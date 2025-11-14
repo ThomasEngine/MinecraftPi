@@ -12,6 +12,8 @@
 #include <iostream>
 #include <string>
 
+
+
 #include "Renderer.h"
 #include "Shader.h"
 #include "Texture.h"
@@ -19,15 +21,18 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
+#include "gui.h"
+
 #include "Cube.h"
 #include "Camera.h"
 
 #include "Chunk.h"
 
 
-Game::Game(const Input* const input, IGraphics* graphics) :
+Game::Game(const Input* const input, IGraphics* graphics, Gui* mGui) :
 	input(input),
-	graphics(graphics)
+	graphics(graphics),
+	gui(mGui)
 {
 }
 
@@ -51,6 +56,8 @@ void Game::Start()
 	auto lastTime = startTime;
 
 	float averageFPS{ 0 };
+
+
 	
 	Renderer renderer;
 	if (!renderer.init()) {
@@ -114,10 +121,24 @@ void Game::Start()
 		printf("FPS: %f \n", averageFPS);
 		// Setup the viewport
 		ClearScreen();
+
+
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		//Update and Draw your game here
 		renderer.beginFrame();
+		gui->newFrame();
+		{
+			{
+				ImGui::Begin("Window");
 
+				ImGui::End();
+			}
+
+
+		}
+		gui->render();
+
+		
 		glm::mat4 projView = cam.GetViewProjectionMatrix();
 		chunk.Draw(renderer, projView, shader, *testTex);
 		//chunk2.Draw(renderer, projView, shader, *testTex);

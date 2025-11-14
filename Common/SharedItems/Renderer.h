@@ -6,6 +6,8 @@
 //include glad and glfw for Windows build
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <SharedItems/gui.h>
+#include <imgui/imgui.h>
 #else
 #include <GLES2/gl2.h>
 #endif

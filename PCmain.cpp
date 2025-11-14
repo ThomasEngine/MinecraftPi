@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/common.hpp>
 #include "Game.h"
+#include "gui.h"
 #include "WindowsGraphics.h"
 #include "WindowsInput.h"
 
@@ -34,10 +35,11 @@ int main()
 	WinGraphics = new WindowsGraphics();
 	glfwSwapInterval(0); // stop the windows build updating without vblank so its the same speed as pi
 
+	Gui gui(&WinGraphics->Window());
 
 	input = new Input(new WindowsKeyboard(WinGraphics->Window()), new WindowsMouse(WinGraphics->Window()));
 
-	game = new Game(input, WinGraphics);
+	game = new Game(input, WinGraphics, &gui);
 
 	game->Start();
 

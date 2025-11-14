@@ -19,6 +19,7 @@ class Input;
 class Renderer;
 class Camera;
 class Chunk;
+class Gui;
 
 constexpr unsigned int WINDOW_WIDTH = 1024;
 constexpr unsigned int WINDOW_HEIGHT = 768;
@@ -27,7 +28,7 @@ constexpr float ASPECT_RATIO = 1024.0f / 768.0f;
 class Game
 {
 public:
-	Game(const Input* const input, IGraphics* graphics);
+	Game(const Input* const input, IGraphics* graphics, Gui* mGui);
 	virtual ~Game();
 	void Start(); 
 	const Input& GetInput() const;
@@ -43,11 +44,13 @@ protected:
 	float gameDeltaTime;
 
 	IGraphics* graphics;
-
+	Gui* gui = nullptr;
 
 private:
 	void InitializeOpenGLES();
 	void ClearScreen();
+
+
 
 	bool canBreakBlock = true;
 	float blockTimer = 0;
