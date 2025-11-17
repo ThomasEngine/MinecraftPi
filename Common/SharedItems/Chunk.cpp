@@ -79,12 +79,13 @@ bool Chunk::IsEmpty(int x, int y, int z) const
     return GetBlock(x, y, z) != 0 ? true : false;
 }
 
-// Pseudocode plan:
-// - The neighbor check block is missing a statement after the if (owner.GetBlockAtPosition(...) == B_AIR)
-// - The if block is empty, so the compiler expects a statement, but finds only a closing brace
-// - The logic should be: if the neighbor block is air, add the face; otherwise, skip to next face
-// - For the else branch (when neighbor is inside the chunk), the logic is inverted: if not air, skip; else, add face
-// - Fix: Add a continue statement after the neighbor air check, and invert the logic in the else branch
+void Chunk::destroyMesh(Renderer& ren)
+{
+	if (isReady) {
+		ren.destroyMesh(*mesh);
+		isReady = false;
+	}
+}
 
 void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
 {
@@ -94,6 +95,7 @@ void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
 
     std::vector<FaceVertex> vertices;
     std::vector<unsigned int> indices;
+
     unsigned int indexOffset = 0;
 
     for (int x = 0; x < CHUNK_SIZE_X; ++x) {
@@ -169,6 +171,3 @@ void Chunk::Draw(Renderer& renderer, const glm::mat4& viewProj, const Shader& sh
         renderer.drawMesh(*mesh, shader, viewProj, texture);
     }
 }
-
-
-

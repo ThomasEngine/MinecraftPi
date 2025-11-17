@@ -1,6 +1,8 @@
 #pragma once
 #include <Renderer.h>
 #include <map>
+#include <queue>
+#include <set>
 
 struct IVec3Less {
 	bool operator()(const glm::ivec3& a, const glm::ivec3& b) const {
@@ -11,34 +13,47 @@ struct IVec3Less {
 };
 
 
+
+
 class Shader;
 class Texture;
 class Chunk;
 class FastNoiseLite;
+
 class ChunkManager
 {
 public:
 	ChunkManager(Renderer& rend);
 	~ChunkManager();
 
-	void Update(float dt, const glm::vec3 camPos, const glm::vec3 comDir, Renderer& renderer);
+	void Update(float dt, const glm::vec3 camPos, const glm::vec3 camDir, Renderer& renderer);
 	void Draw(Renderer& renderer, const glm::mat4 viewProj, Shader& shader, Texture& tex);
 
 	uint8_t GetBlockAtPosition(const glm::vec3 position, const glm::ivec3 chunkPos);
 
 private:
-	glm::ivec2 m_LastCameraChunk;
-	glm::vec3 m_CameraPos, m_CameraDir;
-	std::vector<Chunk*> m_LoadList, m_SetupList, m_RebuildList, m_UnloadList, m_VisibilityList, m_RenderList;
+	static constexpr int CHUNK_SIZE_X = 16;
+	static constexpr int CHUNK_SIZE_Z = 16;
+	static constexpr int VIEW_DISTANCE = 8;
 
+	glm::vec3 m_CameraPos, m_CameraDir;
 	FastNoiseLite* FNL;
 	std::map<glm::ivec3, Chunk*, IVec3Less> m_Chunks;
+	std::vector<Chunk*> m_RenderList;
+	std::vector<Chunk*> m_InShotRenderList;
+	std::vector<Chunk*> m_PendingMesh;
 
-	void UpdateLoadList(const glm::vec3 camPos);
-	void UpdateSetupList(Renderer& renderer);
-	void UpdateRebuildList(Renderer& renderer);
-	void UpdateUnloadList();
-	void UpdateVisibilityList(const glm::vec3 camPos, const glm::vec3 camDir);
-	void UpdateRenderList();
+
+	std::queue<glm::ivec3> m_ChunksToLoad;
+	std::queue<glm::ivec3> m_ChunksToUnload;
+	std::set<glm::ivec3, IVec3Less> m_ChunksScheduledForLoad;
+	std::set<glm::ivec3, IVec3Less> m_ChunksScheduledForUnload;
+
+	glm::ivec3 WorldToChunkPos(const glm::vec3& pos) const;
+
+	bool AreNeighborsLoaded(const glm::ivec3& pos) const;
+	void FindChunksToLoadAndUnload(const glm::vec3& camPos);
+	void ProcessChunkLoading(Renderer& renderer);
+	void ProcessChunkUnloading(Renderer& renderer);
+	void UpdateInShotRenderList();
 };
-

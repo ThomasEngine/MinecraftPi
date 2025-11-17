@@ -26,6 +26,7 @@ public:
     void SetBlock(int x, int y, int z, uint8_t type);
     uint8_t GetBlock(int x, int y, int z) const;
 
+    void destroyMesh(Renderer& ren);
     void createChunkMesh(Renderer& renderer, ChunkManager& owner);
     void Draw(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const;
 
