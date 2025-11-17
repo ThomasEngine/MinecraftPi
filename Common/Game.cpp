@@ -18,6 +18,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "gui.h"
+#include "WindowsGraphics.h"
 
 #include "Cube.h"
 #include "Camera.h"
@@ -54,6 +55,7 @@ void Game::Start()
 	auto lastTime = startTime;
 
 	float averageFPS{ 0 };
+	float moveSpeed = 0.8f;
 
 	
 	Renderer renderer;
@@ -101,7 +103,7 @@ void Game::Start()
 
 		gameDeltaTime = delta.count();
 
-		ProcessInput(cam, renderer, gameDeltaTime);
+		ProcessInput(cam, renderer, gameDeltaTime, moveSpeed);
 
 		std::chrono::duration<float> elapsed = time - startTime;
 		if(elapsed.count() > 0.25f && frameCount > 10)
@@ -138,6 +140,8 @@ void Game::Start()
 				ImGui::Text("Y: %f", camPos.y);
 				ImGui::Text("Z: %f", camPos.z);
 
+				ImGui::SliderFloat("Move Speed", &moveSpeed, 1.8f, 8.f);
+
 				ImGui::End();
 			}
 		}
@@ -164,12 +168,12 @@ void Game::Quit()
 
 
 //example of using the key and mouse
-void Game::ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& chunk*/, float deltaTime)
+void Game::ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& chunk*/, float deltaTime, float speed)
 {
 	const Input& input = GetInput();
 	const IMouse& mouse = input.GetMouse();
 	const IKeyboard& keyboard = input.GetKeyboard();
-	float moveSpeed = 8.f * gameDeltaTime;
+	float moveSpeed = speed * deltaTime;
 	float lookSpeed = 1.12f * gameDeltaTime;
 
 	static glm::vec2 lastMouse = mouse.GetPosition();
@@ -202,6 +206,14 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& chunk*/, float
 
 	if (keyboard.GetKey(Key::ESCAPE))
 		Quit();
+
+#ifdef WINDOWS_BUILD
+	if (keyboard.GetKey(Key::ALT_LEFT))
+	{
+		dynamic_cast<WindowsGraphics*>(graphics)->ToggleCurser();
+	}
+#endif 
+
 
 
 

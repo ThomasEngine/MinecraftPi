@@ -34,7 +34,7 @@ public:
 	const Input& GetInput() const;
 	void Quit();
 protected:
-	void ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& currentChunk*/, float deltaTime);
+	void ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& currentChunk*/, float deltaTime, float moveSpeed);
 	virtual void Update(float /*gameDeltaTime*/) {}
 	virtual void Render() {}
 	virtual void PostRender() {}

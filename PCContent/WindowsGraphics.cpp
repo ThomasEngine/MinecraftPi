@@ -17,6 +17,21 @@ GLFWwindow& WindowsGraphics::Window() const
 	return *window;
 }
 
+void WindowsGraphics::ToggleCurser() const
+{
+	static bool cursorVisible = false;
+	if (cursorVisible)
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		cursorVisible = false;
+	}
+	else
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		cursorVisible = true;
+	}
+}
+
 WindowsGraphics::WindowsGraphics()
 {
 	// Initialize GLFW and set window properties.

@@ -21,6 +21,8 @@ public:
 	void SwapBuffer() override;
 	GLFWwindow& Window() const;
 
+	void ToggleCurser() const;
+
 private:
 	GLFWwindow* window;
 };
