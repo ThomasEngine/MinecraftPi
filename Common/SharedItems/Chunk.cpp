@@ -79,6 +79,13 @@ bool Chunk::IsEmpty(int x, int y, int z) const
     return GetBlock(x, y, z) != 0 ? true : false;
 }
 
+// Pseudocode plan:
+// - The neighbor check block is missing a statement after the if (owner.GetBlockAtPosition(...) == B_AIR)
+// - The if block is empty, so the compiler expects a statement, but finds only a closing brace
+// - The logic should be: if the neighbor block is air, add the face; otherwise, skip to next face
+// - For the else branch (when neighbor is inside the chunk), the logic is inverted: if not air, skip; else, add face
+// - Fix: Add a continue statement after the neighbor air check, and invert the logic in the else branch
+
 void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
 {
     if (isReady) {
@@ -101,23 +108,24 @@ void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
                     if (nx < 0 || nx >= CHUNK_SIZE_X ||
                         nz < 0 || nz >= CHUNK_SIZE_Z)
                     {
-						glm::ivec3 neighborChunkPos = chunkPos;
-						if (nx < 0) neighborChunkPos.x -= 1;
-						else if (nx >= CHUNK_SIZE_X) neighborChunkPos.x += 1;
-						if (nz < 0) neighborChunkPos.z -= 1;
-						else if (nz >= CHUNK_SIZE_Z) neighborChunkPos.z += 1;
+                        glm::ivec3 neighborChunkPos = chunkPos;
+                        if (nx < 0) neighborChunkPos.x -= 1;
+                        else if (nx >= CHUNK_SIZE_X) neighborChunkPos.x += 1;
+                        if (nz < 0) neighborChunkPos.z -= 1;
+                        else if (nz >= CHUNK_SIZE_Z) neighborChunkPos.z += 1;
                         neighborChunkPos.y = 0;
 
-						
-                        glm::ivec3 neighborBlockPos = glm::ivec3(nx, ny, nz);
-						neighborBlockPos.x = nx < 0 ? CHUNK_SIZE_X : (nx > CHUNK_SIZE_X ? 0 : nx);
-						neighborBlockPos.z = nz < 0 ? CHUNK_SIZE_Z : (nz > CHUNK_SIZE_Z ? 0 : nz);
+                        glm::ivec3 neighborBlockPos = glm::ivec3(nx, y, nz);
+                        neighborBlockPos.x = nx < 0 ? CHUNK_SIZE_X - 1 : (nx >= CHUNK_SIZE_X ? 0 : nx);
+                        neighborBlockPos.z = nz < 0 ? CHUNK_SIZE_Z - 1 : (nz >= CHUNK_SIZE_Z ? 0 : nz);
 
-                        if (owner.GetBlockAtPosition(neighborBlockPos, neighborChunkPos) == B_AIR)
-                            continue;
-						
+                        if (owner.GetBlockAtPosition(neighborBlockPos, neighborChunkPos) != B_AIR)
+                            continue; 
                     }
-                    if (IsEmpty(nx,ny,nz)) continue;
+                    else {
+                        if (GetBlock(nx, ny, nz) != B_AIR)
+                            continue;
+                    }
 
                     // Add 4 vertices for each face
                     for (int v = 0; v < 4; ++v) {
@@ -126,7 +134,7 @@ void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
                         glm::vec2 tex = fv.tex;
 
                         const BlockType& blockType = g_BlockTypes[blockId];
-                        uint8_t atlasIndex = blockType.textureIndices[face]; // face is 0-5 for each face direction
+                        uint8_t atlasIndex = blockType.textureIndices[face];
 
                         const int cols = 16;
                         float cellX = float(atlasIndex % cols);
@@ -149,7 +157,7 @@ void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
         }
     }
     mesh = std::make_unique<Mesh>(renderer.uploadMesh(vertices, indices));
-	isReady = true;
+    isReady = true;
     vertices.clear();
     indices.clear();
 }

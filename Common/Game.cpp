@@ -123,7 +123,6 @@ void Game::Start()
 		glm::mat4 projView = cam.GetViewProjectionMatrix();
 		chunkManager.Update(gameDeltaTime, cam.GetPosition(), cam.GetDirection(), renderer);
 
-
 		// Draw
 		chunkManager.Draw(renderer, projView, shader, *testTex);
 
