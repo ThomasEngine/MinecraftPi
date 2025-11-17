@@ -1,6 +1,6 @@
 #include "gui.h"
 
-#include "glad.h"
+//#include "glad.h"
 #include "GLFW/glfw3.h"
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>

@@ -1,6 +1,10 @@
 #pragma once
 #include <vector>
 #include <glm/glm.hpp>
+#include <memory>
+#include <unordered_map>
+#include <functional>
+#include <cstddef>
 
 #ifdef WINDOWS_BUILD
 //include glad and glfw for Windows build
@@ -39,14 +43,20 @@ struct Mesh {
     GLsizei indexCount = 0;
 };
 
+//struct FaceVertex {
+//    glm::vec3 pos;
+//    glm::vec2 tex;
+//    uint8_t atlasIndex;   
+//};
+
 struct FaceVertex {
     glm::vec3 pos;
     glm::vec2 tex;
-    unsigned int blockType;  // Block type
-    uint8_t face;       // Face index
-    uint8_t facesT;
+    float cellX;
+    float cellY;
 };
-
+struct BlockInstanceData;
+class Chunk;
 class Shader;
 class Texture;
 class Renderer {
@@ -61,15 +71,17 @@ public:
     void beginFrame();
     void endFrame();
 
-    // Shader creation
+    Mesh cubeMesh;
 
     // Mesh helpers
     Mesh createCubeMesh();
+    void uploadInstanceBuffer(const std::vector<BlockInstanceData>& instances, Chunk* chunk);
     Mesh uploadMesh(const std::vector<float>& vertexData, const std::vector<unsigned int>& indices);
     Mesh uploadMesh(const std::vector<FaceVertex>& vertexData, const std::vector<unsigned int>& indices);
     void destroyMesh(Mesh& m);
 
     // Draw
+    void drawInstancedMesh(const glm::mat4& mvp, const Shader& sh, const Texture& texture, size_t instanceCount, GLuint instanceVBO);
     void drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, const Texture& texture);
 
 private:

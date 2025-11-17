@@ -34,7 +34,7 @@ public:
 	const Input& GetInput() const;
 	void Quit();
 protected:
-	void ProcessInput(Camera& cam, Chunk& chunk, Renderer& renderer, float deltaTime);
+	void ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& currentChunk*/, float deltaTime);
 	virtual void Update(float /*gameDeltaTime*/) {}
 	virtual void Render() {}
 	virtual void PostRender() {}
@@ -51,7 +51,7 @@ private:
 	void ClearScreen();
 
 
-
+	bool speedBoost;
 	bool canBreakBlock = true;
 	float blockTimer = 0;
 	int frameCount{0};

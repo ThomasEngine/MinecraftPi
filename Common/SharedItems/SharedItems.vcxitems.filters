@@ -52,6 +52,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)gui.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)BlockType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)BlockRegistery.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ChunkManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Game.cpp">
@@ -79,6 +82,8 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)BlockRegistery.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ChunkManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.mtl">

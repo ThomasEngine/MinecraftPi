@@ -6,6 +6,9 @@
 #include "Shader.h"
 #include "Texture.h"
 
+#include "Chunk.h"
+#include "BlockRegistery.h"
+
 // GLERROR
 void GLClearError()
 {
@@ -42,6 +45,8 @@ bool Renderer::init() {
     glDepthFunc(GL_LEQUAL);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+
+    cubeMesh = createCubeMesh();
 
     return true;
 }
@@ -85,7 +90,7 @@ Mesh Renderer::uploadMesh(const std::vector<float>& vertexData, const std::vecto
 Mesh Renderer::uploadMesh(const std::vector<FaceVertex>& vertexData, const std::vector<unsigned int>& indices) {
     Mesh m;
     m.indexCount = static_cast<GLsizei>(indices.size());
-    glGenVertexArrays(1, &m.vao);
+    GLCall(glGenVertexArrays(1, &m.vao));
     glBindVertexArray(m.vao);
 
     glGenBuffers(1, &m.vbo);
@@ -102,15 +107,12 @@ Mesh Renderer::uploadMesh(const std::vector<FaceVertex>& vertexData, const std::
     // Attribute 1: texcoord (vec2)
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(FaceVertex), (const void*)offsetof(FaceVertex, tex));
-    // Attribute 2: blockType (uint8)
+    // Attribute 2: cellX
     glEnableVertexAttribArray(2);
-    glVertexAttribIPointer(2, 1, GL_UNSIGNED_BYTE, sizeof(FaceVertex), (const void*)offsetof(FaceVertex, blockType));
-    // Attribute 3: face (uint8)
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(FaceVertex), (const void*)offsetof(FaceVertex, cellX));
+    // Attribute 3: cellY
     glEnableVertexAttribArray(3);
-    glVertexAttribIPointer(3, 1, GL_UNSIGNED_BYTE, sizeof(FaceVertex), (const void*)offsetof(FaceVertex, face));
-    // Attribute 4 : facesPerBlock (uint8)
-    glEnableVertexAttribArray(4);
-    glVertexAttribIPointer(4, 1, GL_UNSIGNED_BYTE, sizeof(FaceVertex), (const void*)offsetof(FaceVertex, facesT));
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(FaceVertex), (const void*)offsetof(FaceVertex, cellY));
 
 
     glBindVertexArray(0);
@@ -185,7 +187,7 @@ Mesh Renderer::createCubeMesh() {
     return uploadMesh(v, i);
 }
 
-
+// ~1500 fps and 180 mb memory
 void Renderer::drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, const Texture& texture) {
     GLuint program = sh.GetID();
     GLuint tex = texture.GetID();

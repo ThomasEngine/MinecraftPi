@@ -8,11 +8,7 @@
 #include "IGraphics.h"
 #include "IInput.h"
 
-
-#include <iostream>
 #include <string>
-
-
 
 #include "Renderer.h"
 #include "Shader.h"
@@ -27,6 +23,8 @@
 #include "Camera.h"
 
 #include "Chunk.h"
+#include "BlockRegistery.h"
+#include "ChunkManager.h"
 
 
 Game::Game(const Input* const input, IGraphics* graphics, Gui* mGui) :
@@ -57,7 +55,6 @@ void Game::Start()
 
 	float averageFPS{ 0 };
 
-
 	
 	Renderer renderer;
 	if (!renderer.init()) {
@@ -83,22 +80,16 @@ void Game::Start()
 	}
 	//Texture* testTex = new Texture("Common/SharedItems/Assets/MinecraftTex.png");
 	//Texture testTex("Common/SharedItems/Assets/dirtblock.png");
+	InitializeBlockTypes();
 
 	// Before drawing
 	shader.Bind();
 	shader.SetUniform1i("u_TextureAtlas", 0);
-	shader.SetUniform1i("u_AtlasCols", 256 / 16);
-	shader.SetUniform1i("u_AtlasRows", 256 / 16);
+	shader.SetUniform1f("u_CellWidth", 1.f / 16.f);
+	shader.SetUniform1f("u_CellHeight", 1.f / 16.f);
 	testTex->Bind(0);
 
-	Chunk chunk(glm::ivec3(0));
-	chunk.createChunkMesh(renderer);
-	//Chunk chunk2(glm::ivec3(3,0,0));
-	//chunk2.createChunkMesh(renderer);
-	//Chunk chunk3(glm::ivec3(0,0,1));
-	//chunk3.createChunkMesh(renderer);
-	//Chunk chunk4(glm::ivec3(1,0,1));
-	//chunk4.createChunkMesh(renderer);
+	ChunkManager chunkManager(renderer);
 
 	Camera cam(WINDOW_WIDTH, WINDOW_HEIGHT);
 	cam.SetPosition(glm::vec3(0, 66, 0));
@@ -109,7 +100,8 @@ void Game::Start()
 		std::chrono::duration<float> delta = time - lastTime;
 
 		gameDeltaTime = delta.count();
-		ProcessInput(cam, chunk, renderer, gameDeltaTime);
+
+		ProcessInput(cam, renderer, gameDeltaTime);
 
 		std::chrono::duration<float> elapsed = time - startTime;
 		if(elapsed.count() > 0.25f && frameCount > 10)
@@ -118,7 +110,6 @@ void Game::Start()
 			startTime = time;
 			frameCount = 0;
 		}
-		printf("FPS: %f \n", averageFPS);
 		// Setup the viewport
 		ClearScreen();
 
@@ -126,30 +117,33 @@ void Game::Start()
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		//Update and Draw your game here
 		renderer.beginFrame();
+	
+
+		// Updates
+		glm::mat4 projView = cam.GetViewProjectionMatrix();
+		chunkManager.Update(gameDeltaTime, cam.GetPosition(), cam.GetDirection(), renderer);
+
+
+		// Draw
+		chunkManager.Draw(renderer, projView, shader, *testTex);
+
 		gui->newFrame();
 		{
 			{
 				ImGui::Begin("Window");
 
+				ImGui::Text("FPS: %f", averageFPS);
+				ImGui::Text("--Pos--");
+				glm::vec3 camPos = cam.GetPosition();
+				ImGui::Text("X: %f", camPos.x);
+				ImGui::Text("Y: %f", camPos.y);
+				ImGui::Text("Z: %f", camPos.z);
+
 				ImGui::End();
 			}
-
-
 		}
 		gui->render();
 
-		
-		glm::mat4 projView = cam.GetViewProjectionMatrix();
-		chunk.Draw(renderer, projView, shader, *testTex);
-		//chunk2.Draw(renderer, projView, shader, *testTex);
-		//chunk3.Draw(renderer, projView, shader, *testTex);
-		//chunk4.Draw(renderer, projView, shader, *testTex);
-
-
-
-		// Draw
-		chunk.Draw(renderer, projView, shader, *testTex);
-		//renderer.endFrame();
 		graphics->SwapBuffer();
 		lastTime = time;
 		++frameCount;
@@ -171,16 +165,28 @@ void Game::Quit()
 
 
 //example of using the key and mouse
-void Game::ProcessInput(Camera& cam, Chunk& chunk, Renderer& renderer, float deltaTime)
+void Game::ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& chunk*/, float deltaTime)
 {
-
-
 	const Input& input = GetInput();
 	const IMouse& mouse = input.GetMouse();
 	const IKeyboard& keyboard = input.GetKeyboard();
-
 	float moveSpeed = 8.f * gameDeltaTime;
 	float lookSpeed = 1.12f * gameDeltaTime;
+
+	static glm::vec2 lastMouse = mouse.GetPosition();
+	glm::vec2 currentMouse = mouse.GetPosition();
+	glm::vec2 delta = currentMouse - lastMouse;
+	lastMouse = currentMouse;
+
+	cam.AddYaw(-delta.x * lookSpeed);
+	cam.AddPitch(-delta.y * lookSpeed);
+
+	if (keyboard.GetKey(Key::CTRL_LEFT))
+		speedBoost = true;
+	else speedBoost = false;
+
+	if (speedBoost)
+		moveSpeed *= 3;
 
 	if (keyboard.GetKey(Key::W))
 		cam.MoveForward(moveSpeed);
@@ -198,13 +204,7 @@ void Game::ProcessInput(Camera& cam, Chunk& chunk, Renderer& renderer, float del
 	if (keyboard.GetKey(Key::ESCAPE))
 		Quit();
 
-	static glm::vec2 lastMouse = mouse.GetPosition();
-	glm::vec2 currentMouse = mouse.GetPosition();
-	glm::vec2 delta = currentMouse - lastMouse;
-	lastMouse = currentMouse;
 
-	cam.AddYaw(-delta.x * lookSpeed);
-	cam.AddPitch(-delta.y * lookSpeed);
 
 	if (keyboard.GetKey(Key::ARROW_LEFT))
 		cam.AddYaw(lookSpeed * 10.0f);
@@ -222,48 +222,44 @@ void Game::ProcessInput(Camera& cam, Chunk& chunk, Renderer& renderer, float del
 		canBreakBlock = true;
 
 	// Break blocks
-	if ((mouse.GetButtonDown(MouseButtons::LEFT) || mouse.GetButtonDown(MouseButtons::RIGHT)) && canBreakBlock)
-	{
-		glm::vec3 camPos = cam.GetPosition();
-		glm::vec3 camDir = cam.GetDirection(); 
+	//if ((mouse.GetButtonDown(MouseButtons::LEFT) || mouse.GetButtonDown(MouseButtons::RIGHT)) && canBreakBlock)
+	//{
+	//	glm::vec3 camPos = cam.GetPosition();
+	//	glm::vec3 camDir = cam.GetDirection();
 
-		float maxDistance = 5.0f;
-		float step = 1.f;
-		glm::vec3 lastBlock = camPos;
-		for (float i = 0; i < maxDistance; i += step)
-		{
-			glm::vec3 pos = camPos + camDir * i;
-			int blockX = static_cast<int>(floor(pos.x));
-			int blockY = static_cast<int>(floor(pos.y));
-			int blockZ = static_cast<int>(floor(pos.z));
+	//	float maxDistance = 5.0f;
+	//	float step = 1.f;
+	//	glm::vec3 lastBlock = camPos;
+	//	for (float i = 0; i < maxDistance; i += step)
+	//	{
+	//		glm::vec3 pos = camPos + camDir * i;
+	//		int blockX = static_cast<int>(floor(pos.x));
+	//		int blockY = static_cast<int>(floor(pos.y));
+	//		int blockZ = static_cast<int>(floor(pos.z));
 
-			if (chunk.GetBlock(blockX, blockY, blockZ) != 0) // 0 == air
-			{
-				if (mouse.GetButtonDown(MouseButtons::LEFT))
-				{
-					chunk.SetBlock(blockX, blockY, blockZ, 0);
-				}
-				if (mouse.GetButtonDown(MouseButtons::RIGHT))
-				{
-					if (lastBlock != camPos)
-						chunk.SetBlock(lastBlock.x, lastBlock.y, lastBlock.z, 2);
-				}
+	//		if (chunk.GetBlock(blockX, blockY, blockZ) != 0) // 0 == air
+	//		{
+	//			if (mouse.GetButtonDown(MouseButtons::LEFT))
+	//			{
+	//				chunk.SetBlock(blockX, blockY, blockZ, 0);
+	//			}
+	//			if (mouse.GetButtonDown(MouseButtons::RIGHT))
+	//			{
+	//				if (lastBlock != camPos)
+	//					chunk.SetBlock(lastBlock.x, lastBlock.y, lastBlock.z, 2);
+	//			}
 
-				chunk.createChunkMesh(renderer);
-				canBreakBlock = false;
-				blockTimer = 0;
-				break;
-			}
+	//			chunk.createChunkMesh(renderer);
 
-			lastBlock = { blockX, blockY, blockZ };
-		}
-	}
+	//			canBreakBlock = false;
+	//			blockTimer = 0;
+	//			break;
+	//		}
+	//	lastBlock = { blockX, blockY, blockZ };
+	//	
+	//	}
+	//}
 }
-
-
-
-
-
 
 void Game::InitializeOpenGLES()
 {

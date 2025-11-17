@@ -1301,6 +1301,9 @@
     <ClInclude Include="PCContent\include\KHR\khrplatform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Common\noise\FastNoiseLite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="PCContent\imgui.ini" />
@@ -1747,5 +1750,6 @@
     <None Include="PCContent\include\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="Common\SharedItems\Assets\Ins.shader" />
   </ItemGroup>
 </Project>

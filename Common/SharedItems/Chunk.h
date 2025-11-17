@@ -11,26 +11,24 @@ constexpr int CHUNK_SIZE_X = 16;
 constexpr int CHUNK_SIZE_Y = 128;
 constexpr int CHUNK_SIZE_Z = 16;
 
-// BlockTypeEnmus
-
-enum Block
-{
-
-};
-
+class ChunkManager;
+class FastNoiseLite;
 class Chunk {
 public:
     glm::ivec3 chunkPos; // chunk grid position
-    std::vector<unsigned int> blocks; // 0 = air, >0 = solid (block type)
+    std::vector<uint8_t> blocks;
     std::unique_ptr<Mesh> mesh;
+    bool isReady = false;
 
-    Chunk(glm::ivec3 pos);
+    Chunk(glm::ivec3 pos, FastNoiseLite& FNL);
+    ~Chunk();
 
-    void SetBlock(int x, int y, int z, unsigned int type);
-    unsigned int GetBlock(int x, int y, int z) const;
+    void SetBlock(int x, int y, int z, uint8_t type);
+    uint8_t GetBlock(int x, int y, int z) const;
 
-    void createChunkMesh(Renderer& renderer);
+    void createChunkMesh(Renderer& renderer, ChunkManager& owner);
     void Draw(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const;
+
 
 private:
     bool IsEmpty(int x, int y, int z) const;
