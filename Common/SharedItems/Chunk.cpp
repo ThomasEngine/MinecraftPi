@@ -34,23 +34,31 @@ Chunk::Chunk(glm::ivec3 pos, FastNoiseLite& FNL)
 {
     blocks.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z, 0);
 
-	for (int x = 0; x < CHUNK_SIZE_X; ++x) {
-		for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
-			float noiseValue = FNL.GetNoise(float((chunkPos.x * CHUNK_SIZE_X) + x), float((chunkPos.z * CHUNK_SIZE_Z) + z));
-			int height = static_cast<int>((noiseValue + 1.0f) / 2.0f * (CHUNK_SIZE_Y - 1)); // Normalize to [0, CHUNK_SIZE_Y-1]
-			for (int y = 0; y <= height; ++y) {
-				if (y == height) {
-					SetBlock(x, y, z, B_GRASS);
-				}
-				else if (y > height - 5) {
-					SetBlock(x, y, z, B_DIRT);
-				}
-				else {
-					SetBlock(x, y, z, B_STONE);
-				}
-			}
-		}
-	}
+    for (int x = 0; x < CHUNK_SIZE_X; ++x) {
+        for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
+            float noiseValue = FNL.GetNoise(float((chunkPos.x * CHUNK_SIZE_X) + x), float((chunkPos.z * CHUNK_SIZE_Z) + z));
+            int height = static_cast<int>((noiseValue + 1.0f) / 2.0f * (CHUNK_SIZE_Y - 1));
+            for (int y = 0; y <= height; ++y) {
+                if (y > 65 + (rand() % 3)) {
+                    SetBlock(x, y, z, B_STONE);
+                }
+                else if (y == height) {
+                    if (height < 10 && (x + z) % 5 == 0)
+                        SetBlock(x, y, z, B_SAND);
+                    else if (height < 20 && (x * z) % 7 == 0)
+                        SetBlock(x, y, z, B_GRAVEL);
+                    else
+                        SetBlock(x, y, z, B_GRASS);
+                }
+                else if (y > height - 5) {
+                    SetBlock(x, y, z, B_DIRT);
+                }
+                else {
+                    SetBlock(x, y, z, B_STONE);
+                }
+            }
+        }
+    }
 }
 
 Chunk::~Chunk()

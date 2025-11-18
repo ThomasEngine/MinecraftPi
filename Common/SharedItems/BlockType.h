@@ -10,6 +10,11 @@ enum BlockTypeId : uint8_t {
 	B_OAK_PLANK,
 	B_OAK_LEAF,
 	B_BEDROCK,
+	B_SAND,
+	B_GRAVEL,
+	B_WATER,
+	B_GRANITE,
+	B_DIORITE,
 	B_AMOUNT
 };
 

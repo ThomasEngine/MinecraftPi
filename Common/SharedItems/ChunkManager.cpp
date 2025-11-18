@@ -12,7 +12,6 @@ static const glm::ivec3 offsets[] = {
 ChunkManager::ChunkManager(Renderer& rend)
     : m_CameraPos(-1.0f), m_CameraDir(0.0f)
 {
-    // Minecraft-like terrain: Perlin noise, fractal FBm, multiple octaves, low frequency
     FNL = FastNoiseLite(1337);
     FNL.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_Perlin);
     FNL.SetFractalType(FastNoiseLite::FractalType::FractalType_FBm);
@@ -21,6 +20,7 @@ ChunkManager::ChunkManager(Renderer& rend)
     FNL.SetFractalGain(0.5f);
     FNL.SetFrequency(0.01f);
 }
+
 
 ChunkManager::~ChunkManager()
 {
@@ -32,9 +32,9 @@ ChunkManager::~ChunkManager()
 glm::ivec3 ChunkManager::WorldToChunkPos(const glm::vec3& pos) const
 {
     return glm::ivec3(
-        static_cast<int>(std::floor(pos.x / CHUNK_SIZE_X)),
+        int(std::floor(pos.x / CHUNK_SIZE_X)),
         0,
-        static_cast<int>(std::floor(pos.z / CHUNK_SIZE_Z))
+        int(std::floor(pos.z / CHUNK_SIZE_Z))
     );
 }
 
@@ -147,7 +147,7 @@ void ChunkManager::ProcessChunkUnloading(Renderer& renderer)
         chunk->destroyMesh(renderer);
         delete chunk;
         m_Chunks.erase(it);
-
+        
         // Remove from render list
         m_RenderList.erase(std::remove(m_RenderList.begin(), m_RenderList.end(), chunk), m_RenderList.end());
     }
@@ -188,5 +188,5 @@ uint8_t ChunkManager::GetBlockAtPosition(const glm::vec3 position, const glm::iv
     if (it == m_Chunks.end() || it->second == nullptr)
         return 0;
     Chunk* chunk = it->second;
-    return chunk->GetBlock(static_cast<int>(position.x), static_cast<int>(position.y), static_cast<int>(position.z));
+    return chunk->GetBlock(int(position.x), int(position.y), int(position.z));
 }
