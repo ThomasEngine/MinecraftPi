@@ -55,7 +55,7 @@ void Game::Start()
 	auto lastTime = startTime;
 
 	float averageFPS{ 0 };
-	float moveSpeed = 0.8f;
+	float moveSpeed = 6.f;
 
 	
 	Renderer renderer;
@@ -123,7 +123,7 @@ void Game::Start()
 
 		// Updates
 		glm::mat4 projView = cam.GetViewProjectionMatrix();
-		chunkManager.Update(gameDeltaTime, cam.GetPosition(), cam.GetDirection(), renderer);
+		chunkManager.Update(cam, renderer);
 
 		// Draw
 		chunkManager.Draw(renderer, projView, shader, *testTex);
@@ -140,7 +140,7 @@ void Game::Start()
 				ImGui::Text("Y: %f", camPos.y);
 				ImGui::Text("Z: %f", camPos.z);
 
-				ImGui::SliderFloat("Move Speed", &moveSpeed, 1.8f, 8.f);
+				ImGui::SliderFloat("Move Speed", &moveSpeed, 6.f, 12.f);
 
 				ImGui::End();
 			}
@@ -173,7 +173,7 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& chunk*/, float
 	const Input& input = GetInput();
 	const IMouse& mouse = input.GetMouse();
 	const IKeyboard& keyboard = input.GetKeyboard();
-	float moveSpeed = speed * deltaTime;
+	float moveSpeed = speed * gameDeltaTime;
 	float lookSpeed = 1.12f * gameDeltaTime;
 
 	static glm::vec2 lastMouse = mouse.GetPosition();

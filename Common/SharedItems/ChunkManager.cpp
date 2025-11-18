@@ -1,7 +1,8 @@
 #include "ChunkManager.h"
 #include "Chunk.h"
-#include <noise/FastNoiseLite.h>
 #include <cmath>
+#include <Frustum.h>
+#include <Camera.h>
 
 static const glm::ivec3 offsets[] = {
     { 1, 0, 0 }, { -1, 0, 0 },
@@ -11,8 +12,14 @@ static const glm::ivec3 offsets[] = {
 ChunkManager::ChunkManager(Renderer& rend)
     : m_CameraPos(-1.0f), m_CameraDir(0.0f)
 {
-    FNL = new FastNoiseLite(1337);
-    FNL->SetNoiseType(FastNoiseLite::NoiseType::NoiseType_Value);
+    // Minecraft-like terrain: Perlin noise, fractal FBm, multiple octaves, low frequency
+    FNL = FastNoiseLite(1337);
+    FNL.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_Perlin);
+    FNL.SetFractalType(FastNoiseLite::FractalType::FractalType_FBm);
+    FNL.SetFractalOctaves(5);
+    FNL.SetFractalLacunarity(2.0f);
+    FNL.SetFractalGain(0.5f);
+    FNL.SetFrequency(0.01f);
 }
 
 ChunkManager::~ChunkManager()
@@ -20,7 +27,6 @@ ChunkManager::~ChunkManager()
     for (auto& pair : m_Chunks) {
         delete pair.second;
     }
-    delete FNL;
 }
 
 glm::ivec3 ChunkManager::WorldToChunkPos(const glm::vec3& pos) const
@@ -32,9 +38,10 @@ glm::ivec3 ChunkManager::WorldToChunkPos(const glm::vec3& pos) const
     );
 }
 
-void ChunkManager::Update(float dt, const glm::vec3 camPos, const glm::vec3 camDir, Renderer& renderer)
+void ChunkManager::Update(const Camera& cam, Renderer& renderer)
 {
-    m_CameraDir = camDir;
+    m_CameraDir = cam.GetDirection();
+	glm::vec3 camPos = cam.GetPosition();
     if (WorldToChunkPos(m_CameraPos) != WorldToChunkPos(camPos))
     {
         m_CameraPos = camPos;
@@ -63,8 +70,7 @@ void ChunkManager::Update(float dt, const glm::vec3 camPos, const glm::vec3 camD
             }
         }
     }
-
-    UpdateInShotRenderList();
+    UpdateInShotRenderList(cam.GetViewProjectionMatrix());
 }
 
 bool ChunkManager::AreNeighborsLoaded(const glm::ivec3& pos) const {
@@ -114,7 +120,7 @@ void ChunkManager::ProcessChunkLoading(Renderer& renderer)
     m_ChunksToLoad.pop();
     m_ChunksScheduledForLoad.erase(pos);
 
-    Chunk* chunk = new Chunk(pos, *FNL);
+    Chunk* chunk = new Chunk(pos, FNL);
     m_Chunks[pos] = chunk;
     m_RenderList.push_back(chunk);
 
@@ -147,21 +153,26 @@ void ChunkManager::ProcessChunkUnloading(Renderer& renderer)
     }
 }
 
-void ChunkManager::UpdateInShotRenderList()
+void ChunkManager::UpdateInShotRenderList(const glm::mat4& viewProj)
 {
-	m_InShotRenderList.clear();
-	for (Chunk* chunk : m_RenderList) {
-		glm::vec3 chunkCenter = glm::vec3(
-			(chunk->chunkPos.x + 0.5f) * CHUNK_SIZE_X,
-			CHUNK_SIZE_Y / 2.0f,
-			(chunk->chunkPos.z + 0.5f) * CHUNK_SIZE_Z
-		);
-		glm::vec3 toChunk = glm::normalize(chunkCenter - m_CameraPos);
-		float dot = glm::dot(m_CameraDir, toChunk);
-		if (dot > 0.3f) { 
-			m_InShotRenderList.push_back(chunk);
-		}
-	}
+    m_InShotRenderList.clear();
+    static Frustum frustum;
+    frustum.Extract(viewProj);
+
+    for (Chunk* chunk : m_RenderList) {
+        glm::vec3 center = glm::vec3(
+            (chunk->chunkPos.x + 0.5f) * CHUNK_SIZE_X,
+            CHUNK_SIZE_Y / 2.0f,
+            (chunk->chunkPos.z + 0.5f) * CHUNK_SIZE_Z
+        );
+        static const float halfX = CHUNK_SIZE_X / 2.0f;
+        static const float halfY = CHUNK_SIZE_Y / 2.0f;
+        static const float halfZ = CHUNK_SIZE_Z / 2.0f;
+
+        if (frustum.BoxInFrustum(center, halfX, halfY, halfZ)) {
+            m_InShotRenderList.push_back(chunk);
+        }
+    }
 }
 
 void ChunkManager::Draw(Renderer& renderer, const glm::mat4 viewProj, Shader& shader, Texture& tex)

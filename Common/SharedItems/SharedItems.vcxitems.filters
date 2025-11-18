@@ -55,6 +55,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)BlockType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BlockRegistery.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ChunkManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Frustum.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Game.cpp">
@@ -84,6 +85,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)BlockRegistery.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ChunkManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Frustum.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.mtl">

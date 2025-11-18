@@ -3,6 +3,8 @@
 #include <map>
 #include <queue>
 #include <set>
+#include <FastNoiseLite.h>
+#include <future>
 
 struct IVec3Less {
 	bool operator()(const glm::ivec3& a, const glm::ivec3& b) const {
@@ -12,21 +14,18 @@ struct IVec3Less {
 	}
 };
 
-
-
-
+class Camera;
 class Shader;
 class Texture;
 class Chunk;
 class FastNoiseLite;
-
 class ChunkManager
 {
 public:
 	ChunkManager(Renderer& rend);
 	~ChunkManager();
 
-	void Update(float dt, const glm::vec3 camPos, const glm::vec3 camDir, Renderer& renderer);
+	void Update(const Camera& cam, Renderer& renderer);
 	void Draw(Renderer& renderer, const glm::mat4 viewProj, Shader& shader, Texture& tex);
 
 	uint8_t GetBlockAtPosition(const glm::vec3 position, const glm::ivec3 chunkPos);
@@ -37,12 +36,13 @@ private:
 	static constexpr int VIEW_DISTANCE = 8;
 
 	glm::vec3 m_CameraPos, m_CameraDir;
-	FastNoiseLite* FNL;
+
+	FastNoiseLite FNL;
 	std::map<glm::ivec3, Chunk*, IVec3Less> m_Chunks;
+	std::vector<std::future<std::unique_ptr<Chunk>>> m_ChunkFutures;
 	std::vector<Chunk*> m_RenderList;
 	std::vector<Chunk*> m_InShotRenderList;
 	std::vector<Chunk*> m_PendingMesh;
-
 
 	std::queue<glm::ivec3> m_ChunksToLoad;
 	std::queue<glm::ivec3> m_ChunksToUnload;
@@ -50,10 +50,9 @@ private:
 	std::set<glm::ivec3, IVec3Less> m_ChunksScheduledForUnload;
 
 	glm::ivec3 WorldToChunkPos(const glm::vec3& pos) const;
-
 	bool AreNeighborsLoaded(const glm::ivec3& pos) const;
 	void FindChunksToLoadAndUnload(const glm::vec3& camPos);
 	void ProcessChunkLoading(Renderer& renderer);
 	void ProcessChunkUnloading(Renderer& renderer);
-	void UpdateInShotRenderList();
+	void UpdateInShotRenderList(const glm::mat4& viewProj);
 };

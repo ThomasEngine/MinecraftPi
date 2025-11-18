@@ -25,6 +25,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Chunk.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ChunkManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Cube.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Frustum.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gui.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Renderer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Shader.h" />
@@ -38,6 +39,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Chunk.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ChunkManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Cube.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Frustum.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Renderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Shader.cpp" />
