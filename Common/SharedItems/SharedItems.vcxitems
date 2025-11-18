@@ -27,6 +27,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Cube.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Frustum.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gui.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ICommand.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Player.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Renderer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Shader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Texture.h" />
@@ -41,6 +43,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Cube.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Frustum.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ICommand.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Player.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Renderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Shader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Texture.cpp" />

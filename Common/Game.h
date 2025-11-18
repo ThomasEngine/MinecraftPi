@@ -1,6 +1,10 @@
 #pragma once
 #include <glm/vec2.hpp>
 #include <vector>
+#include <map>
+#include <memory>
+#include "Player.h"
+
 
 #ifdef WINDOWS_BUILD
 //include glad and glfw for Windows build
@@ -20,6 +24,8 @@ class Renderer;
 class Camera;
 class Chunk;
 class Gui;
+class ICommand;
+enum class Key;
 
 constexpr unsigned int WINDOW_WIDTH = 1024;
 constexpr unsigned int WINDOW_HEIGHT = 768;
@@ -50,7 +56,8 @@ private:
 	void InitializeOpenGLES();
 	void ClearScreen();
 
-
+	Player player;
+	std::map<Key, std::unique_ptr<ICommand>> keyCommandMap;
 	bool speedBoost;
 	bool canBreakBlock = true;
 	float blockTimer = 0;

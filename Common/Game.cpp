@@ -6,7 +6,10 @@
 #include <sstream>
 #include <iostream>
 #include "IGraphics.h"
+
 #include "IInput.h"
+#include <map>
+#include "ICommand.h"
 
 #include <string>
 
@@ -31,7 +34,8 @@
 Game::Game(const Input* const input, IGraphics* graphics, Gui* mGui) :
 	input(input),
 	graphics(graphics),
-	gui(mGui)
+	gui(mGui),
+	player(WINDOW_WIDTH, WINDOW_HEIGHT)
 {
 }
 
@@ -93,8 +97,14 @@ void Game::Start()
 
 	ChunkManager chunkManager(renderer);
 
-	Camera cam(WINDOW_WIDTH, WINDOW_HEIGHT);
-	cam.SetPosition(glm::vec3(0, 66, 0));
+
+	keyCommandMap[Key::W] = std::make_unique<MoveForwardCommand>();
+	keyCommandMap[Key::S] = std::make_unique<MoveBackwardCommand>();
+	keyCommandMap[Key::A] = std::make_unique<MoveLeftCommand>();
+	keyCommandMap[Key::D] = std::make_unique<MoveRightCommand>();
+	keyCommandMap[Key::SHIFT_LEFT] = std::make_unique<CrouchCommand>();
+	keyCommandMap[Key::SPACE] = std::make_unique<JumpCommand>();
+
 
 	while(!quitting)
 	{
@@ -103,7 +113,7 @@ void Game::Start()
 
 		gameDeltaTime = delta.count();
 
-		ProcessInput(cam, renderer, gameDeltaTime, moveSpeed);
+		ProcessInput(player.GetCamera(), renderer, gameDeltaTime, moveSpeed);
 
 		std::chrono::duration<float> elapsed = time - startTime;
 		if(elapsed.count() > 0.25f && frameCount > 10)
@@ -122,8 +132,8 @@ void Game::Start()
 	
 
 		// Updates
-		glm::mat4 projView = cam.GetViewProjectionMatrix();
-		chunkManager.Update(cam, renderer);
+		glm::mat4 projView = player.GetCamera().GetViewProjectionMatrix();
+		chunkManager.Update(player.GetCamera(), renderer);
 
 		// Draw
 		chunkManager.Draw(renderer, projView, shader, *testTex);
@@ -135,10 +145,10 @@ void Game::Start()
 
 				ImGui::Text("FPS: %f", averageFPS);
 				ImGui::Text("--Pos--");
-				glm::vec3 camPos = cam.GetPosition();
-				ImGui::Text("X: %f", camPos.x);
-				ImGui::Text("Y: %f", camPos.y);
-				ImGui::Text("Z: %f", camPos.z);
+				glm::vec3 playerPos = player.GetCamera().GetPosition();
+				ImGui::Text("X: %f", playerPos.x);
+				ImGui::Text("Y: %f", playerPos.y);
+				ImGui::Text("Z: %f", playerPos.z);
 
 				ImGui::SliderFloat("Move Speed", &moveSpeed, 6.f, 12.f);
 
@@ -190,19 +200,25 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& chunk*/, float
 
 	if (speedBoost)
 		moveSpeed *= 3;
+	player.SetMoveSpeed(moveSpeed);
+	for (const auto& pair : keyCommandMap) {
+		if (keyboard.GetKey(pair.first)) {
+			pair.second->Execute(player, deltaTime);
+		}
+	}
 
-	if (keyboard.GetKey(Key::W))
-		cam.MoveForward(moveSpeed);
-	if (keyboard.GetKey(Key::S))
-		cam.MoveForward(-moveSpeed);
-	if (keyboard.GetKey(Key::A))
-		cam.MoveRight(moveSpeed);
-	if (keyboard.GetKey(Key::D))
-		cam.MoveRight(-moveSpeed);
-	if (keyboard.GetKey(Key::SPACE))
-		cam.Move(glm::vec3(0, moveSpeed, 0));
-	if (keyboard.GetKey(Key::SHIFT_LEFT))
-		cam.Move(glm::vec3(0, -moveSpeed, 0));
+	//if (keyboard.GetKey(Key::W))
+	//	cam.MoveForward(moveSpeed);
+	//if (keyboard.GetKey(Key::S))
+	//	cam.MoveForward(-moveSpeed);
+	//if (keyboard.GetKey(Key::A))
+	//	cam.MoveRight(moveSpeed);
+	//if (keyboard.GetKey(Key::D))
+	//	cam.MoveRight(-moveSpeed);
+	//if (keyboard.GetKey(Key::SPACE))
+	//	cam.Move(glm::vec3(0, moveSpeed, 0));
+	//if (keyboard.GetKey(Key::SHIFT_LEFT))
+	//	cam.Move(glm::vec3(0, -moveSpeed, 0));
 
 	if (keyboard.GetKey(Key::ESCAPE))
 		Quit();
