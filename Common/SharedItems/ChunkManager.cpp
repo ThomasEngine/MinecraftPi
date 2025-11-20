@@ -12,13 +12,24 @@ static const glm::ivec3 offsets[] = {
 ChunkManager::ChunkManager(Renderer& rend)
     : m_CameraPos(-1.0f), m_CameraDir(0.0f)
 {
-    FNL = FastNoiseLite(1337);
-    FNL.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_Perlin);
-    FNL.SetFractalType(FastNoiseLite::FractalType::FractalType_FBm);
-    FNL.SetFractalOctaves(5);
-    FNL.SetFractalLacunarity(2.0f);
-    FNL.SetFractalGain(0.5f);
-    FNL.SetFrequency(0.01f);
+	// Continentalness Noise
+    m_Continentalness = FastNoiseLite(1337);
+    m_Continentalness.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2);
+    m_Continentalness.SetFrequency(0.0008f);
+    m_Continentalness.SetFractalType(FastNoiseLite::FractalType::FractalType_FBm);
+    m_Continentalness.SetFractalOctaves(3);
+    m_Continentalness.SetFractalGain(0.55f);
+
+	// Erosion noise
+	m_Erosion = FastNoiseLite(42);
+    m_Erosion.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+    m_Erosion.SetFrequency(0.002f); 
+
+	// Peaks and Valleys noise
+    m_PeaksAndValleys = FastNoiseLite(56);
+    m_PeaksAndValleys.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+    m_PeaksAndValleys.SetFrequency(0.003f);
+    m_PeaksAndValleys.SetFractalType(FastNoiseLite::FractalType_Ridged);
 }
 
 
@@ -120,11 +131,11 @@ void ChunkManager::ProcessChunkLoading(Renderer& renderer)
     m_ChunksToLoad.pop();
     m_ChunksScheduledForLoad.erase(pos);
 
-    Chunk* chunk = new Chunk(pos, FNL);
+    Chunk* chunk = new Chunk(pos, m_Continentalness, m_Erosion, m_PeaksAndValleys);
     m_Chunks[pos] = chunk;
     m_RenderList.push_back(chunk);
 
-    // Defer mesh creation if neighbors not loaded
+    // Mmesh creation if neighbors not loaded
     if (AreNeighborsLoaded(pos)) {
         chunk->createChunkMesh(renderer, *this);
     }

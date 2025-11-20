@@ -3,6 +3,7 @@
 #include "ICommand.h"
 #include "Camera.h"
 
+class CollisionSystem;
 class Player
 {
 public:
@@ -18,9 +19,11 @@ public:
 	void Crouch();
 	void SetFlying(bool b);
 	void SetMoveSpeed(float s) { m_MovementSpeed = s; }
+	void SetCollisionSystem(CollisionSystem* CS) { m_CS = CS; }
 	Camera& GetCamera() { return m_Camera; }
 
 private:
+	CollisionSystem* m_CS;
 	Camera m_Camera;
 	bool m_Flying{ true };
 	float m_MovementSpeed;

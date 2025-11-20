@@ -58,6 +58,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Frustum.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Player.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ICommand.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CollisionSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Game.cpp">
@@ -90,6 +91,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Frustum.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Player.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ICommand.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CollisionSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.mtl">
@@ -147,5 +149,6 @@
       <Filter>Assets</Filter>
     </Image>
     <Image Include="$(MSBuildThisFileDirectory)Assets\MinecraftTex.png" />
+    <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas.png" />
   </ItemGroup>
 </Project>

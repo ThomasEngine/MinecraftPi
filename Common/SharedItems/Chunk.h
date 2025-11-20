@@ -8,7 +8,7 @@
 
 // Chunk dimensions
 constexpr int CHUNK_SIZE_X = 16;
-constexpr int CHUNK_SIZE_Y = 128;
+constexpr int CHUNK_SIZE_Y = 128 * 2;
 constexpr int CHUNK_SIZE_Z = 16;
 
 class ChunkManager;
@@ -20,7 +20,7 @@ public:
     std::unique_ptr<Mesh> mesh;
     bool isReady = false;
 
-    Chunk(glm::ivec3 pos, FastNoiseLite& FNL);
+    Chunk(glm::ivec3 pos, FastNoiseLite& Continental, FastNoiseLite& Erosion, FastNoiseLite& PeaksValleys);
     ~Chunk();
 
     void SetBlock(int x, int y, int z, uint8_t type);
@@ -33,4 +33,5 @@ public:
 
 private:
     bool IsEmpty(int x, int y, int z) const;
+    float mapContinentalValue(float value);
 };

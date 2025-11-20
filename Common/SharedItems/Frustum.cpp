@@ -6,26 +6,14 @@
 #include <array>
 #include <cmath>
 
-// Helper to normalize a plane (a, b, c, d)
-static glm::vec4 NormalizePlane(const glm::vec4& plane) {
-    float len = glm::length(glm::vec3(plane));
-    return plane / len;
-}
-
 void Frustum::Extract(const glm::mat4& viewProj)
 {
-    // Left
-    planes[LEFT] = NormalizePlane(glm::row(viewProj, 3) + glm::row(viewProj, 0));
-    // Right
-    planes[RIGHT] = NormalizePlane(glm::row(viewProj, 3) - glm::row(viewProj, 0));
-    // Bottom
-    planes[BOTTOM] = NormalizePlane(glm::row(viewProj, 3) + glm::row(viewProj, 1));
-    // Top
-    planes[TOP] = NormalizePlane(glm::row(viewProj, 3) - glm::row(viewProj, 1));
-    // Near
-    planes[NEAR] = NormalizePlane(glm::row(viewProj, 3) + glm::row(viewProj, 2));
-    // Far
-    planes[FAR] = NormalizePlane(glm::row(viewProj, 3) - glm::row(viewProj, 2));
+    planes[LEFT] = glm::normalize(glm::row(viewProj, 3) + glm::row(viewProj, 0));
+    planes[RIGHT] = glm::normalize(glm::row(viewProj, 3) - glm::row(viewProj, 0));
+    planes[BOTTOM] = glm::normalize(glm::row(viewProj, 3) + glm::row(viewProj, 1));
+    planes[TOP] = glm::normalize(glm::row(viewProj, 3) - glm::row(viewProj, 1));
+    planes[NEAR] = glm::normalize(glm::row(viewProj, 3) + glm::row(viewProj, 2));
+    planes[FAR] = glm::normalize(glm::row(viewProj, 3) - glm::row(viewProj, 2));
 }
 
 bool Frustum::BoxInFrustum(const glm::vec3& center, float halfX, float halfY, float halfZ) const

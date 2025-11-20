@@ -25,6 +25,7 @@ class Camera;
 class Chunk;
 class Gui;
 class ICommand;
+class CollisionSystem;
 enum class Key;
 
 constexpr unsigned int WINDOW_WIDTH = 1024;
@@ -58,6 +59,7 @@ private:
 
 	Player player;
 	std::map<Key, std::unique_ptr<ICommand>> keyCommandMap;
+	CollisionSystem* collisionSystem = nullptr;
 	bool speedBoost;
 	bool canBreakBlock = true;
 	float blockTimer = 0;

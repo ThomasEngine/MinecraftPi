@@ -1,11 +1,11 @@
 #pragma once
 #include "Renderer.h"
+#include <glm/glm.hpp>
 
 // Adaptation from: https://sites.google.com/site/letsmakeavoxelengine/home/frustum-culling
-// And https://www.lighthouse3d.com/tutorials/view-frustum-culling/
+// mostly: https://stackoverflow.com/questions/12836967/extracting-view-frustum-planes-gribb-hartmann-method
 // And https://www.youtube.com/watch?v=-ymmkfjMIeI
 
-#include <glm/glm.hpp>
 
 class Frustum {
 public:

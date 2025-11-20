@@ -3,7 +3,6 @@
 #include <noise/FastNoiseLite.h>
 #include "ChunkManager.h"
 
-
 static const FaceVertex faceVertices[6][4] = {
     // -Z (Back)
     { { {0,0,0}, {0,0} }, { {0,1,0}, {0,1} }, { {1,1,0}, {1,1} }, { {1,0,0}, {1,0} } },
@@ -27,35 +26,60 @@ static const int faceDirs[6][3] = {
     { -1,  0,  0 }, // -X (Left)
     {  1,  0,  0 }  // +X (Right)
 };
-
-
-Chunk::Chunk(glm::ivec3 pos, FastNoiseLite& FNL)
+Chunk::Chunk(glm::ivec3 pos, FastNoiseLite& Continental, FastNoiseLite& Erosion, FastNoiseLite& PeaksValleys)
     : chunkPos(pos)
 {
     blocks.resize(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z, 0);
 
     for (int x = 0; x < CHUNK_SIZE_X; ++x) {
         for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
-            float noiseValue = FNL.GetNoise(float((chunkPos.x * CHUNK_SIZE_X) + x), float((chunkPos.z * CHUNK_SIZE_Z) + z));
-            int height = static_cast<int>((noiseValue + 1.0f) / 2.0f * (CHUNK_SIZE_Y - 1));
-            for (int y = 0; y <= height; ++y) {
-                if (y > 65 + (rand() % 3)) {
-                    SetBlock(x, y, z, B_STONE);
+            // World coordinates
+            float wx = float(chunkPos.x * CHUNK_SIZE_X + x);
+            float wz = float(chunkPos.z * CHUNK_SIZE_Z + z);
+
+            float continental = Continental.GetNoise(wx, wz); 
+            float erosion = Erosion.GetNoise(wx, wz);         
+            float peaks = PeaksValleys.GetNoise(wx, wz);      
+
+            continental = (continental + 1.0f) * 0.5f;
+            erosion = (erosion + 1.0f) * 0.5f;
+            peaks = (peaks + 1.0f) * 0.5f;
+
+            float baseHeight = 64.0f; 
+            float maxHeight = 164; 
+
+            float continentHeight = glm::clamp(glm::mix(0.0f, maxHeight, continental), 0.0f, maxHeight);
+            float erosionEffect = glm::mix(1.0f, 0.5f, erosion);
+            float peakEffect = glm::mix(0.0f, 32.0f, peaks);
+
+            float height = continentHeight * erosionEffect + peakEffect;
+            height = glm::clamp(height, 0.0f, float(CHUNK_SIZE_Y - 1));
+            int intHeight = static_cast<int>(height);
+
+            // --- Step 4: Set blocks ---
+            for (int y = 0; y <= intHeight; ++y) {
+                if (y == 0) {
+                    SetBlock(x, y, z, B_BEDROCK);
                 }
-                else if (y == height) {
-                    if (height < 10 && (x + z) % 5 == 0)
+                else if (y == intHeight) {
+                    // Surface block: choose based on height
+                    if (height < baseHeight + 2)
                         SetBlock(x, y, z, B_SAND);
-                    else if (height < 20 && (x * z) % 7 == 0)
+                    else if (height > maxHeight - 10)
                         SetBlock(x, y, z, B_GRAVEL);
                     else
                         SetBlock(x, y, z, B_GRASS);
                 }
-                else if (y > height - 5) {
+                else if (y > intHeight - 5) {
                     SetBlock(x, y, z, B_DIRT);
                 }
                 else {
                     SetBlock(x, y, z, B_STONE);
                 }
+            }
+
+            for (int y = intHeight + 1; y <= baseHeight; ++y) {
+                SetBlock(x, y, z, B_WATER);
             }
         }
     }
@@ -110,11 +134,19 @@ void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
         for (int y = 0; y < CHUNK_SIZE_Y; ++y) {
             for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
                 uint8_t blockId = GetBlock(x, y, z);
-                if (blockId == B_AIR) continue;
+                if (g_BlockTypes[blockId].isTransparent && blockId != B_WATER) continue;
+
+                // Only draw the top layer of water
+                if (blockId == B_WATER) {
+                    uint8_t aboveBlock = (y + 1 < CHUNK_SIZE_Y) ? GetBlock(x, y + 1, z) : B_AIR;
+                    if (aboveBlock == B_WATER) continue;
+                }
+
                 for (int face = 0; face < 6; ++face) {
                     int nx = x + faceDirs[face][0];
                     int ny = y + faceDirs[face][1];
                     int nz = z + faceDirs[face][2];
+                    if (ny < 0) continue;
                     if (nx < 0 || nx >= CHUNK_SIZE_X ||
                         nz < 0 || nz >= CHUNK_SIZE_Z)
                     {
@@ -133,9 +165,13 @@ void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
                             continue; 
                     }
                     else {
-                        if (GetBlock(nx, ny, nz) != B_AIR)
+                        uint8_t neighborBlockId = GetBlock(nx, ny, nz);
+                        if (neighborBlockId != B_AIR && neighborBlockId != B_WATER)
                             continue;
                     }
+
+                    if (blockId == B_WATER && face != 3) // Top face
+                        continue;
 
                     // Add 4 vertices for each face
                     for (int v = 0; v < 4; ++v) {
@@ -147,10 +183,9 @@ void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
                         uint8_t atlasIndex = blockType.textureIndices[face];
 
                         const int cols = 16;
-                        float cellX = float(atlasIndex % cols);
-                        float cellY = float(atlasIndex / cols);
 
-                        cellY += 15;
+                        float cellX = float(atlasIndex % cols);
+                        float cellY = 15 - (atlasIndex / cols);
 
                         vertices.push_back(FaceVertex{ pos, tex, cellX, cellY });
                     }

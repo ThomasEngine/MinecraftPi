@@ -31,13 +31,15 @@ public:
 	uint8_t GetBlockAtPosition(const glm::vec3 position, const glm::ivec3 chunkPos);
 
 private:
-	static constexpr int CHUNK_SIZE_X = 16;
-	static constexpr int CHUNK_SIZE_Z = 16;
-	static constexpr int VIEW_DISTANCE = 8;
+	static constexpr int VIEW_DISTANCE = 12;
 
 	glm::vec3 m_CameraPos, m_CameraDir;
 
-	FastNoiseLite FNL;
+	FastNoiseLite m_Continentalness;
+	FastNoiseLite m_Erosion;
+	FastNoiseLite m_PeaksAndValleys;
+
+
 	std::map<glm::ivec3, Chunk*, IVec3Less> m_Chunks;
 	std::vector<std::future<std::unique_ptr<Chunk>>> m_ChunkFutures;
 	std::vector<Chunk*> m_RenderList;

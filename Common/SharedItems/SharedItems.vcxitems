@@ -24,6 +24,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Camera.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Chunk.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ChunkManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CollisionSystem.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Cube.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Frustum.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gui.h" />
@@ -40,6 +41,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Camera.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Chunk.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ChunkManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CollisionSystem.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Cube.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Frustum.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp" />
@@ -95,6 +97,7 @@
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03_em.png" />
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Textures\Harvey2.jpg" />
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Textures\MinecraftTex.png" />
+    <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\MinecraftTex.png" />
   </ItemGroup>
 </Project>

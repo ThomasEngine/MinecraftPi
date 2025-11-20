@@ -29,6 +29,7 @@
 #include "Chunk.h"
 #include "BlockRegistery.h"
 #include "ChunkManager.h"
+#include "CollisionSystem.h"
 
 
 Game::Game(const Input* const input, IGraphics* graphics, Gui* mGui) :
@@ -37,6 +38,7 @@ Game::Game(const Input* const input, IGraphics* graphics, Gui* mGui) :
 	gui(mGui),
 	player(WINDOW_WIDTH, WINDOW_HEIGHT)
 {
+
 }
 
 Game::~Game()
@@ -69,7 +71,7 @@ void Game::Start()
 
 #ifdef WINDOWS_BUILD
 	Shader shader("Common/SharedItems/Assets/Basic.shader");
-	Texture* testTex = new Texture("Common/SharedItems/Assets/MinecraftTex.png");
+	Texture* testTex = new Texture("Common/SharedItems/Assets/minecraftAtlas.png");
 #endif
 #ifdef Raspberry_BUILD
 	Shader shader("../Common/SharedItems/Assets/basicpi.shader");
@@ -96,6 +98,9 @@ void Game::Start()
 	testTex->Bind(0);
 
 	ChunkManager chunkManager(renderer);
+	collisionSystem = new CollisionSystem();
+	collisionSystem->SetTarget(&chunkManager);
+	player.SetCollisionSystem(collisionSystem);
 
 
 	keyCommandMap[Key::W] = std::make_unique<MoveForwardCommand>();
@@ -200,25 +205,14 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& chunk*/, float
 
 	if (speedBoost)
 		moveSpeed *= 3;
+
+
 	player.SetMoveSpeed(moveSpeed);
 	for (const auto& pair : keyCommandMap) {
 		if (keyboard.GetKey(pair.first)) {
 			pair.second->Execute(player, deltaTime);
 		}
 	}
-
-	//if (keyboard.GetKey(Key::W))
-	//	cam.MoveForward(moveSpeed);
-	//if (keyboard.GetKey(Key::S))
-	//	cam.MoveForward(-moveSpeed);
-	//if (keyboard.GetKey(Key::A))
-	//	cam.MoveRight(moveSpeed);
-	//if (keyboard.GetKey(Key::D))
-	//	cam.MoveRight(-moveSpeed);
-	//if (keyboard.GetKey(Key::SPACE))
-	//	cam.Move(glm::vec3(0, moveSpeed, 0));
-	//if (keyboard.GetKey(Key::SHIFT_LEFT))
-	//	cam.Move(glm::vec3(0, -moveSpeed, 0));
 
 	if (keyboard.GetKey(Key::ESCAPE))
 		Quit();
