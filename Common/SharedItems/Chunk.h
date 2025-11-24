@@ -18,7 +18,8 @@ public:
     glm::ivec3 chunkPos; // chunk grid position
     std::vector<uint8_t> blocks;
     std::unique_ptr<Mesh> mesh;
-    bool isReady = false;
+	std::unique_ptr<Mesh> transparentMesh;
+    bool hasTransparentBlocks = false;
 
     Chunk(glm::ivec3 pos, FastNoiseLite& Continental, FastNoiseLite& Erosion, FastNoiseLite& PeaksValleys);
     ~Chunk();
@@ -30,9 +31,12 @@ public:
     void createChunkMesh(Renderer& renderer, ChunkManager& owner);
 	void createTransparentMesh(Renderer& renderer, ChunkManager& owner);
 	void createSolidMesh(Renderer& renderer, ChunkManager& owner);
-    void Draw(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const;
+    void DrawSolid(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const;
+    void DrawTransparent(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const;
 
 
 private:
     bool IsEmpty(int x, int y, int z) const;
+	bool NeighborIsEmpty(int nx, int ny, int nz, ChunkManager& owner, int y) const;
+    void AddFaces(std::vector<FaceVertex>& vertices, std::vector<unsigned int>& indices, const int& face, const uint8_t blockIdD);
 };

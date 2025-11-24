@@ -111,6 +111,36 @@ bool Chunk::IsEmpty(int x, int y, int z) const
     return GetBlock(x, y, z) != 0 ? true : false;
 }
 
+bool Chunk::NeighborIsEmpty(int nx, int ny, int nz, ChunkManager& owner, int y) const
+{
+    if (ny < 0) return false;
+    if (nx < 0 || nx >= CHUNK_SIZE_X ||
+        nz < 0 || nz >= CHUNK_SIZE_Z)
+    {
+        glm::ivec3 neighborChunkPos = chunkPos;
+        if (nx < 0) neighborChunkPos.x -= 1;
+        else if (nx >= CHUNK_SIZE_X) neighborChunkPos.x += 1;
+        if (nz < 0) neighborChunkPos.z -= 1;
+        else if (nz >= CHUNK_SIZE_Z) neighborChunkPos.z += 1;
+        neighborChunkPos.y = 0;
+
+
+        glm::ivec3 neighborBlockPos = glm::ivec3(nx, ny, nz);
+        neighborBlockPos.x = nx < 0 ? CHUNK_SIZE_X - 1 : (nx >= CHUNK_SIZE_X ? 0 : nx);
+        neighborBlockPos.z = nz < 0 ? CHUNK_SIZE_Z - 1 : (nz >= CHUNK_SIZE_Z ? 0 : nz);
+        uint8_t neighborChunkBlockId = owner.GetBlockAtPosition(neighborBlockPos, neighborChunkPos);
+        if (neighborChunkBlockId != B_AIR && neighborChunkBlockId != B_WATER)
+            return false;
+    }
+    else
+    {
+        uint8_t neighborBlockId = GetBlock(nx, ny, nz);
+        if (neighborBlockId != B_AIR && neighborBlockId != B_WATER)
+            return false;
+    }
+    return true;
+}
+
 void Chunk::destroyMesh(Renderer& ren)
 {
 	if (mesh) {
@@ -119,6 +149,69 @@ void Chunk::destroyMesh(Renderer& ren)
 }
 
 void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
+{
+	createSolidMesh(renderer, owner);
+	if (hasTransparentBlocks) {
+		createTransparentMesh(renderer, owner);
+	}
+}
+
+void Chunk::createTransparentMesh(Renderer& renderer, ChunkManager& owner)
+{
+    if (transparentMesh) {
+        renderer.destroyMesh(*transparentMesh);
+    }
+
+    std::vector<FaceVertex> vertices;
+    std::vector<unsigned int> indices;
+
+    unsigned int indexOffset = 0;
+	const int face = 3; // Top face only
+    for (int x = 0; x < CHUNK_SIZE_X; ++x) {
+        for (int y = 0; y < CHUNK_SIZE_Y; ++y) {
+            for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
+                uint8_t blockId = GetBlock(x, y, z);
+                if (blockId != B_WATER) continue;
+
+                // Only draw the top layer of water
+                if (blockId == B_WATER) {
+                    uint8_t aboveBlock = (y + 1 < CHUNK_SIZE_Y) ? GetBlock(x, y + 1, z) : B_AIR;
+                    if (aboveBlock == B_WATER) continue;
+                }
+
+                // Add 4 vertices for each face
+                for (int v = 0; v < 4; ++v) {
+                    const FaceVertex& fv = faceVertices[face][v];
+                    glm::vec3 pos = fv.pos + glm::vec3(x, y, z) + glm::vec3(chunkPos.x * CHUNK_SIZE_X, chunkPos.y * CHUNK_SIZE_Y, chunkPos.z * CHUNK_SIZE_Z);
+                    glm::vec2 tex = fv.tex;
+
+                    const BlockType& blockType = g_BlockTypes[blockId];
+                    uint8_t atlasIndex = blockType.textureIndices[face];
+
+                    const int cols = 16;
+
+                    float cellX = float(atlasIndex % cols);
+                    float cellY = 15 - (atlasIndex / cols);
+
+                    vertices.push_back(FaceVertex{ pos, tex, cellX, cellY });
+                }
+                // 6 indices for each face square
+                indices.push_back(indexOffset + 0);
+                indices.push_back(indexOffset + 1);
+                indices.push_back(indexOffset + 2);
+                indices.push_back(indexOffset + 0);
+                indices.push_back(indexOffset + 2);
+                indices.push_back(indexOffset + 3);
+                indexOffset += 4;
+            }
+        }
+    }
+    transparentMesh = std::make_unique<Mesh>(renderer.uploadMesh(vertices, indices));
+    vertices.clear();
+    indices.clear();
+}
+
+void Chunk::createSolidMesh(Renderer& renderer, ChunkManager& owner)
 {
     if (mesh) {
         renderer.destroyMesh(*mesh);
@@ -133,44 +226,19 @@ void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
         for (int y = 0; y < CHUNK_SIZE_Y; ++y) {
             for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
                 uint8_t blockId = GetBlock(x, y, z);
-                if (g_BlockTypes[blockId].isTransparent && blockId != B_WATER) continue;
 
-                // Only draw the top layer of water
-                if (blockId == B_WATER) {
-                    uint8_t aboveBlock = (y + 1 < CHUNK_SIZE_Y) ? GetBlock(x, y + 1, z) : B_AIR;
-                    if (aboveBlock == B_WATER) continue;
+                if (g_BlockTypes[blockId].isTransparent)
+                {
+                    if (blockId == B_WATER) hasTransparentBlocks = true;
+                    continue;
                 }
 
                 for (int face = 0; face < 6; ++face) {
                     int nx = x + faceDirs[face][0];
                     int ny = y + faceDirs[face][1];
                     int nz = z + faceDirs[face][2];
-                    if (ny < 0) continue;
-                    if (nx < 0 || nx >= CHUNK_SIZE_X ||
-                        nz < 0 || nz >= CHUNK_SIZE_Z)
-                    {
-                        glm::ivec3 neighborChunkPos = chunkPos;
-                        if (nx < 0) neighborChunkPos.x -= 1;
-                        else if (nx >= CHUNK_SIZE_X) neighborChunkPos.x += 1;
-                        if (nz < 0) neighborChunkPos.z -= 1;
-                        else if (nz >= CHUNK_SIZE_Z) neighborChunkPos.z += 1;
-                        neighborChunkPos.y = 0;
+					if (!NeighborIsEmpty(nx, ny, nz, owner, y)) continue;
 
-                        glm::ivec3 neighborBlockPos = glm::ivec3(nx, y, nz);
-                        neighborBlockPos.x = nx < 0 ? CHUNK_SIZE_X - 1 : (nx >= CHUNK_SIZE_X ? 0 : nx);
-                        neighborBlockPos.z = nz < 0 ? CHUNK_SIZE_Z - 1 : (nz >= CHUNK_SIZE_Z ? 0 : nz);
-                        uint8_t neighborChunkBlockId = owner.GetBlockAtPosition(neighborBlockPos, neighborChunkPos);
-                        if (neighborChunkBlockId != B_AIR && neighborChunkBlockId != B_WATER)
-                            continue; 
-                    }
-                    else {
-                        uint8_t neighborBlockId = GetBlock(nx, ny, nz);
-                        if (neighborBlockId != B_AIR && neighborBlockId != B_WATER)
-                            continue;
-                    }
-
-                    if (blockId == B_WATER && face != 3) // Top face
-                        continue;
 
                     // Add 4 vertices for each face
                     for (int v = 0; v < 4; ++v) {
@@ -201,23 +269,17 @@ void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
         }
     }
     mesh = std::make_unique<Mesh>(renderer.uploadMesh(vertices, indices));
-    isReady = true;
     vertices.clear();
     indices.clear();
 }
 
-void Chunk::createTransparentMesh(Renderer& renderer, ChunkManager& owner)
-{
-
-}
-
-void Chunk::createSolidMesh(Renderer& renderer, ChunkManager& owner)
-{
-
-}
-
-void Chunk::Draw(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const 
+void Chunk::DrawSolid(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const
 {
     if (!mesh) return;
     renderer.drawMesh(*mesh, shader, viewProj, texture);
+}
+
+void Chunk::DrawTransparent(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const
+{
+    if (hasTransparentBlocks) renderer.drawMesh(*transparentMesh, shader, viewProj, texture);
 }

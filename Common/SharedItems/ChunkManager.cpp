@@ -188,7 +188,10 @@ void ChunkManager::UpdateInShotRenderList(const glm::mat4& viewProj)
 void ChunkManager::Draw(Renderer& renderer, const glm::mat4 viewProj, Shader& shader, Texture& tex)
 {
     for (Chunk* chunk : m_InShotRenderList) {
-        chunk->Draw(renderer, viewProj, shader, tex);
+        chunk->DrawSolid(renderer, viewProj, shader, tex);
+    }
+    for (Chunk* chunk : m_InShotRenderList) {
+        chunk->DrawTransparent(renderer, viewProj, shader, tex);
     }
 }
 
