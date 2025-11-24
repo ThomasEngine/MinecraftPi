@@ -37,6 +37,7 @@ Chunk::Chunk(glm::ivec3 pos, FastNoiseLite& Continental, FastNoiseLite& Erosion,
             float wx = float(chunkPos.x * CHUNK_SIZE_X + x);
             float wz = float(chunkPos.z * CHUNK_SIZE_Z + z);
 
+            // Creating height
             float continental = Continental.GetNoise(wx, wz); 
             float erosion = Erosion.GetNoise(wx, wz);         
             float peaks = PeaksValleys.GetNoise(wx, wz);      
@@ -56,13 +57,12 @@ Chunk::Chunk(glm::ivec3 pos, FastNoiseLite& Continental, FastNoiseLite& Erosion,
             height = glm::clamp(height, 0.0f, float(CHUNK_SIZE_Y - 1));
             int intHeight = static_cast<int>(height);
 
-            // --- Step 4: Set blocks ---
+            // Placing blocks
             for (int y = 0; y <= intHeight; ++y) {
                 if (y == 0) {
                     SetBlock(x, y, z, B_BEDROCK);
                 }
                 else if (y == intHeight) {
-                    // Surface block: choose based on height
                     if (height < baseHeight + 2)
                         SetBlock(x, y, z, B_SAND);
                     else if (height > maxHeight - 10)
@@ -91,7 +91,7 @@ Chunk::~Chunk()
 
 void Chunk::SetBlock(int x, int y, int z, uint8_t type) {
     if (x < 0 || x >= CHUNK_SIZE_X ||
-        y < -128 || y >= CHUNK_SIZE_Y ||
+        y < 0 || y >= CHUNK_SIZE_Y ||
         z < 0 || z >= CHUNK_SIZE_Z)
         return;
     blocks[x + CHUNK_SIZE_X * (y + CHUNK_SIZE_Y * z)] = type;
@@ -113,15 +113,14 @@ bool Chunk::IsEmpty(int x, int y, int z) const
 
 void Chunk::destroyMesh(Renderer& ren)
 {
-	if (isReady) {
+	if (mesh) {
 		ren.destroyMesh(*mesh);
-		isReady = false;
 	}
 }
 
 void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
 {
-    if (isReady) {
+    if (mesh) {
         renderer.destroyMesh(*mesh);
     }
 
@@ -160,8 +159,8 @@ void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
                         glm::ivec3 neighborBlockPos = glm::ivec3(nx, y, nz);
                         neighborBlockPos.x = nx < 0 ? CHUNK_SIZE_X - 1 : (nx >= CHUNK_SIZE_X ? 0 : nx);
                         neighborBlockPos.z = nz < 0 ? CHUNK_SIZE_Z - 1 : (nz >= CHUNK_SIZE_Z ? 0 : nz);
-
-                        if (owner.GetBlockAtPosition(neighborBlockPos, neighborChunkPos) != B_AIR)
+                        uint8_t neighborChunkBlockId = owner.GetBlockAtPosition(neighborBlockPos, neighborChunkPos);
+                        if (neighborChunkBlockId != B_AIR && neighborChunkBlockId != B_WATER)
                             continue; 
                     }
                     else {
@@ -207,10 +206,18 @@ void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
     indices.clear();
 }
 
+void Chunk::createTransparentMesh(Renderer& renderer, ChunkManager& owner)
+{
+
+}
+
+void Chunk::createSolidMesh(Renderer& renderer, ChunkManager& owner)
+{
+
+}
+
 void Chunk::Draw(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const 
 {
-    if (isReady)
-    {
-        renderer.drawMesh(*mesh, shader, viewProj, texture);
-    }
+    if (!mesh) return;
+    renderer.drawMesh(*mesh, shader, viewProj, texture);
 }

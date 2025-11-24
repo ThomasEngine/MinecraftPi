@@ -28,10 +28,11 @@ public:
 
     void destroyMesh(Renderer& ren);
     void createChunkMesh(Renderer& renderer, ChunkManager& owner);
+	void createTransparentMesh(Renderer& renderer, ChunkManager& owner);
+	void createSolidMesh(Renderer& renderer, ChunkManager& owner);
     void Draw(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const;
 
 
 private:
     bool IsEmpty(int x, int y, int z) const;
-    float mapContinentalValue(float value);
 };

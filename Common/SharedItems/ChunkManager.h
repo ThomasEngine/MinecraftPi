@@ -28,10 +28,10 @@ public:
 	void Update(const Camera& cam, Renderer& renderer);
 	void Draw(Renderer& renderer, const glm::mat4 viewProj, Shader& shader, Texture& tex);
 
-	uint8_t GetBlockAtPosition(const glm::vec3 position, const glm::ivec3 chunkPos);
+	uint8_t GetBlockAtPosition(const glm::vec3& position, const glm::ivec3& chunkPos);
 
 private:
-	static constexpr int VIEW_DISTANCE = 12;
+	static constexpr int VIEW_DISTANCE = 7;
 
 	glm::vec3 m_CameraPos, m_CameraDir;
 

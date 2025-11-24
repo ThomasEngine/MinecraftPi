@@ -63,7 +63,6 @@ void ChunkManager::Update(const Camera& cam, Renderer& renderer)
 		m_CameraPos = camPos;
     }
 
-
     if (!m_ChunksToLoad.empty()) {
         ProcessChunkLoading(renderer);
     }
@@ -98,7 +97,7 @@ void ChunkManager::FindChunksToLoadAndUnload(const glm::vec3& camPos)
 {
     glm::ivec3 camChunk = WorldToChunkPos(camPos);
 
-    // Mark all chunks within view distance as needed
+    // Mark all chunks within view distance
     std::set<glm::ivec3, IVec3Less> neededChunks;
     for (int dx = -VIEW_DISTANCE; dx <= VIEW_DISTANCE; ++dx) {
         for (int dz = -VIEW_DISTANCE; dz <= VIEW_DISTANCE; ++dz) {
@@ -107,7 +106,7 @@ void ChunkManager::FindChunksToLoadAndUnload(const glm::vec3& camPos)
         }
     }
 
-    // Schedule loads
+    // loads
     for (const auto& pos : neededChunks) {
         if (m_Chunks.find(pos) == m_Chunks.end() && m_ChunksScheduledForLoad.find(pos) == m_ChunksScheduledForLoad.end()) {
             m_ChunksToLoad.push(pos);
@@ -115,7 +114,7 @@ void ChunkManager::FindChunksToLoadAndUnload(const glm::vec3& camPos)
         }
     }
 
-    // Schedule unloads
+    // unloads
     for (const auto& pair : m_Chunks) {
         if (neededChunks.find(pair.first) == neededChunks.end() && m_ChunksScheduledForUnload.find(pair.first) == m_ChunksScheduledForUnload.end()) {
             m_ChunksToUnload.push(pair.first);
@@ -193,7 +192,7 @@ void ChunkManager::Draw(Renderer& renderer, const glm::mat4 viewProj, Shader& sh
     }
 }
 
-uint8_t ChunkManager::GetBlockAtPosition(const glm::vec3 position, const glm::ivec3 chunkPos)
+uint8_t ChunkManager::GetBlockAtPosition(const glm::vec3& position, const glm::ivec3& chunkPos)
 {
     auto it = m_Chunks.find(chunkPos);
     if (it == m_Chunks.end() || it->second == nullptr)

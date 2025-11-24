@@ -71,8 +71,6 @@ public:
     void beginFrame();
     void endFrame();
 
-    Mesh cubeMesh;
-
     // Mesh helpers
     Mesh createCubeMesh();
     void uploadInstanceBuffer(const std::vector<BlockInstanceData>& instances, Chunk* chunk);
