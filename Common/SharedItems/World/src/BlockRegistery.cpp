@@ -1,4 +1,5 @@
-#include "BlockRegistery.h"
+#include "World/include/BlockRegistery.h"
+
 
 BlockType g_BlockTypes[BlockTypeId::B_AMOUNT];
 
@@ -15,4 +16,5 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_OAK_PLANK] = { "Oak Plank", {3,3,3,3,3,3}, true, false };
 	g_BlockTypes[B_BEDROCK] = { "Bedrock", {3,3,3,3,3,3}, true, false };
 	g_BlockTypes[B_WATER] = { "Water", { 205,205,205,205,205,205}, false, true };
-}
+	g_BlockTypes[B_GLOWSTONE] = { "Glowstone", { 105, 105, 105, 105, 105, 105}, true, false, 15 };
+} 

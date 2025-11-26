@@ -1,4 +1,4 @@
-#include "Frustum.h"
+#include "Camera/include/Frustum.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_access.hpp>

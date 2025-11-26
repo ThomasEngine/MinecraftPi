@@ -1,5 +1,5 @@
 #include "Player.h"
-#include "Camera.h"
+#include "Camera/include/Camera.h"
 #include "CollisionSystem.h"
 
 Player::Player(int w, int h)

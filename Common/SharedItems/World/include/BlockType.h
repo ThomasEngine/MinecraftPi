@@ -15,6 +15,7 @@ enum BlockTypeId : uint8_t {
 	B_WATER,
 	B_GRANITE,
 	B_DIORITE,
+	B_GLOWSTONE,
 	B_AMOUNT
 };
 
@@ -23,5 +24,6 @@ struct BlockType {
 	uint8_t textureIndices[6];
 	bool isSolid;
 	bool isTransparent;
+	uint8_t lightStrength = 0;
 };
 

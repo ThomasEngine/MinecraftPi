@@ -1,10 +1,10 @@
-#include "Shader.h"
+#include "Rendering/include/Shader.h"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
 
-#include <Renderer.h>
+#include <Rendering/include/Renderer.h>
 
 struct ShaderProgramSource
 {

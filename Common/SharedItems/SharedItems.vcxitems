@@ -4,6 +4,7 @@
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
     <ItemsProjectGuid>{a001fcaf-2399-4412-a986-3e56ae0c15d4}</ItemsProjectGuid>
+    <ItemsProjectName>Engine</ItemsProjectName>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -19,82 +20,45 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\IInput.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Input.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\tiny_obj_loader.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)BlockRegistery.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)BlockType.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Camera.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Chunk.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ChunkManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Lighting\include\Lighting.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)World\include\BlockRegistery.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)World\include\BlockType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Camera\include\Camera.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)World\include\Chunk.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)World\include\ChunkManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CollisionSystem.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Cube.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Frustum.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)gui.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ICommand.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Camera\include\Frustum.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ui\include\gui.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Commands\ICommand.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Player.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Renderer.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Shader.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Texture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\include\Renderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\include\Shader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\include\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Game.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Input.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)BlockRegistery.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Camera.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Chunk.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ChunkManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Lighting\src\Lighting.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)World\src\BlockRegistery.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Camera\src\Camera.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)World\src\Chunk.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)World\src\ChunkManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CollisionSystem.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Cube.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Frustum.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ICommand.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Camera\src\Frustum.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ui\src\gui.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Commands\ICommand.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Player.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Renderer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Shader.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Texture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\src\Renderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\src\Shader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.mtl" />
-    <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_02.mtl" />
-    <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03.mtl" />
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Shaders\Basic.shader" />
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Shaders\basicpi.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\Basic.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\basicpi.shader" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </Object>
-    <Object Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_02.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</DeploymentContent>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">true</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">true</DeploymentContent>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-    </Object>
-    <Object Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</DeploymentContent>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">true</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">true</DeploymentContent>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-    </Object>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.png" />
-    <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01_em.png" />
-    <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_02.png" />
-    <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_02_em.png" />
-    <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03.png" />
-    <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03_em.png" />
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Textures\Harvey2.jpg" />
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Textures\MinecraftTex.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas.png" />

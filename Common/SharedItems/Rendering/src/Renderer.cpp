@@ -2,12 +2,12 @@
 #include <cstring>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Renderer.h"
-#include "Shader.h"
-#include "Texture.h"
+#include "Rendering/include/Renderer.h"
+#include "Rendering/include/Shader.h"
+#include "Rendering/include/Texture.h"
 
-#include "Chunk.h"
-#include "BlockRegistery.h"
+#include "World/include/Chunk.h"
+#include "World/include/BlockRegistery.h"
 
 // GLERROR
 void GLClearError()
@@ -110,6 +110,10 @@ Mesh Renderer::uploadMesh(const std::vector<FaceVertex>& vertexData, const std::
     // Attribute 3: cellY
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(FaceVertex), (const void*)offsetof(FaceVertex, cellY));
+
+	// Attribute 4: light
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(FaceVertex), (const void*)offsetof(FaceVertex, light));
 
 
     glBindVertexArray(0);

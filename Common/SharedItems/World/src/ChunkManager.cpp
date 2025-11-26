@@ -1,8 +1,8 @@
-#include "ChunkManager.h"
-#include "Chunk.h"
+#include "World/include/ChunkManager.h"
+#include "World/include/Chunk.h"
 #include <cmath>
-#include <Frustum.h>
-#include <Camera.h>
+#include "Camera/include/Frustum.h"
+#include "Camera/include/Camera.h"
 
 static const glm::ivec3 offsets[] = {
     { 1, 0, 0 }, { -1, 0, 0 },
@@ -30,6 +30,16 @@ ChunkManager::ChunkManager(Renderer& rend)
     m_PeaksAndValleys.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
     m_PeaksAndValleys.SetFrequency(0.003f);
     m_PeaksAndValleys.SetFractalType(FastNoiseLite::FractalType_Ridged);
+
+    // Caves
+	m_CaveNoise = FastNoiseLite(9001);
+	m_CaveNoise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
+	m_CaveNoise.SetFrequency(0.02f);
+
+
+    HALF_X = CHUNK_SIZE_X / 2;
+    HALF_Y = CHUNK_SIZE_Y / 2;
+    HALF_Z = CHUNK_SIZE_Z / 2;
 }
 
 
@@ -130,7 +140,7 @@ void ChunkManager::ProcessChunkLoading(Renderer& renderer)
     m_ChunksToLoad.pop();
     m_ChunksScheduledForLoad.erase(pos);
 
-    Chunk* chunk = new Chunk(pos, m_Continentalness, m_Erosion, m_PeaksAndValleys);
+    Chunk* chunk = new Chunk(pos, *this);
     m_Chunks[pos] = chunk;
     m_RenderList.push_back(chunk);
 
@@ -142,7 +152,6 @@ void ChunkManager::ProcessChunkLoading(Renderer& renderer)
         m_PendingMesh.push_back(chunk);
     }
 }
-
 
 void ChunkManager::ProcessChunkUnloading(Renderer& renderer)
 {
@@ -166,7 +175,6 @@ void ChunkManager::ProcessChunkUnloading(Renderer& renderer)
 void ChunkManager::UpdateInShotRenderList(const glm::mat4& viewProj)
 {
     m_InShotRenderList.clear();
-    static Frustum frustum;
     frustum.Extract(viewProj);
 
     for (Chunk* chunk : m_RenderList) {
@@ -175,11 +183,8 @@ void ChunkManager::UpdateInShotRenderList(const glm::mat4& viewProj)
             CHUNK_SIZE_Y / 2.0f,
             (chunk->chunkPos.z + 0.5f) * CHUNK_SIZE_Z
         );
-        static const float halfX = CHUNK_SIZE_X / 2.0f;
-        static const float halfY = CHUNK_SIZE_Y / 2.0f;
-        static const float halfZ = CHUNK_SIZE_Z / 2.0f;
 
-        if (frustum.BoxInFrustum(center, halfX, halfY, halfZ)) {
+        if (frustum.BoxInFrustum(center, HALF_X, HALF_Y, HALF_Z)) {
             m_InShotRenderList.push_back(chunk);
         }
     }

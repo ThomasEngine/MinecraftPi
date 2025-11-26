@@ -9,26 +9,24 @@
 
 #include "IInput.h"
 #include <map>
-#include "ICommand.h"
+#include "Commands/ICommand.h"
 
 #include <string>
 
-#include "Renderer.h"
-#include "Shader.h"
-#include "Texture.h"
+#include "Rendering/include/Renderer.h"
+#include "Rendering/include/Shader.h"
+#include "Rendering/include/Texture.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
-#include "gui.h"
+#include "ui/include/gui.h"
 #include "WindowsGraphics.h"
 
-#include "Cube.h"
-#include "Camera.h"
+#include "Camera/include/Camera.h"
 
-#include "Chunk.h"
-#include "BlockRegistery.h"
-#include "ChunkManager.h"
+#include "World/include/BlockRegistery.h"
+#include "World/include/ChunkManager.h"
 #include "CollisionSystem.h"
 
 
@@ -110,6 +108,7 @@ void Game::Start()
 	keyCommandMap[Key::SHIFT_LEFT] = std::make_unique<CrouchCommand>();
 	keyCommandMap[Key::SPACE] = std::make_unique<JumpCommand>();
 
+	Initialize();
 
 	while(!quitting)
 	{
@@ -135,27 +134,33 @@ void Game::Start()
 		//Update and Draw your game here
 		renderer.beginFrame();
 	
-
 		// Updates
+		Update(gameDeltaTime);
 		glm::mat4 projView = player.GetCamera().GetViewProjectionMatrix();
 		chunkManager.Update(player.GetCamera(), renderer);
 
-		// Draw
+
+		// Render
+		Render();
 		chunkManager.Draw(renderer, projView, shader, *testTex);
+
+
+		// Post Render
+		PostRender();
 
 		gui->newFrame();
 		{
 			{
 				ImGui::Begin("Window");
 
-				ImGui::Text("FPS: %f", averageFPS);
+				ImGui::Text("FPS: %.2f", averageFPS);
 				ImGui::Text("--Pos--");
 				glm::vec3 playerPos = player.GetCamera().GetPosition();
 				ImGui::Text("X: %f", playerPos.x);
 				ImGui::Text("Y: %f", playerPos.y);
 				ImGui::Text("Z: %f", playerPos.z);
 
-				ImGui::SliderFloat("Move Speed", &moveSpeed, 6.f, 12.f);
+				ImGui::SliderFloat("Move Speed", &moveSpeed, 6.f, 42.f);
 
 				ImGui::End();
 			}
@@ -168,6 +173,7 @@ void Game::Start()
 	}
 	delete testTex;
 	graphics->Quit();
+	Shutdown();
 }
 
 
@@ -189,15 +195,15 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& chunk*/, float
 	const IMouse& mouse = input.GetMouse();
 	const IKeyboard& keyboard = input.GetKeyboard();
 	float moveSpeed = speed * gameDeltaTime;
-	float lookSpeed = 1.12f * gameDeltaTime;
+	float lookSpeed = 1.12f;
 
 	static glm::vec2 lastMouse = mouse.GetPosition();
 	glm::vec2 currentMouse = mouse.GetPosition();
 	glm::vec2 delta = currentMouse - lastMouse;
 	lastMouse = currentMouse;
 
-	cam.AddYaw(-delta.x * lookSpeed);
-	cam.AddPitch(-delta.y * lookSpeed);
+	cam.AddYaw(-delta.x * lookSpeed * gameDeltaTime);
+	cam.AddPitch(-delta.y * lookSpeed * gameDeltaTime);
 
 	if (keyboard.GetKey(Key::CTRL_LEFT))
 		speedBoost = true;

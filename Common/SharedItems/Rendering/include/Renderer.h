@@ -10,7 +10,7 @@
 //include glad and glfw for Windows build
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <SharedItems/gui.h>
+#include <SharedItems/ui/include/gui.h>
 #include <imgui/imgui.h>
 #else
 #include <GLES2/gl2.h>
@@ -54,7 +54,18 @@ struct FaceVertex {
     glm::vec2 tex;
     float cellX;
     float cellY;
+    float light;
 };
+
+enum FaceDirection {
+	FACE_BACK = 0,
+	FACE_FRONT = 1,
+	FACE_BOTTOM = 2,
+	FACE_TOP = 3,
+	FACE_LEFT = 4,
+	FACE_RIGHT = 5
+};
+
 struct BlockInstanceData;
 class Chunk;
 class Shader;

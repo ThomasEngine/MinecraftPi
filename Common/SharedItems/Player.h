@@ -1,7 +1,7 @@
 #pragma once
-#include "Renderer.h"
-#include "ICommand.h"
-#include "Camera.h"
+#include "Rendering/include/Renderer.h"
+#include "Commands/ICommand.h"
+#include "Camera/include/Camera.h"
 
 class CollisionSystem;
 class Player

@@ -54,6 +54,9 @@
     <ClCompile Include="PCContent\include\glm\detail\glm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PCContent\WindowsInput.h">
@@ -1302,6 +1305,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\noise\FastNoiseLite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

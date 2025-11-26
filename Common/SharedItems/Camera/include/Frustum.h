@@ -1,5 +1,5 @@
 #pragma once
-#include "Renderer.h"
+#include "Rendering/include/Renderer.h"
 #include <glm/glm.hpp>
 
 // Adaptation from: https://sites.google.com/site/letsmakeavoxelengine/home/frustum-culling

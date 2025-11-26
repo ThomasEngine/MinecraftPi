@@ -147,6 +147,7 @@
     <ClCompile Include="Common\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="Common\imgui\imgui_tables.cpp" />
     <ClCompile Include="Common\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Game\Application.cpp" />
     <ClCompile Include="PCContent\glad.c" />
     <ClCompile Include="PCContent\include\glm\detail\glm.cpp" />
     <ClCompile Include="PCContent\WindowsGraphics.cpp" />
@@ -195,6 +196,7 @@
     <ClInclude Include="Common\imgui\misc\single_file\imgui_single_file.h" />
     <ClInclude Include="Common\noise\FastNoiseLite.h" />
     <ClInclude Include="Common\stb_image.h" />
+    <ClInclude Include="Game\Application.h" />
     <ClInclude Include="PCContent\include\assimp\aabb.h" />
     <ClInclude Include="PCContent\include\assimp\ai_assert.h" />
     <ClInclude Include="PCContent\include\assimp\anim.h" />

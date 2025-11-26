@@ -1,6 +1,6 @@
 #include "ICommand.h"
 #include "Player.h"
-#include "Camera.h"
+#include "Camera/include/Camera.h"
 
 void MoveForwardCommand::Execute(Player& player, float dt)
 {

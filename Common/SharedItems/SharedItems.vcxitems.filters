@@ -33,32 +33,30 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\tiny_obj_loader.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Camera.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Camera\include\Camera.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Chunk.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)World\include\Chunk.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Cube.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\include\Renderer.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Renderer.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\include\Shader.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Shader.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\include\Texture.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Texture.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)gui.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)BlockType.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)BlockRegistery.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ChunkManager.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Frustum.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ui\include\gui.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)World\include\BlockType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)World\include\BlockRegistery.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)World\include\ChunkManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Camera\include\Frustum.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Player.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ICommand.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Commands\ICommand.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CollisionSystem.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Lighting\include\Lighting.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Game.cpp">
@@ -67,42 +65,31 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Input.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Camera.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Camera\src\Camera.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Chunk.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)World\src\Chunk.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Renderer.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\src\Renderer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Shader.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\src\Shader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Texture.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\src\Texture.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Cube.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)BlockRegistery.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ChunkManager.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Frustum.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ui\src\gui.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)World\src\BlockRegistery.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)World\src\ChunkManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Camera\src\Frustum.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Player.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ICommand.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Commands\ICommand.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CollisionSystem.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Lighting\src\Lighting.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.mtl">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_02.mtl">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03.mtl">
-      <Filter>Assets</Filter>
-    </None>
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Shaders\Basic.shader">
       <Filter>Assets</Filter>
     </None>
@@ -113,35 +100,6 @@
     <None Include="$(MSBuildThisFileDirectory)Assets\basicpi.shader" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_02.obj">
-      <Filter>Assets</Filter>
-    </Object>
-    <Object Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03.obj">
-      <Filter>Assets</Filter>
-    </Object>
-    <Object Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.obj">
-      <Filter>Assets</Filter>
-    </Object>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01_em.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_02.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_02_em.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03_em.png">
-      <Filter>Assets</Filter>
-    </Image>
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Textures\Harvey2.jpg">
       <Filter>Assets</Filter>
     </Image>
