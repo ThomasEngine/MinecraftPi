@@ -32,7 +32,7 @@ Chunk::Chunk(glm::ivec3 pos, ChunkManager& owner)
     : chunkPos(pos)
 {
 	GenerateTerrain(owner);
-	//ApplySunlight(owner);
+	ApplySunlight(owner);
 }
 
 Chunk::~Chunk()
@@ -170,17 +170,18 @@ void Chunk::ApplySunlight(ChunkManager& owner)
                 Voxel& v = blocks[idx];
                 if (g_BlockTypes[v.blockID].isTransparent) {
                     v.lightLevel = 15;
-                    sunlightBfsQueue.push(idx);
                 }
                 else {
+                    int nIdx = GetBlockIndex(x, y + 1, z);
+                    sunlightBfsQueue.push(nIdx);
                     break;
                 }
             }
         }
     }
-    
-
-
+    int amount = 0;
+    for (auto& v : blocks)
+        if (v.lightLevel == 15) amount++;
 
     while (!sunlightBfsQueue.empty()) {
         unsigned int index = sunlightBfsQueue.front();
@@ -214,7 +215,6 @@ void Chunk::ApplySunlight(ChunkManager& owner)
             sunlightBfsQueue.push(neighborIdx);
         }
     }
-
 }
 
 
@@ -474,13 +474,21 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkManager& owner)
                     int nz = z + faceDirs[face][2];
 					if (!NeighborIsEmpty(nx, ny, nz, owner, y)) continue;
 
-                    // Get voxel light
-                    Voxel& v = blocks[x + CHUNK_SIZE_X * (y + CHUNK_SIZE_Y * z)];
-                    float baseLight = v.lightLevel / 15.0f; // normalize 0–1
+                    // sample neighbor in face direction
+                    int sx = x + faceDirs[face][0];
+                    int sy = y + faceDirs[face][1];
+                    int sz = z + faceDirs[face][2];
+                    float sampledLight = 0.0f;
+                    int sIdx = GetBlockIndex(sx, sy, sz);
+                    if (sIdx != -1) {
+                        sampledLight = float(blocks[sIdx].lightLevel) / 15.0f;
+                    }
+                    else {
+                        //check chunkManager for neighbor chunk
+                        sampledLight = 0.0f;
+                    }
                     float ambient = FaceBrightness((FaceDirection)face);
-                    float finalLight = baseLight * ambient;
-                    //float minLight = 13 / 15 * ambient;
-                    //finalLight = finalLight < minLight ? minLight : finalLight;
+                    float finalLight = sampledLight * ambient;
 
 
                     // Add 4 vertices for each face
