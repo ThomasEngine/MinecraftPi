@@ -1,4 +1,4 @@
-#include "World/include/ChunkManager.h"
+#include "World/include/ChunkLoader.h"
 #include "World/include/Chunk.h"
 #include <cmath>
 #include "Camera/include/Frustum.h"
@@ -9,41 +9,16 @@ const glm::ivec3 offsets[] = {
     { 0, 0, 1 }, { 0, 0, -1 }
 };
 
-ChunkManager::ChunkManager(Renderer& rend)
-    : m_CameraPos(-1.0f), m_CameraDir(0.0f)
+ChunkLoader::ChunkLoader(Renderer& rend, std::shared_ptr<NoiseMaps> noiseMaps)
+	: m_CameraPos(-1.0f), m_CameraDir(0.0f), m_Renderer(rend), m_NoiseMaps(noiseMaps)
 {
-	// Continentalness Noise
-    m_Continentalness = FastNoiseLite(1337);
-    m_Continentalness.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2);
-    m_Continentalness.SetFrequency(0.0008f);
-    m_Continentalness.SetFractalType(FastNoiseLite::FractalType::FractalType_FBm);
-    m_Continentalness.SetFractalOctaves(3);
-    m_Continentalness.SetFractalGain(0.55f);
-
-	// Erosion noise
-	m_Erosion = FastNoiseLite(42);
-    m_Erosion.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
-    m_Erosion.SetFrequency(0.002f); 
-
-	// Peaks and Valleys noise
-    m_PeaksAndValleys = FastNoiseLite(56);
-    m_PeaksAndValleys.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
-    m_PeaksAndValleys.SetFrequency(0.005f);
-    m_PeaksAndValleys.SetFractalType(FastNoiseLite::FractalType_Ridged);
-
-    // Caves
-	m_CaveNoise = FastNoiseLite(9001);
-	m_CaveNoise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
-	m_CaveNoise.SetFrequency(0.02f);
-
-
-    HALF_X = CHUNK_SIZE_X / 2;
-    HALF_Y = CHUNK_SIZE_Y / 2;
-    HALF_Z = CHUNK_SIZE_Z / 2;
+   HALF_X = CHUNK_SIZE_X / 2;
+   HALF_Y = CHUNK_SIZE_Y / 2;
+   HALF_Z = CHUNK_SIZE_Z / 2;
 }
 
 
-ChunkManager::~ChunkManager()  
+ChunkLoader::~ChunkLoader()  
 {  
    for (auto& pair : m_Chunks) {  
        pair.second.reset(); 
@@ -51,7 +26,7 @@ ChunkManager::~ChunkManager()
    m_Chunks.clear(); 
 }
 
-glm::ivec3 ChunkManager::WorldToChunkPos(const glm::vec3& pos) const
+glm::ivec3 ChunkLoader::WorldToChunkPos(const glm::vec3& pos) const
 {
     return glm::ivec3(
         int(std::floor(pos.x / CHUNK_SIZE_X)),
@@ -60,10 +35,9 @@ glm::ivec3 ChunkManager::WorldToChunkPos(const glm::vec3& pos) const
     );
 }
 
-void ChunkManager::Update(const Camera& cam, Renderer& renderer)
+void ChunkLoader::Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& viewProjMatrix)
 {
-    m_CameraDir = cam.GetDirection();
-	glm::vec3 camPos = cam.GetPosition();
+    m_CameraDir = camDir;
     if (WorldToChunkPos(m_CameraPos) != WorldToChunkPos(camPos))
     {
         m_CameraPos = camPos;
@@ -75,18 +49,18 @@ void ChunkManager::Update(const Camera& cam, Renderer& renderer)
     }
 
     if (!m_ChunksToLoad.empty()) {
-        ProcessChunkLoading(renderer);
+        ProcessChunkLoading(m_Renderer);
     } 
     else if (!m_ChunksToUnload.empty()) {
-        ProcessChunkUnloading(renderer);
+        ProcessChunkUnloading(m_Renderer);
     }
     else {
-		ProccessChunkLoadingAsync(renderer);
+		ProccessChunkLoadingAsync(m_Renderer);
     }
-    UpdateInShotRenderList(cam.GetViewProjectionMatrix());
+    UpdateInShotRenderList(viewProjMatrix);
 }
 
-bool ChunkManager::AreNeighborsLoaded(const glm::ivec3& pos) const {
+bool ChunkLoader::AreNeighborsLoaded(const glm::ivec3& pos) const {
 
     for (const auto& off : offsets) {
         if (m_Chunks.find(pos + off) == m_Chunks.end())
@@ -96,7 +70,7 @@ bool ChunkManager::AreNeighborsLoaded(const glm::ivec3& pos) const {
 }
 
 
-void ChunkManager::FindChunksToLoadAndUnload(const glm::vec3& camPos)
+void ChunkLoader::FindChunksToLoadAndUnload(const glm::vec3& camPos)
 {
     glm::ivec3 camChunk = WorldToChunkPos(camPos);
 
@@ -123,7 +97,7 @@ void ChunkManager::FindChunksToLoadAndUnload(const glm::vec3& camPos)
     }
 }
 
-void ChunkManager::ProccessChunkLoadingAsync(Renderer& renderer)
+void ChunkLoader::ProccessChunkLoadingAsync(Renderer& renderer)
 {
     if (m_ChunkLoadTasks.empty()) {
         return;
@@ -150,7 +124,7 @@ void ChunkManager::ProccessChunkLoadingAsync(Renderer& renderer)
     }
 }
 
-void ChunkManager::ProcessChunkLoading(Renderer& renderer)  
+void ChunkLoader::ProcessChunkLoading(Renderer& renderer)  
 {  
    if (m_ChunksToLoad.empty()) return;  
    glm::ivec3 pos = m_ChunksToLoad.front();  
@@ -167,7 +141,7 @@ void ChunkManager::ProcessChunkLoading(Renderer& renderer)
 
 
 
-void ChunkManager::ProcessChunkUnloading(Renderer& renderer)
+void ChunkLoader::ProcessChunkUnloading(Renderer& renderer)
 {
     if (m_ChunksToUnload.empty()) return;
     glm::ivec3 pos = m_ChunksToUnload.front();
@@ -183,7 +157,7 @@ void ChunkManager::ProcessChunkUnloading(Renderer& renderer)
     }
 }
 
-void ChunkManager::UpdateInShotRenderList(const glm::mat4& viewProj)
+void ChunkLoader::UpdateInShotRenderList(const glm::mat4& viewProj)
 {
     m_InShotRenderList.clear();
     frustum.Extract(viewProj);
@@ -201,17 +175,17 @@ void ChunkManager::UpdateInShotRenderList(const glm::mat4& viewProj)
     }
 }
 
-void ChunkManager::Draw(Renderer& renderer, const glm::mat4 viewProj, Shader& shader, Texture& tex)
+void ChunkLoader::Draw(const glm::mat4 viewProj, Shader& shader, Texture& tex)
 {
     for (auto chunk : m_InShotRenderList) {
-        chunk->DrawSolid(renderer, viewProj, shader, tex);
+        chunk->DrawSolid(m_Renderer, viewProj, shader, tex);
     }
     for (auto chunk : m_InShotRenderList) {
-        chunk->DrawTransparent(renderer, viewProj, shader, tex);
+        chunk->DrawTransparent(m_Renderer, viewProj, shader, tex);
     }
 }
 
-uint8_t ChunkManager::GetBlockAtPosition(const glm::vec3& position, const glm::ivec3& chunkPos)
+uint8_t ChunkLoader::GetBlockAtPosition(const glm::vec3& position, const glm::ivec3& chunkPos)
 {
     auto it = m_Chunks.find(chunkPos);
     if (it == m_Chunks.end() || it->second == nullptr)
@@ -220,7 +194,7 @@ uint8_t ChunkManager::GetBlockAtPosition(const glm::vec3& position, const glm::i
     return chunk->GetBlock(int(position.x), int(position.y), int(position.z));
 }
 
-Chunk* ChunkManager::GetChunk(const glm::ivec3& chunkPos)  
+Chunk* ChunkLoader::GetChunk(const glm::ivec3& chunkPos)  
 {  
    auto it = m_Chunks.find(chunkPos);  
    if (it != m_Chunks.end()) {  
@@ -229,7 +203,7 @@ Chunk* ChunkManager::GetChunk(const glm::ivec3& chunkPos)
    return nullptr;  
 }
 
-void ChunkManager::SetBlockLightLevel(const glm::ivec3& worldPos, uint8_t lightLevel)
+void ChunkLoader::SetBlockLightLevel(const glm::ivec3& worldPos, uint8_t lightLevel)
 {
     glm::ivec3 chunkPos(
         int(std::floor(worldPos.x / CHUNK_SIZE_X)),
@@ -269,7 +243,7 @@ void ChunkManager::SetBlockLightLevel(const glm::ivec3& worldPos, uint8_t lightL
 }
 
 
-uint8_t ChunkManager::GetBlockLightLevel(const glm::ivec3& worldPos)
+uint8_t ChunkLoader::GetBlockLightLevel(const glm::ivec3& worldPos)
 {
     glm::ivec3 chunkPos(
         int(std::floor(worldPos.x / CHUNK_SIZE_X)),
@@ -295,4 +269,3 @@ uint8_t ChunkManager::GetBlockLightLevel(const glm::ivec3& worldPos)
 
     return it->second->GetLightLevel(x, y, z);
 }
-

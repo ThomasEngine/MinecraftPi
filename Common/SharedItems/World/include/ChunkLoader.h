@@ -5,6 +5,7 @@
 #include <set>
 #include <FastNoiseLite.h>
 #include "Camera/include/Frustum.h"
+#include "World/include/World.h"
 
 struct IVec3Less {
 	bool operator()(const glm::ivec3& a, const glm::ivec3& b) const {
@@ -39,19 +40,16 @@ class Shader;
 class Texture;
 class Chunk;
 class FastNoiseLite;
-class ChunkManager
+class ChunkLoader
 {
 public:
-	ChunkManager(Renderer& rend);
-	~ChunkManager();
+	ChunkLoader(Renderer& rend, std::shared_ptr<NoiseMaps> noiseMaps);
+	~ChunkLoader();
 
-	void Update(const Camera& cam, Renderer& renderer);
-	void Draw(Renderer& renderer, const glm::mat4 viewProj, Shader& shader, Texture& tex);
+	void Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& viewProj);
+	void Draw(const glm::mat4 viewProj, Shader& shader, Texture& tex);
 
 	uint8_t GetBlockAtPosition(const glm::vec3& position, const glm::ivec3& chunkPos);
-	uint8_t GetBlockAtPosition(const glm::vec3& worldPos);
-
-	void PlaceBlockAtPosition(const glm::vec3& worldPos);
 
 	Chunk* GetChunk(const glm::ivec3& chunkPos);
 	void SetBlockLightLevel(const glm::ivec3& worldPos, uint8_t lightLevel);
@@ -59,19 +57,14 @@ public:
 	bool AreNeighborsLoaded(const glm::ivec3& pos) const;
 	glm::ivec3 WorldToChunkPos(const glm::vec3& pos) const;
 	
-	// Overworld noise generators
-	FastNoiseLite m_Continentalness;
-	FastNoiseLite m_Erosion;
-	FastNoiseLite m_PeaksAndValleys;
-
-	// Cave noise
-	FastNoiseLite m_CaveNoise;
-
+	std::shared_ptr<NoiseMaps> m_NoiseMaps;
 private:
 	uint8_t VIEW_DISTANCE = 8;
 	uint8_t HALF_X = 0;
 	uint8_t HALF_Z = 0;
 	uint8_t HALF_Y = 0;
+
+	Renderer& m_Renderer;
 
 	Frustum frustum;
 

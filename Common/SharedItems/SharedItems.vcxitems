@@ -25,7 +25,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)World\include\BlockType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Camera\include\Camera.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)World\include\Chunk.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)World\include\ChunkManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)World\include\ChunkLoader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CollisionSystem.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Camera\include\Frustum.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ui\include\gui.h" />
@@ -34,15 +34,18 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\include\Renderer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\include\Shader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\include\Texture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)World\include\World.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)World\World.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Game.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Input.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Lighting\src\Lighting.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)World\src\World.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)World\src\BlockRegistery.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Camera\src\Camera.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)World\src\Chunk.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)World\src\ChunkManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)World\src\ChunkLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CollisionSystem.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Camera\src\Frustum.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ui\src\gui.cpp" />

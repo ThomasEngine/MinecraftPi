@@ -26,7 +26,7 @@
 #include "Camera/include/Camera.h"
 
 #include "World/include/BlockRegistery.h"
-#include "World/include/ChunkManager.h"
+#include "World/include/World.h"
 #include "CollisionSystem.h"
 
 
@@ -95,9 +95,9 @@ void Game::Start()
 	shader.SetUniform1f("u_CellHeight", 1.f / 16.f);
 	testTex->Bind(0);
 
-	ChunkManager chunkManager(renderer);
+	World world(renderer);
 	collisionSystem = new CollisionSystem();
-	collisionSystem->SetTarget(&chunkManager);
+	//collisionSystem->SetTarget(&world);
 	player.SetCollisionSystem(collisionSystem);
 
 
@@ -137,12 +137,11 @@ void Game::Start()
 		// Updates
 		Update(gameDeltaTime);
 		glm::mat4 projView = player.GetCamera().GetViewProjectionMatrix();
-		chunkManager.Update(player.GetCamera(), renderer);
-
+		world.Update(player.GetCamera().GetDirection(), player.GetCamera().GetPosition(), projView);
 
 		// Render
 		Render();
-		chunkManager.Draw(renderer, projView, shader, *testTex);
+		world.Draw(projView, shader, *testTex);
 
 
 		// Post Render

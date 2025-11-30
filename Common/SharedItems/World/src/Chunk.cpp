@@ -1,7 +1,7 @@
 #include "World/include/Chunk.h"
 #include <World/include/BlockRegistery.h>
 #include <noise/FastNoiseLite.h>
-#include "World/include/ChunkManager.h"
+#include "World/include/ChunkLoader.h"
 
 static const FaceVertex faceVertices[6][4] = {
     // -Z (Back)
@@ -28,7 +28,7 @@ static const int faceDirs[6][3] = {
 };
 
 // https://www.redblobgames.com/maps/terrain-from-noise/
-Chunk::Chunk(glm::ivec3 pos, ChunkManager& owner)
+Chunk::Chunk(glm::ivec3 pos, ChunkLoader& owner)
     : chunkPos(pos)
 {
 	GenerateTerrain(owner);
@@ -64,7 +64,7 @@ Voxel Chunk::GetVoxel(int x, int y, int z) const
     return blocks[idx];
 }
 
-void Chunk::GenerateTerrain(ChunkManager& owner)
+void Chunk::GenerateTerrain(ChunkLoader & owner)
 {
     blocks.resize(CHUNKSIZE, { 0,0 });
     //memset(blocks, 0, sizeof(blocks));
@@ -73,11 +73,10 @@ void Chunk::GenerateTerrain(ChunkManager& owner)
             // World coordinates
             float wx = float(chunkPos.x * CHUNK_SIZE_X + x);
             float wz = float(chunkPos.z * CHUNK_SIZE_Z + z);
-
             // Creating height
-            float continental = owner.m_Continentalness.GetNoise(wx, wz);
-            float erosion = owner.m_Erosion.GetNoise(wx, wz);
-            float peaks = owner.m_PeaksAndValleys.GetNoise(wx, wz);
+            float continental = owner.m_NoiseMaps->continentalness.GetNoise(wx, wz);
+            float erosion = owner.m_NoiseMaps->erosion.GetNoise(wx, wz);
+            float peaks = owner.m_NoiseMaps->peaksAndValleys.GetNoise(wx, wz);
 
             continental = (continental + 1.0f) * 0.5f;
             erosion = (erosion + 1.0f) * 0.5f;
@@ -123,7 +122,7 @@ void Chunk::GenerateTerrain(ChunkManager& owner)
             }
             for (int y = 1; y < intHeight; y++)
             {
-                float caveNoise = owner.m_CaveNoise.GetNoise((float)wx, (float)y, (float)wz);
+                float caveNoise = owner.m_NoiseMaps->caveNoise.GetNoise((float)wx, (float)y, (float)wz);
 
 
                 // carve out cave
@@ -150,7 +149,7 @@ void Chunk::GenerateTerrain(ChunkManager& owner)
     }
 }
 
-void Chunk::ApplySunlight(ChunkManager& owner)
+void Chunk::ApplySunlight(ChunkLoader& owner)
 {
     while (!sunlightBfsQueue.empty()) {
         unsigned int index = sunlightBfsQueue.front();
@@ -190,7 +189,7 @@ void Chunk::ApplySunlight(ChunkManager& owner)
     }
 }
 
-void Chunk::PropagateLight(ChunkManager& owner)
+void Chunk::PropagateLight(ChunkLoader& owner)
 {
     for (int x = 0; x < CHUNK_SIZE_X; ++x) {
         for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
@@ -211,7 +210,7 @@ void Chunk::PropagateLight(ChunkManager& owner)
     }
 }
 
-void Chunk::ReapplyBorderLight(ChunkManager& owner)
+void Chunk::ReapplyBorderLight(ChunkLoader& owner)
 {
 	for (int x = 0; x < CHUNK_SIZE_X; ++x) {
 		for (int y = 0; y < CHUNK_SIZE_Y; ++y) {
@@ -245,7 +244,7 @@ bool Chunk::IsEmpty(int x, int y, int z) const
 }
 
 
-bool Chunk::NeighborIsEmpty(int nx, int ny, int nz, ChunkManager& owner, int y) const
+bool Chunk::NeighborIsEmpty(int nx, int ny, int nz, ChunkLoader& owner, int y) const
 {
     if (ny < 0) return false;
     if (nx < 0 || nx >= CHUNK_SIZE_X ||
@@ -295,7 +294,7 @@ void Chunk::destroyMesh(Renderer& ren)
 	}
 }
 
-void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
+void Chunk::createChunkMesh(Renderer& renderer, ChunkLoader& owner)
 {
 	createSolidMesh(renderer, owner);
 	if (hasTransparentBlocks) {
@@ -303,7 +302,7 @@ void Chunk::createChunkMesh(Renderer& renderer, ChunkManager& owner)
 	}
 }
 
-void Chunk::createTransparentMesh(Renderer& renderer, ChunkManager& owner)
+void Chunk::createTransparentMesh(Renderer& renderer, ChunkLoader& owner)
 {
     if (transparentMesh) {
         renderer.destroyMesh(*transparentMesh);
@@ -358,7 +357,7 @@ void Chunk::createTransparentMesh(Renderer& renderer, ChunkManager& owner)
     indices.clear();
 }
 
-void Chunk::createSolidMesh(Renderer& renderer, ChunkManager& owner)
+void Chunk::createSolidMesh(Renderer& renderer, ChunkLoader& owner)
 {
     if (mesh) {
         renderer.destroyMesh(*mesh);
