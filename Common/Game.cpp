@@ -230,9 +230,6 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& chunk*/, float
 	}
 #endif 
 
-
-
-
 	if (keyboard.GetKey(Key::ARROW_LEFT))
 		cam.AddYaw(lookSpeed * 10.0f);
 	if (keyboard.GetKey(Key::ARROW_RIGHT))
@@ -300,7 +297,12 @@ void Game::InitializeOpenGLES()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendEquation(GL_FUNC_ADD);
 
+	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 

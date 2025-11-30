@@ -50,9 +50,13 @@ public:
 
     void SetLightLevel(int x, int y, int z, uint8_t lightLevel);
     void SetLightLevel(int index, uint8_t lightLevel);
+
+	void ApplySunlight(ChunkManager& owner);
+	void ApplyPropagatedLight(ChunkManager& owner);
+	void ReapplyBorderLight(ChunkManager& owner);
+
 private:
 	void GenerateTerrain(ChunkManager& owner);
-	void ApplySunlight(ChunkManager& owner);
 	inline int GetBlockIndex(int x, int y, int z) const;
 
 

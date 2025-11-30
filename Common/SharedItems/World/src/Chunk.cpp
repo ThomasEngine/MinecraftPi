@@ -32,7 +32,6 @@ Chunk::Chunk(glm::ivec3 pos, ChunkManager& owner)
     : chunkPos(pos)
 {
 	GenerateTerrain(owner);
-	ApplySunlight(owner);
 }
 
 Chunk::~Chunk()
@@ -94,16 +93,9 @@ void Chunk::GenerateTerrain(ChunkManager& owner)
             float height = continentHeight * erosionEffect + peakEffect;
             height = glm::clamp(height, 0.0f, float(CHUNK_SIZE_Y - 1));
             int intHeight =int(height);
-
-
-
-            // Debuging:
-            // 
-            if (x == 8 && z == 8) intHeight += 2;
-            // 
+            
+            
             // Placing blocks
-
-
             for (int y = 0; y <= intHeight; ++y) {
                 if (y == 0) {
                     SetBlock(x, y, z, B_BEDROCK);
@@ -129,8 +121,6 @@ void Chunk::GenerateTerrain(ChunkManager& owner)
             for (int y = intHeight + 1; y <= baseHeight; ++y) {
                 SetBlock(x, y, z, B_WATER);
             }
-
-
             for (int y = 1; y < intHeight; y++)
             {
                 float caveNoise = owner.m_CaveNoise.GetNoise((float)wx, (float)y, (float)wz);
@@ -162,27 +152,6 @@ void Chunk::GenerateTerrain(ChunkManager& owner)
 
 void Chunk::ApplySunlight(ChunkManager& owner)
 {
-    for(int x = 0; x < CHUNK_SIZE_X; ++x) {
-        for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
-            for (int y = CHUNK_SIZE_Y - 1; y >= 0; --y) {
-                int idx = GetBlockIndex(x, y, z);
-                if (idx == -1) break;
-                Voxel& v = blocks[idx];
-                if (g_BlockTypes[v.blockID].isTransparent) {
-                    v.lightLevel = 15;
-                }
-                else {
-                    int nIdx = GetBlockIndex(x, y + 1, z);
-                    sunlightBfsQueue.push(nIdx);
-                    break;
-                }
-            }
-        }
-    }
-    int amount = 0;
-    for (auto& v : blocks)
-        if (v.lightLevel == 15) amount++;
-
     while (!sunlightBfsQueue.empty()) {
         unsigned int index = sunlightBfsQueue.front();
         sunlightBfsQueue.pop();
@@ -200,14 +169,18 @@ void Chunk::ApplySunlight(ChunkManager& owner)
             int nz = vz + faceDirs[d][2];
             int neighborIdx = GetBlockIndex(nx, ny, nz);
             if (neighborIdx == -1) {
-                // handle cross-chunk neighbor via owner if needed
+                // Calculate world position of neighbor
+                glm::ivec3 chunkSize{ 16,0,16 };
+                glm::ivec3 worldPos = chunkPos * chunkSize + glm::ivec3(nx, ny, nz);
+                glm::ivec3 neighborChunkPos = owner.WorldToChunkPos(worldPos);
+                uint8_t newLight = (lightLevel > 0) ? lightLevel - 1 : 0;
+				owner.SetBlockLightLevel(worldPos, newLight);
                 continue;
             }
 
             Voxel& neighbor = blocks[neighborIdx];
             if (!g_BlockTypes[neighbor.blockID].isTransparent) continue;
 
-            // uniform attenuation: every step reduces light by 1
             uint8_t newLight = (lightLevel > 0) ? lightLevel - 1 : 0;
             if (neighbor.lightLevel >= newLight) continue;
 
@@ -217,106 +190,48 @@ void Chunk::ApplySunlight(ChunkManager& owner)
     }
 }
 
+void Chunk::ApplyPropagatedLight(ChunkManager& owner)
+{
+    for (int x = 0; x < CHUNK_SIZE_X; ++x) {
+        for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
+            for (int y = CHUNK_SIZE_Y - 1; y >= 0; --y) {
+                int idx = GetBlockIndex(x, y, z);
+                if (idx == -1) break;
+                Voxel& v = blocks[idx];
+                if (g_BlockTypes[v.blockID].isTransparent) {
+                    v.lightLevel = 15;
+                }
+                else {
+                    int nIdx = GetBlockIndex(x, y + 1, z);
+                    sunlightBfsQueue.push(nIdx);
+                    break;
+                }
+            }
+        }
+    }
+}
 
-//void Chunk::ApplySunlight(ChunkManager& owner)
-//{
-//    //for (int x = 0; x < CHUNK_SIZE_X; ++x) {
-//    //    for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
-//    //        for (int y = CHUNK_SIZE_Y - 1; y >= 0; --y) {
-//		  //      int idx = GetBlockIndex(x, y, z);
-//	   //         Voxel& v = blocks[idx];
-//    //            if (g_BlockTypes[v.blockID].isTransparent)
-//    //            {
-//    //                v.lightLevel = 15;
-//    //            }
-//    //            else
-//    //            {
-//    //                v.lightLevel = 14;
-//			 //       break; 
-//    //            }
-//    //        }
-//    //    }
-//    //}
-//
-//
-//
-//    for (int x = 0; x < CHUNK_SIZE_X; ++x) {
-//        for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
-//            // Start from the top and go down
-//            for (int y = CHUNK_SIZE_Y - 1; y >= 0; --y) {
-//                int idx = GetBlockIndex(x, y, z);
-//                Voxel& v = blocks[idx];
-//                if (g_BlockTypes[v.blockID].isTransparent) {
-//                    v.lightLevel = 15; // Set max sunlight
-//                }
-//                else {
-//                    v.lightLevel = 15;
-//                    break; // Stop at first solid block
-//                }
-//            }
-//        }
-//    }
-//
-//    // Now flood fill sunlight from all top-exposed air blocks
-//    for (int x = 0; x < CHUNK_SIZE_X; ++x) {
-//        for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
-//            for (int y = CHUNK_SIZE_Y - 1; y >= 0; --y) {
-//                int idx = GetBlockIndex(x, y, z);
-//                Voxel& v = blocks[idx];
-//                if (v.lightLevel == 15 &&
-//                    g_BlockTypes[blocks[GetBlockIndex(x,y - 1,z)].blockID].isSolid == true) {
-//                    FloodFillLight(x, y, z, owner);
-//                }
-//                else {
-//                    break;
-//                }
-//            }
-//        }
-//    }
-//
-//
-//        /*const int MAX_LIGHT = 15;
-//        int currentLight = MAX_LIGHT;
-//        for (int x = 0; x < CHUNK_SIZE_X; ++x) {
-//            for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
-//                currentLight = MAX_LIGHT;
-//                for (int y = CHUNK_SIZE_Y - 2; y >= 1; --y) {
-//                    int index = GetBlockIndex(x, y ,z);
-//                    int indexAbove = GetBlockIndex(x, y + 1, z);
-//                    int indexFront = GetBlockIndex(x, y, z + 1);
-//                    int indexBack = GetBlockIndex(x, y, z - 1);
-//                    int indexLeft = GetBlockIndex(x - 1, y, z);
-//                    int indexRight = GetBlockIndex(x + 1, y, z);
-//                    Voxel& v = blocks[index];
-//                    Voxel& vAbve = blocks[indexAbove];
-//                    Voxel& vFront = blocks[indexFront];
-//                    Voxel& vBack = blocks[indexBack];
-//                    Voxel& vLeft = blocks[indexLeft];
-//                    Voxel& vRight = blocks[indexRight];
-//
-//                    if (g_BlockTypes[vAbve.blockID].isTransparent) {
-//                        v.lightLevel = currentLight;
-//                    }
-//                    else if (g_BlockTypes[vFront.blockID].isTransparent ||
-//                        g_BlockTypes[vBack.blockID].isTransparent ||
-//                        g_BlockTypes[vLeft.blockID].isTransparent ||
-//                        g_BlockTypes[vRight.blockID].isTransparent) {
-//                        if (currentLight - 1 < 3) {
-//                            v.lightLevel = 3;
-//                        }
-//                        else {
-//                            v.lightLevel = currentLight - 1;
-//                        }
-//                        v.lightLevel = currentLight;
-//                    }
-//                    else {
-//                        v.lightLevel = 4;
-//                        currentLight = 3;
-//                    }
-//                }
-//            }
-//        }*/
-//}
+void Chunk::ReapplyBorderLight(ChunkManager& owner)
+{
+	for (int x = 0; x < CHUNK_SIZE_X; ++x) {
+		for (int y = 0; y < CHUNK_SIZE_Y; ++y) {
+			for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
+				if (x == 0 || x == CHUNK_SIZE_X - 1 ||
+					y == 0 || y == CHUNK_SIZE_Y - 1 ||
+					z == 0 || z == CHUNK_SIZE_Z - 1)
+				{
+					int idx = GetBlockIndex(x, y, z);
+					if (idx != -1) {
+						sunlightBfsQueue.push(idx);
+					}
+				}
+			}
+		}
+	}
+
+	ApplySunlight(owner);
+
+}
 
 int Chunk::GetBlockIndex(int x, int y, int z) const
 {
@@ -327,11 +242,11 @@ int Chunk::GetBlockIndex(int x, int y, int z) const
     return x + CHUNK_SIZE_X * (y + CHUNK_SIZE_Y * z);
 }
 
-
 bool Chunk::IsEmpty(int x, int y, int z) const
 {
     return GetBlock(x, y, z) != 0 ? true : false;
 }
+
 
 bool Chunk::NeighborIsEmpty(int nx, int ny, int nz, ChunkManager& owner, int y) const
 {
@@ -484,8 +399,15 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkManager& owner)
                         sampledLight = float(blocks[sIdx].lightLevel) / 15.0f;
                     }
                     else {
-                        //check chunkManager for neighbor chunk
-                        sampledLight = 0.0f;
+                        
+                        glm::ivec3 nWorldPos = glm::ivec3(
+                            chunkPos.x * CHUNK_SIZE_X + sx,
+                            sy,
+                            chunkPos.z * CHUNK_SIZE_Z + sz
+                        );
+
+                        const uint8_t& light = owner.GetBlockLightLevel(nWorldPos);
+                        sampledLight = light / 15.0f;
                     }
                     float ambient = FaceBrightness((FaceDirection)face);
                     float finalLight = sampledLight * ambient;
@@ -494,6 +416,7 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkManager& owner)
                     // Add 4 vertices for each face
                     for (int v = 0; v < 4; ++v) {
                         const FaceVertex& fv = faceVertices[face][v];
+
                         glm::vec3 pos = fv.pos + glm::vec3(x, y, z) + glm::vec3(chunkPos.x * CHUNK_SIZE_X, chunkPos.y * CHUNK_SIZE_Y, chunkPos.z * CHUNK_SIZE_Z);
                         glm::vec2 tex = fv.tex;
 
@@ -645,6 +568,10 @@ void Chunk::SetLightLevel(int x, int y, int z, uint8_t newLight)
 
 void Chunk::SetLightLevel(int index, uint8_t newLight)
 {
-    if (newLight > 15) return;
+    if (newLight > 15)
+    {
+        blocks[index].lightLevel = 15;
+        return;
+    }
     blocks[index].lightLevel = newLight;
 }

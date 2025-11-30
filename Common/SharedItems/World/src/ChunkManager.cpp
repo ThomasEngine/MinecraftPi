@@ -4,7 +4,7 @@
 #include "Camera/include/Frustum.h"
 #include "Camera/include/Camera.h"
 
-static const glm::ivec3 offsets[] = {
+const glm::ivec3 offsets[] = {
     { 1, 0, 0 }, { -1, 0, 0 },
     { 0, 0, 1 }, { 0, 0, -1 }
 };
@@ -28,7 +28,7 @@ ChunkManager::ChunkManager(Renderer& rend)
 	// Peaks and Valleys noise
     m_PeaksAndValleys = FastNoiseLite(56);
     m_PeaksAndValleys.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
-    m_PeaksAndValleys.SetFrequency(0.003f);
+    m_PeaksAndValleys.SetFrequency(0.005f);
     m_PeaksAndValleys.SetFractalType(FastNoiseLite::FractalType_Ridged);
 
     // Caves
@@ -75,20 +75,12 @@ void ChunkManager::Update(const Camera& cam, Renderer& renderer)
 
     if (!m_ChunksToLoad.empty()) {
         ProcessChunkLoading(renderer);
-    }
+    } 
     else if (!m_ChunksToUnload.empty()) {
         ProcessChunkUnloading(renderer);
     }
-    else if (!m_PendingMesh.empty()) {
-        // Try to mesh one pending chunk per frame
-        for (auto it = m_PendingMesh.begin(); it != m_PendingMesh.end(); ++it) {
-            Chunk* chunk = *it;
-            if (AreNeighborsLoaded(chunk->chunkPos)) {
-                chunk->createChunkMesh(renderer, *this);
-                m_PendingMesh.erase(it);
-                break; // Only one per frame
-            }
-        }
+    else {
+		ProccessChunkLoadingAsync(renderer);
     }
     UpdateInShotRenderList(cam.GetViewProjectionMatrix());
 }
@@ -133,6 +125,68 @@ void ChunkManager::FindChunksToLoadAndUnload(const glm::vec3& camPos)
     }
 }
 
+void ChunkManager::ProccessChunkLoadingAsync(Renderer& renderer)
+{
+    if (!m_PendingSunlight.empty())
+    {
+        for (auto it = m_PendingSunlight.begin(); it != m_PendingSunlight.end(); ) {
+            Chunk* chunk = *it;
+            if (AreNeighborsLoaded(chunk->chunkPos)) {
+                chunk->ApplyPropagatedLight(*this);
+
+                it = m_PendingSunlight.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+    }
+
+    if (!m_PendingSunlightFill.empty())
+    {
+        for (auto it = m_PendingSunlightFill.begin(); it != m_PendingSunlightFill.end(); ) {
+            Chunk* chunk = *it;
+            if(AreNeighborsLoaded(chunk->chunkPos)) {
+                chunk->ApplySunlight(*this);
+
+                // Border light propagation for all neighbors
+                for (const auto& offset : offsets) {
+                    glm::ivec3 neighborPos = chunk->chunkPos + offset;
+                    auto itNeighbor = m_Chunks.find(neighborPos);
+                    if (itNeighbor != m_Chunks.end() && itNeighbor->second) {
+                        itNeighbor->second->ReapplyBorderLight(*this);
+                        itNeighbor->second->ApplySunlight(*this);
+
+                        if (std::find(m_PendingMesh.begin(), m_PendingMesh.end(), itNeighbor->second) == m_PendingMesh.end()) {
+                            m_PendingMesh.push_back(itNeighbor->second);
+                        }
+                    }
+                }
+
+                it = m_PendingSunlightFill.erase(it);
+            }
+    else {
+        ++it;
+    }
+        }
+    }
+
+    if (!m_PendingMesh.empty())
+    {
+        for (auto it = m_PendingMesh.begin(); it != m_PendingMesh.end(); ) {
+            Chunk* chunk = *it;
+            if (AreNeighborsLoaded(chunk->chunkPos)) {
+                chunk->createChunkMesh(renderer, *this);
+                it = m_PendingMesh.erase(it);
+                break;
+            }
+            else {
+                ++it;
+            }
+        }
+    }
+}
+
 void ChunkManager::ProcessChunkLoading(Renderer& renderer)
 {
     if (m_ChunksToLoad.empty()) return;
@@ -144,14 +198,12 @@ void ChunkManager::ProcessChunkLoading(Renderer& renderer)
     m_Chunks[pos] = chunk;
     m_RenderList.push_back(chunk);
 
-    // Mmesh creation if neighbors not loaded
-    if (AreNeighborsLoaded(pos)) {
-        chunk->createChunkMesh(renderer, *this);
-    }
-    else {
-        m_PendingMesh.push_back(chunk);
-    }
+    m_PendingSunlight.push_back(chunk);
+    m_PendingSunlightFill.push_back(chunk);
+    m_PendingMesh.push_back(chunk);
 }
+
+
 
 void ChunkManager::ProcessChunkUnloading(Renderer& renderer)
 {
@@ -208,3 +260,122 @@ uint8_t ChunkManager::GetBlockAtPosition(const glm::vec3& position, const glm::i
     Chunk* chunk = it->second;
     return chunk->GetBlock(int(position.x), int(position.y), int(position.z));
 }
+
+uint8_t ChunkManager::GetBlockAtPosition(const glm::vec3& worldPos)
+{
+    return 0;
+}
+
+void ChunkManager::PlaceBlockAtPosition(const glm::vec3& worldPos)
+{
+}
+
+Chunk* ChunkManager::GetChunk(const glm::ivec3& chunkPos)
+{
+	auto it = m_Chunks.find(chunkPos);
+	if (it != m_Chunks.end()) {
+		return it->second;
+	}
+	return nullptr;
+}
+
+void ChunkManager::SetBlockLightLevel(const glm::ivec3& worldPos, uint8_t lightLevel)
+{
+    glm::ivec3 chunkPos(
+        int(std::floor(worldPos.x / CHUNK_SIZE_X)),
+        0,
+        int(std::floor(worldPos.z / CHUNK_SIZE_Z))
+    );
+
+    auto it = m_Chunks.find(chunkPos);
+    if (it == m_Chunks.end() || it->second == nullptr)
+        return;
+
+    int x = worldPos.x % CHUNK_SIZE_X;
+    int y = worldPos.y;
+    int z = worldPos.z % CHUNK_SIZE_Z;
+    if (x < 0) x += CHUNK_SIZE_X;
+    if (z < 0) z += CHUNK_SIZE_Z;
+    if (x < 0 || x >= CHUNK_SIZE_X ||
+        y < 0 || y >= CHUNK_SIZE_Y ||
+        z < 0 || z >= CHUNK_SIZE_Z)
+        return;
+
+    Chunk* chunk = it->second;
+    unsigned int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
+    uint8_t currentLight = chunk->GetLightLevel(index);
+    if (lightLevel > currentLight) {
+        chunk->SetLightLevel(index, lightLevel);
+        chunk->sunlightBfsQueue.emplace(index);
+        if (std::find(m_PendingSunlightFill.begin(), m_PendingSunlightFill.end(), chunk) == m_PendingSunlightFill.end()) {
+            m_PendingSunlightFill.push_back(chunk);
+        }
+        if (std::find(m_PendingMesh.begin(), m_PendingMesh.end(), chunk) == m_PendingMesh.end()) {
+            m_PendingMesh.push_back(chunk);
+        }
+    }
+}
+
+
+//void ChunkManager::SetBlockLightLevel(const glm::ivec3& worldPos, uint8_t lightLevel)
+//{
+//    glm::ivec3 chunkPos(
+//        int(std::floor(worldPos.x / CHUNK_SIZE_X)),
+//        0,
+//        int(std::floor(worldPos.z / CHUNK_SIZE_Z))
+//    );
+//
+//    auto it = m_Chunks.find(chunkPos);
+//    if (it == m_Chunks.end() || it->second == nullptr)
+//        return;
+//
+//    int x = worldPos.x % CHUNK_SIZE_X;
+//    int y = worldPos.y;
+//    int z = worldPos.z % CHUNK_SIZE_Z;
+//
+//
+//
+//    if (x < 0) x += CHUNK_SIZE_X;
+//    if (z < 0) z += CHUNK_SIZE_Z;
+//
+//    if (x < 0 || x >= CHUNK_SIZE_X ||
+//        y < 0 || y >= CHUNK_SIZE_Y ||
+//        z < 0 || z >= CHUNK_SIZE_Z)
+//        return;
+//
+//    Chunk* chunk = it->second;
+//    unsigned int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
+//    uint8_t currentLight = chunk->GetLightLevel(index);
+//    if (lightLevel > currentLight) {
+//        currentLight = lightLevel;
+//        chunk->sunlightBfsQueue.emplace(index);
+//    }
+//}
+
+uint8_t ChunkManager::GetBlockLightLevel(const glm::ivec3& worldPos)
+{
+    glm::ivec3 chunkPos(
+        int(std::floor(worldPos.x / CHUNK_SIZE_X)),
+        0,
+        int(std::floor(worldPos.z / CHUNK_SIZE_Z))
+    );
+
+    auto it = m_Chunks.find(chunkPos);
+    if (it == m_Chunks.end() || it->second == nullptr)
+        return 0; 
+
+    int x = worldPos.x % CHUNK_SIZE_X;
+    int y = worldPos.y;
+    int z = worldPos.z % CHUNK_SIZE_Z;
+
+    if (x < 0) x += CHUNK_SIZE_X;
+    if (z < 0) z += CHUNK_SIZE_Z;
+
+    if (x < 0 || x >= CHUNK_SIZE_X ||
+        y < 0 || y >= CHUNK_SIZE_Y ||
+        z < 0 || z >= CHUNK_SIZE_Z)
+        return 0; 
+
+    return it->second->GetLightLevel(x, y, z);
+}
+
