@@ -190,7 +190,7 @@ void Chunk::ApplySunlight(ChunkManager& owner)
     }
 }
 
-void Chunk::ApplyPropagatedLight(ChunkManager& owner)
+void Chunk::PropagateLight(ChunkManager& owner)
 {
     for (int x = 0; x < CHUNK_SIZE_X; ++x) {
         for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
@@ -228,9 +228,6 @@ void Chunk::ReapplyBorderLight(ChunkManager& owner)
 			}
 		}
 	}
-
-	ApplySunlight(owner);
-
 }
 
 int Chunk::GetBlockIndex(int x, int y, int z) const
@@ -393,7 +390,7 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkManager& owner)
                     int sx = x + faceDirs[face][0];
                     int sy = y + faceDirs[face][1];
                     int sz = z + faceDirs[face][2];
-                    float sampledLight = 0.0f;
+                    float sampledLight = 0.1f;
                     int sIdx = GetBlockIndex(sx, sy, sz);
                     if (sIdx != -1) {
                         sampledLight = float(blocks[sIdx].lightLevel) / 15.0f;
@@ -410,6 +407,7 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkManager& owner)
                         sampledLight = light / 15.0f;
                     }
                     float ambient = FaceBrightness((FaceDirection)face);
+					sampledLight = glm::clamp(sampledLight, 0.1f, 1.0f);
                     float finalLight = sampledLight * ambient;
 
 
@@ -459,95 +457,6 @@ void Chunk::DrawTransparent(Renderer& renderer, const glm::mat4& viewProj, const
     if (hasTransparentBlocks) renderer.drawMesh(*transparentMesh, shader, viewProj, texture);
 }
 
-void Chunk::FloodFillLight(int x, int y, int z, ChunkManager& owner)
-{
-    struct Node { unsigned int index; };
-    std::queue<Node> q;
-    unsigned int BlockIndex = GetBlockIndex(x,y,z);
-    if (BlockIndex == -1) return;
-    Node n{ BlockIndex };
-    q.emplace(n);
-
-	while (!q.empty()) {
-		unsigned int index = q.front().index;
-		q.pop();
-		int vx = index % CHUNK_SIZE_X;
-		int vy = (index / (CHUNK_SIZE_X * CHUNK_SIZE_Z));
-		int vz = (index / CHUNK_SIZE_X) % CHUNK_SIZE_Z;
-		if (vx < 0 || vx >= CHUNK_SIZE_X ||
-			vy < 0 || vy >= CHUNK_SIZE_Y ||
-			vz < 0 || vz >= CHUNK_SIZE_Z)
-			continue; 
-		
-        uint8_t lightLevel = GetLightLevel(vx, vy, vz);
-
-        for (int d = 0; d < 6; d++)
-        {
-            unsigned int neighbourIndex = GetBlockIndex(
-                vx + faceDirs[d][0], 
-                vy + faceDirs[d][1], 
-                vz + faceDirs[d][2]);
-            
-            if (neighbourIndex == -1)
-            {
-                // Check neighbouring chunks
-                continue;
-
-            }
-            
-
-            if (!g_BlockTypes[blocks[neighbourIndex].blockID].isTransparent
-                && GetLightLevel(neighbourIndex) + 2 <= lightLevel)
-            {
-                SetLightLevel(neighbourIndex, lightLevel - 1);
-                q.emplace(Node{ neighbourIndex });
-            }
-        }
-	}
-}
-
-void Chunk::FloodFillLight(int x, int y, int z, uint8_t lightLevel, ChunkManager& owner)
-{
- //   struct Node { int index; uint8_t light; };
- //   std::queue<Node> q;
-	//int BlockIndex = GetBlockIndex(x, y, z);
-	//if (BlockIndex ==  -1) return;
- //   q.push({ GetBlockIndex(x, y, z), lightLevel});
-
- //   while (!q.empty()) {
- //       Node n = q.front(); q.pop();
-
- //       int vx = n.index % CHUNK_SIZE_X;
- //       int vy = (n.index / (CHUNK_SIZE_X * CHUNK_SIZE_Z));
- //       int vz = (n.index / CHUNK_SIZE_X) % CHUNK_SIZE_Z;
-
- //       if (vx < 0 || vx >= CHUNK_SIZE_X ||
- //           vy < 0 || vy >= CHUNK_SIZE_Y ||
- //           vz < 0 || vz >= CHUNK_SIZE_Z)
-	//		continue; // Continue next chunk
-
- //       Voxel& v = blocks[n.index];
- //       if (!g_BlockTypes[v.blockID].isTransparent)
- //           continue;
-
- //       if (v.lightLevel >= n.light)
- //           continue;
-
- //       v.lightLevel = n.light;
-
- //       if (n.light > 1) {
- //           for (int i = 0; i < 6; ++i) {
- //               int nx = vx + faceDirs[i][0];
- //               int ny = vy + faceDirs[i][1];
- //               int nz = vz + faceDirs[i][2];
-	//			int neighborIndex = GetBlockIndex(nx, ny, nz);
-	//			if (neighborIndex == -1) continue;
- //               q.push({ GetBlockIndex(nx, ny, nz), uint8_t(n.light - 1)});
- //           }
- //       }
-    //}
-}
-
 uint8_t Chunk::GetLightLevel(int x, int y, int z)
 {
     int blockIndex = GetBlockIndex(x, y, z);
@@ -555,14 +464,17 @@ uint8_t Chunk::GetLightLevel(int x, int y, int z)
     return blocks[blockIndex].lightLevel;
 }
 
-inline uint8_t Chunk::GetLightLevel(unsigned int index)
+uint8_t Chunk::GetLightLevel(unsigned int index)
 {
     return blocks[index].lightLevel;
 }
 
 void Chunk::SetLightLevel(int x, int y, int z, uint8_t newLight)
 {
-    if (newLight > 15) return;
+    if (newLight > 15) {
+		blocks[GetBlockIndex(x, y, z)].lightLevel = 15;
+		return;
+    }
     blocks[GetBlockIndex(x, y, z)].lightLevel = newLight;
 }
 

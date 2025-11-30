@@ -4,7 +4,6 @@
 #include <queue>
 #include <set>
 #include <FastNoiseLite.h>
-#include <future>
 #include "Camera/include/Frustum.h"
 
 struct IVec3Less {
@@ -13,6 +12,24 @@ struct IVec3Less {
 		if (a.y != b.y) return a.y < b.y;
 		return a.z < b.z;
 	}
+};
+
+struct IVec3Hash {
+	std::size_t operator()(const glm::ivec3& v) const noexcept {
+		std::size_t h1 = std::hash<int>()(v.x);
+		std::size_t h2 = std::hash<int>()(v.y);
+		std::size_t h3 = std::hash<int>()(v.z);
+		return h1 ^ (h2 << 1) ^ (h3 << 2);
+	}
+};
+
+struct ChunkLoadTask {
+	glm::ivec3 chunkPos;
+	std::shared_ptr<Chunk> chunk;
+	bool pendingMesh = false;
+	bool pendingSunlight = true;
+	bool pendingSunlightFill = false;
+	bool renderReady = false;
 };
 
 extern const glm::ivec3 offsets[];
@@ -60,13 +77,10 @@ private:
 
 	glm::vec3 m_CameraPos, m_CameraDir;
 
-	std::map<glm::ivec3, Chunk*, IVec3Less> m_Chunks;
-	std::vector<std::future<std::unique_ptr<Chunk>>> m_ChunkFutures;
-	std::vector<Chunk*> m_RenderList;
-	std::vector<Chunk*> m_InShotRenderList;
-	std::vector<Chunk*> m_PendingMesh;
-	std::vector<Chunk*> m_PendingSunlight;
-	std::vector<Chunk*> m_PendingSunlightFill;
+	std::unordered_map<glm::ivec3, std::shared_ptr<Chunk>, IVec3Hash> m_Chunks;
+	std::unordered_map<glm::ivec3, ChunkLoadTask, IVec3Hash> m_ChunkLoadTasks;
+	std::vector<std::shared_ptr<Chunk>> m_RenderList;
+	std::vector<std::shared_ptr<Chunk>> m_InShotRenderList;
 
 	std::queue<glm::ivec3> m_ChunksToLoad;
 	std::queue<glm::ivec3> m_ChunksToUnload;

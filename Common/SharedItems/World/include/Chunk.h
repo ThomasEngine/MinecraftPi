@@ -42,17 +42,16 @@ public:
     void DrawSolid(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const;
     void DrawTransparent(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const;
 
-    void FloodFillLight(int x, int y, int z, ChunkManager& owner);
-	void FloodFillLight(int x, int y, int z, uint8_t lightLevel, ChunkManager& owner);
 
-    inline uint8_t GetLightLevel(int x, int y, int z);
-    inline uint8_t GetLightLevel(unsigned int index);
+    uint8_t GetLightLevel(int x, int y, int z);
+    uint8_t GetLightLevel(unsigned int index);
+
 
     void SetLightLevel(int x, int y, int z, uint8_t lightLevel);
     void SetLightLevel(int index, uint8_t lightLevel);
 
 	void ApplySunlight(ChunkManager& owner);
-	void ApplyPropagatedLight(ChunkManager& owner);
+	void PropagateLight(ChunkManager& owner);
 	void ReapplyBorderLight(ChunkManager& owner);
 
 private:
