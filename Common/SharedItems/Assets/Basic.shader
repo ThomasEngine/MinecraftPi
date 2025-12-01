@@ -13,12 +13,13 @@ out float v_LightLevel;
 uniform mat4 u_MVP;
 uniform float u_CellWidth;
 uniform float u_CellHeight;
+uniform float u_DayTime;
 
 void main()
 {
     gl_Position = u_MVP * vec4(a_Position, 1.0);
     v_AtlasUV = a_TexCoord * vec2(u_CellWidth, u_CellHeight) + vec2(a_CellX * u_CellWidth, a_CellY * u_CellHeight);
-    v_LightLevel = a_Light;
+    v_LightLevel = a_Light * u_DayTime;
 }
 
 #shader fragment

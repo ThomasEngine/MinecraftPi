@@ -27,10 +27,12 @@ static const int faceDirs[6][3] = {
     {  1,  0,  0 }  // +X (Right)
 };
 
+
 // https://www.redblobgames.com/maps/terrain-from-noise/
 Chunk::Chunk(glm::ivec3 pos, ChunkLoader& owner)
-    : chunkPos(pos)
+	: chunkPos(pos)
 {
+    sunlightBfsQueue.reserve(200);
 	GenerateTerrain(owner);
 }
 
@@ -173,14 +175,15 @@ void Chunk::ApplySunlight(ChunkLoader& owner)
                 glm::ivec3 worldPos = chunkPos * chunkSize + glm::ivec3(nx, ny, nz);
                 glm::ivec3 neighborChunkPos = owner.WorldToChunkPos(worldPos);
                 uint8_t newLight = (lightLevel > 0) ? lightLevel - 1 : 0;
-				owner.SetBlockLightLevel(worldPos, newLight);
+				uint8_t oldLight = owner.GetBlockLightLevel(worldPos);
+				if (oldLight >= newLight) continue;
+                owner.SetBlockLightLevel(worldPos, newLight);
                 continue;
             }
 
             Voxel& neighbor = blocks[neighborIdx];
             if (!g_BlockTypes[neighbor.blockID].isTransparent) continue;
-
-            uint8_t newLight = (lightLevel > 0) ? lightLevel - 1 : 0;
+            uint8_t newLight = (d == 2) ? lightLevel : (lightLevel > 0 ? lightLevel - 1 : 0); // d==4 is -Y (down)
             if (neighbor.lightLevel >= newLight) continue;
 
             neighbor.lightLevel = newLight;
@@ -193,21 +196,33 @@ void Chunk::PropagateLight(ChunkLoader& owner)
 {
     for (int x = 0; x < CHUNK_SIZE_X; ++x) {
         for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
+            //int y = CHUNK_SIZE_Y - 1;
+            int y = 150;
+            int idx = GetBlockIndex(x, y, z);
+			blocks[idx].lightLevel = 15;
+            sunlightBfsQueue.push(idx);
+        }
+    }
+}
+
+    /*for (int x = 0; x < CHUNK_SIZE_X; ++x) {
+        for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
             for (int y = CHUNK_SIZE_Y - 1; y >= 0; --y) {
                 int idx = GetBlockIndex(x, y, z);
                 if (idx == -1) break;
                 Voxel& v = blocks[idx];
                 if (g_BlockTypes[v.blockID].isTransparent) {
                     v.lightLevel = 15;
-                    sunlightBfsQueue.push(idx);
                 }
                 else {
+                    int nIdx = GetBlockIndex(x, y + 1, z);
+                    sunlightBfsQueue.push(nIdx);
                     break;
                 }
             }
         }
-    }
-}
+    }*/
+//}
 
 void Chunk::ReapplyBorderLight(ChunkLoader& owner)
 {

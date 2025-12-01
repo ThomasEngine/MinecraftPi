@@ -110,6 +110,8 @@ void Game::Start()
 
 	Initialize();
 
+	float dayTime = 12.f; // Noon
+
 	while(!quitting)
 	{
 		auto time = std::chrono::system_clock::now();
@@ -136,6 +138,10 @@ void Game::Start()
 	
 		// Updates
 		Update(gameDeltaTime);
+		shader.Bind();
+		float timeOfDay = fmod(dayTime / 12.f, 1.f);
+		shader.SetUniform1f("u_DayTime", timeOfDay);
+		shader.Unbind();
 		glm::mat4 projView = player.GetCamera().GetViewProjectionMatrix();
 		world.Update(player.GetCamera().GetDirection(), player.GetCamera().GetPosition(), projView);
 
@@ -168,9 +174,9 @@ void Game::Start()
 
 				// Position in chunk
 				glm::ivec3 localPos = glm::ivec3(
-					static_cast<int>(floor(playerPos.x)) - chunkPos.x * 16,
-					static_cast<int>(floor(playerPos.y)),
-					static_cast<int>(floor(playerPos.z)) - chunkPos.z * 16
+					(int)(floor(playerPos.x)) - chunkPos.x * 16,
+					(int)(floor(playerPos.y)),
+					(int)(floor(playerPos.z)) - chunkPos.z * 16
 				);
 				ImGui::Text("--Local Pos--");
 				ImGui::Text("X: %d", localPos.x);
@@ -178,6 +184,7 @@ void Game::Start()
 				ImGui::Text("Z: %d", localPos.z);
 
 				ImGui::SliderFloat("Move Speed", &moveSpeed, 6.f, 42.f);
+				ImGui::SliderFloat("Time", &dayTime, 0.f, 11.9f);
 
 				ImGui::End();
 			}
