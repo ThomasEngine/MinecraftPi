@@ -34,6 +34,8 @@ public:
 
 	void PlaceBlockAtPosition(const glm::vec3& worldPos);  
 	void RemoveBlockAtPosition(const glm::vec3& worldPos);  
+
+	glm::vec3 WorldToChunkPos(const glm::vec3& pos) const;
 private:  
 	// List of noise maps
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;

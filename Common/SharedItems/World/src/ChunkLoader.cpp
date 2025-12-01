@@ -20,10 +20,10 @@ ChunkLoader::ChunkLoader(Renderer& rend, std::shared_ptr<NoiseMaps> noiseMaps)
 
 ChunkLoader::~ChunkLoader()  
 {  
-   for (auto& pair : m_Chunks) {  
-       pair.second.reset(); 
+   for (auto& pair : m_ChunkLoadTasks) {  
+       pair.second.chunk.reset(); 
    }  
-   m_Chunks.clear(); 
+   m_ChunkLoadTasks.clear();
 }
 
 glm::ivec3 ChunkLoader::WorldToChunkPos(const glm::vec3& pos) const
@@ -63,7 +63,8 @@ void ChunkLoader::Update(const glm::vec3& camDir, const glm::vec3& camPos, const
 bool ChunkLoader::AreNeighborsLoaded(const glm::ivec3& pos) const {
 
     for (const auto& off : offsets) {
-        if (m_Chunks.find(pos + off) == m_Chunks.end())
+		auto it = m_ChunkLoadTasks.find(pos + off);
+        if (m_ChunkLoadTasks.find(pos + off) == m_ChunkLoadTasks.end())
             return false;
     }
     return true;
@@ -83,13 +84,13 @@ void ChunkLoader::FindChunksToLoadAndUnload(const glm::vec3& camPos)
     }
 
     for (const auto& pos : neededChunks) {
-        if (m_Chunks.find(pos) == m_Chunks.end() && m_ChunksScheduledForLoad.find(pos) == m_ChunksScheduledForLoad.end()) {
+        if (m_ChunkLoadTasks.find(pos) == m_ChunkLoadTasks.end() && m_ChunksScheduledForLoad.find(pos) == m_ChunksScheduledForLoad.end()) {
             m_ChunksToLoad.push(pos);
             m_ChunksScheduledForLoad.insert(pos);
         }
     }
 
-    for (const auto& pair : m_Chunks) {
+    for (const auto& pair : m_ChunkLoadTasks) {
         if (neededChunks.find(pair.first) == neededChunks.end() && m_ChunksScheduledForUnload.find(pair.first) == m_ChunksScheduledForUnload.end()) {
             m_ChunksToUnload.push(pair.first);
             m_ChunksScheduledForUnload.insert(pair.first);
@@ -99,27 +100,38 @@ void ChunkLoader::FindChunksToLoadAndUnload(const glm::vec3& camPos)
 
 void ChunkLoader::ProccessChunkLoadingAsync(Renderer& renderer)
 {
-    if (m_ChunkLoadTasks.empty()) {
-        return;
-    }
-
     for (auto& pair : m_ChunkLoadTasks) {
         ChunkLoadTask& task = pair.second;
-        if (task.pendingSunlight && AreNeighborsLoaded(task.chunkPos)) {
+        if (task.pendingSunlight && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
             task.chunk->PropagateLight(*this);
             task.pendingSunlight = false;
             task.pendingSunlightFill = true;
         }
-        else if (task.pendingSunlightFill && AreNeighborsLoaded(task.chunkPos)) {
+        else if (task.pendingSunlightFill && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
             task.chunk->ApplySunlight(*this);
             task.pendingSunlightFill = false;
             task.pendingMesh = true;
         }
-        else if (task.pendingMesh && AreNeighborsLoaded(task.chunkPos)) {
+        else if (task.pendingMesh && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
             task.chunk->createChunkMesh(renderer, *this);
             task.pendingMesh = false;
-            m_ChunkLoadTasks.erase(pair.first);
+			if (task.renderReady) 			  
+                task.reloaded = true;
+			else
+			    task.renderReady = true;
             return;
+        }
+    }
+
+    if (m_ChunksToLoad.empty()) {
+        std::vector<glm::ivec3> finishedChunks;
+        for (auto& pair : m_ChunkLoadTasks) {
+            if (pair.second.renderReady && !pair.second.reloaded) {
+                finishedChunks.push_back(pair.first);
+            }
+        }
+        for (const auto& pos : finishedChunks) {
+            ReloadNeighborChunks(pos);
         }
     }
 }
@@ -132,14 +144,10 @@ void ChunkLoader::ProcessChunkLoading(Renderer& renderer)
    m_ChunksScheduledForLoad.erase(pos);  
 
    std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>(pos, *this);  
-   m_Chunks[pos] = chunk;
    m_RenderList.push_back(chunk);  
 
-   m_ChunkLoadTasks.emplace(pos, ChunkLoadTask{ pos, chunk });  
+   m_ChunkLoadTasks.emplace(pos, ChunkLoadTask{ pos, chunk });
 }
-
-
-
 
 void ChunkLoader::ProcessChunkUnloading(Renderer& renderer)
 {
@@ -147,11 +155,10 @@ void ChunkLoader::ProcessChunkUnloading(Renderer& renderer)
     glm::ivec3 pos = m_ChunksToUnload.front();
     m_ChunksToUnload.pop();
     m_ChunksScheduledForUnload.erase(pos);
-    auto it = m_Chunks.find(pos);
-    if (it != m_Chunks.end()) {
-        auto chunk = it->second;
+    auto it = m_ChunkLoadTasks.find(pos);
+    if (it != m_ChunkLoadTasks.end()) {
+        auto chunk = it->second.chunk;
         chunk->destroyMesh(renderer);
-        m_Chunks.erase(it);
         m_ChunkLoadTasks.erase(pos);
         m_RenderList.erase(std::remove(m_RenderList.begin(), m_RenderList.end(), chunk), m_RenderList.end());
     }
@@ -170,9 +177,21 @@ void ChunkLoader::UpdateInShotRenderList(const glm::mat4& viewProj)
         );
 
         if (frustum.BoxInFrustum(center, HALF_X, HALF_Y, HALF_Z)) {
-            m_InShotRenderList.push_back(chunk);
+            m_InShotRenderList.push_back(chunk);  
         }
     }
+}
+
+void ChunkLoader::ReloadNeighborChunks(const glm::ivec3& chunkPos)
+{
+	for (const auto& off : offsets) {
+		glm::ivec3 neighborPos = chunkPos + off;
+		auto it = m_ChunkLoadTasks.find(neighborPos);
+		if (it != m_ChunkLoadTasks.end() && it->second.reloaded) {
+			ChunkLoadTask& task = it->second;
+			task.pendingSunlightFill = true;
+		}
+	}
 }
 
 void ChunkLoader::Draw(const glm::mat4 viewProj, Shader& shader, Texture& tex)
@@ -187,18 +206,27 @@ void ChunkLoader::Draw(const glm::mat4 viewProj, Shader& shader, Texture& tex)
 
 uint8_t ChunkLoader::GetBlockAtPosition(const glm::vec3& position, const glm::ivec3& chunkPos)
 {
-    auto it = m_Chunks.find(chunkPos);
-    if (it == m_Chunks.end() || it->second == nullptr)
+    auto it = m_ChunkLoadTasks.find(chunkPos);
+    if (it == m_ChunkLoadTasks.end() || it->second.chunk == nullptr)
         return 0;
-    auto chunk = it->second;
+    auto chunk = it->second.chunk;
     return chunk->GetBlock(int(position.x), int(position.y), int(position.z));
+}
+
+uint8_t ChunkLoader::GetLightAtPosition(const glm::vec3& position, const glm::ivec3& chunkPos)
+{
+    auto it = m_ChunkLoadTasks.find(chunkPos);
+    if (it == m_ChunkLoadTasks.end() || it->second.chunk == nullptr)
+        return 0;
+    auto chunk = it->second.chunk;
+    return chunk->GetLightLevel(int(position.x), int(position.y), int(position.z));
 }
 
 Chunk* ChunkLoader::GetChunk(const glm::ivec3& chunkPos)  
 {  
-   auto it = m_Chunks.find(chunkPos);  
-   if (it != m_Chunks.end()) {  
-       return it->second.get();
+   auto it = m_ChunkLoadTasks.find(chunkPos);
+   if (it != m_ChunkLoadTasks.end()) {
+       return it->second.chunk.get();
    }  
    return nullptr;  
 }
@@ -210,9 +238,8 @@ void ChunkLoader::SetBlockLightLevel(const glm::ivec3& worldPos, uint8_t lightLe
         0,
         int(std::floor(worldPos.z / CHUNK_SIZE_Z))
     );
-
-    auto it = m_Chunks.find(chunkPos);
-    if (it == m_Chunks.end() || it->second == nullptr)
+	auto it = m_ChunkLoadTasks.find(chunkPos);
+    if (it == m_ChunkLoadTasks.end() || it->second.chunk.get() == nullptr)
         return;
 
     int x = worldPos.x % CHUNK_SIZE_X;
@@ -225,20 +252,13 @@ void ChunkLoader::SetBlockLightLevel(const glm::ivec3& worldPos, uint8_t lightLe
         z < 0 || z >= CHUNK_SIZE_Z)
         return;
 
-    auto chunk = it->second;
+	auto chunk = it->second.chunk.get();
     unsigned int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
     uint8_t currentLight = chunk->GetLightLevel(index);
-    if (lightLevel > currentLight) {
+    if (lightLevel >= currentLight) {
         chunk->SetLightLevel(index, lightLevel);
         chunk->sunlightBfsQueue.emplace(index);
-
-		auto it = m_ChunkLoadTasks.find(chunkPos);
-		if (it == m_ChunkLoadTasks.end()) {
-			m_ChunkLoadTasks.emplace(chunkPos, ChunkLoadTask{ chunkPos, std::shared_ptr<Chunk>(chunk), true, false, false, false });
-		}
-		else {
-			it->second.pendingSunlightFill = true;
-		}
+		it->second.pendingSunlightFill = true;
     }
 }
 
@@ -251,8 +271,8 @@ uint8_t ChunkLoader::GetBlockLightLevel(const glm::ivec3& worldPos)
         int(std::floor(worldPos.z / CHUNK_SIZE_Z))
     );
 
-    auto it = m_Chunks.find(chunkPos);
-    if (it == m_Chunks.end() || it->second == nullptr)
+    auto it = m_ChunkLoadTasks.find(chunkPos);
+    if (it == m_ChunkLoadTasks.end() || it->second.chunk == nullptr)
         return 0; 
 
     int x = worldPos.x % CHUNK_SIZE_X;
@@ -267,5 +287,5 @@ uint8_t ChunkLoader::GetBlockLightLevel(const glm::ivec3& worldPos)
         z < 0 || z >= CHUNK_SIZE_Z)
         return 0; 
 
-    return it->second->GetLightLevel(x, y, z);
+    return it->second.chunk->GetLightLevel(x, y, z);
 }

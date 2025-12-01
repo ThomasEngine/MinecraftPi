@@ -31,6 +31,7 @@ struct ChunkLoadTask {
 	bool pendingSunlight = true;
 	bool pendingSunlightFill = false;
 	bool renderReady = false;
+	bool reloaded = false;
 };
 
 extern const glm::ivec3 offsets[];
@@ -50,6 +51,7 @@ public:
 	void Draw(const glm::mat4 viewProj, Shader& shader, Texture& tex);
 
 	uint8_t GetBlockAtPosition(const glm::vec3& position, const glm::ivec3& chunkPos);
+	uint8_t GetLightAtPosition(const glm::vec3& position, const glm::ivec3& chunkPos);
 
 	Chunk* GetChunk(const glm::ivec3& chunkPos);
 	void SetBlockLightLevel(const glm::ivec3& worldPos, uint8_t lightLevel);
@@ -70,7 +72,6 @@ private:
 
 	glm::vec3 m_CameraPos, m_CameraDir;
 
-	std::unordered_map<glm::ivec3, std::shared_ptr<Chunk>, IVec3Hash> m_Chunks;
 	std::unordered_map<glm::ivec3, ChunkLoadTask, IVec3Hash> m_ChunkLoadTasks;
 	std::vector<std::shared_ptr<Chunk>> m_RenderList;
 	std::vector<std::shared_ptr<Chunk>> m_InShotRenderList;
@@ -85,4 +86,5 @@ private:
 	void ProcessChunkLoading(Renderer& renderer);
 	void ProcessChunkUnloading(Renderer& renderer);
 	void UpdateInShotRenderList(const glm::mat4& viewProj);
+	void ReloadNeighborChunks(const glm::ivec3& chunkPos);
 };

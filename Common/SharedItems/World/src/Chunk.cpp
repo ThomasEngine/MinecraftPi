@@ -199,10 +199,9 @@ void Chunk::PropagateLight(ChunkLoader& owner)
                 Voxel& v = blocks[idx];
                 if (g_BlockTypes[v.blockID].isTransparent) {
                     v.lightLevel = 15;
+                    sunlightBfsQueue.push(idx);
                 }
                 else {
-                    int nIdx = GetBlockIndex(x, y + 1, z);
-                    sunlightBfsQueue.push(nIdx);
                     break;
                 }
             }
@@ -396,13 +395,19 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkLoader& owner)
                     }
                     else {
                         
-                        glm::ivec3 nWorldPos = glm::ivec3(
-                            chunkPos.x * CHUNK_SIZE_X + sx,
-                            sy,
-                            chunkPos.z * CHUNK_SIZE_Z + sz
-                        );
+                        glm::ivec3 neighborChunkPos = chunkPos;
+                        if (nx < 0) neighborChunkPos.x -= 1;
+                        else if (nx >= CHUNK_SIZE_X) neighborChunkPos.x += 1;
+                        if (nz < 0) neighborChunkPos.z -= 1;
+                        else if (nz >= CHUNK_SIZE_Z) neighborChunkPos.z += 1;
+                        neighborChunkPos.y = 0;
 
-                        const uint8_t& light = owner.GetBlockLightLevel(nWorldPos);
+
+                        glm::ivec3 neighborBlockPos = glm::ivec3(nx, ny, nz);
+                        neighborBlockPos.x = nx < 0 ? CHUNK_SIZE_X - 1 : (nx >= CHUNK_SIZE_X ? 0 : nx);
+                        neighborBlockPos.z = nz < 0 ? CHUNK_SIZE_Z - 1 : (nz >= CHUNK_SIZE_Z ? 0 : nz);
+
+                        const uint8_t& light = owner.GetLightAtPosition(neighborBlockPos, neighborChunkPos);
                         sampledLight = light / 15.0f;
                     }
                     float ambient = FaceBrightness((FaceDirection)face);

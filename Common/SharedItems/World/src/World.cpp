@@ -56,3 +56,8 @@ void World::PlaceBlockAtPosition(const glm::vec3& worldPos)
 void World::RemoveBlockAtPosition(const glm::vec3& worldPos)
 {
 }
+
+glm::vec3 World::WorldToChunkPos(const glm::vec3& pos) const
+{
+	return m_ChunkLoader->WorldToChunkPos(pos);
+}

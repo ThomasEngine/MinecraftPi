@@ -159,6 +159,24 @@ void Game::Start()
 				ImGui::Text("Y: %f", playerPos.y);
 				ImGui::Text("Z: %f", playerPos.z);
 
+				// Chunk position
+				glm::ivec3 chunkPos = world.WorldToChunkPos(playerPos);
+				ImGui::Text("--Chunk Pos--");
+				ImGui::Text("X: %d", chunkPos.x);
+				ImGui::Text("Y: %d", chunkPos.y);
+				ImGui::Text("Z: %d", chunkPos.z);
+
+				// Position in chunk
+				glm::ivec3 localPos = glm::ivec3(
+					static_cast<int>(floor(playerPos.x)) - chunkPos.x * 16,
+					static_cast<int>(floor(playerPos.y)),
+					static_cast<int>(floor(playerPos.z)) - chunkPos.z * 16
+				);
+				ImGui::Text("--Local Pos--");
+				ImGui::Text("X: %d", localPos.x);
+				ImGui::Text("Y: %d", localPos.y);
+				ImGui::Text("Z: %d", localPos.z);
+
 				ImGui::SliderFloat("Move Speed", &moveSpeed, 6.f, 42.f);
 
 				ImGui::End();
