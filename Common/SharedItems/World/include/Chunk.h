@@ -23,8 +23,8 @@ public:
     glm::ivec3 chunkPos; // chunk grid position
     std::vector<Voxel> blocks;
     //Voxel blocks[CHUNKSIZE];
-    std::vector<unsigned int> sunlightBfsQueue;
-    //std::queue<unsigned int> sunlightBfsQueue;
+    //std::vector<unsigned int> sunlightBfsQueue;
+    std::queue<unsigned int> sunlightBfsQueue;
     std::unique_ptr<Mesh> mesh;
 	std::unique_ptr<Mesh> transparentMesh;
     bool hasTransparentBlocks = false;
