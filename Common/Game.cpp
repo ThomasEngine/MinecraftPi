@@ -272,15 +272,16 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 	if (mouse.GetButtonDown(MouseButtons::LEFT) && canBreakBlock)
 	{
 		glm::vec3 camPos = cam.GetPosition();
+		camPos.y += .95f; // camera height offset
 		glm::vec3 camDir = cam.GetDirection();
 		float maxDistance = 5.0f;
 		float step = 1.f;
 		for (float i = 0; i < maxDistance; i += step)
 		{
 			glm::vec3 pos = camPos + camDir * i;
-			int blockX = static_cast<int>(floor(pos.x));
-			int blockY = static_cast<int>(floor(pos.y));
-			int blockZ = static_cast<int>(floor(pos.z));
+			int blockX = int(floor(pos.x));
+			int blockY = int(floor(pos.y));
+			int blockZ = int(floor(pos.z));
 			if (world->GetBlockAtPosition(glm::vec3(blockX, blockY, blockZ)) != 0) // 0 == air
 			{
 				world->RemoveBlockAtPosition(glm::vec3(blockX, blockY, blockZ));
@@ -288,6 +289,35 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 				blockTimer = 0;
 				break;
 			}
+		}
+	}
+	// Place blocks
+	if (mouse.GetButtonDown(MouseButtons::RIGHT) && canBreakBlock)
+	{
+		glm::vec3 camPos = cam.GetPosition();
+		camPos.y += .9f; // camera height offset
+		glm::vec3 camDir = cam.GetDirection();
+		float maxDistance = 5.0f;
+		float step = 0.1f;
+		glm::vec3 lastAirBlock = camPos;
+		for (float i = 0; i < maxDistance; i += step)
+		{
+			glm::vec3 pos = camPos + camDir * i;
+			int blockX = int(floor(pos.x));
+			int blockY = int(floor(pos.y));
+			int blockZ = int(floor(pos.z));
+			if (world->GetBlockAtPosition(glm::vec3(blockX, blockY, blockZ)) != B_AIR)
+			{
+				if (collisionSystem->CehckPlayerToBlock(player.GetCamera().GetPosition(), lastAirBlock))
+				{
+					break;
+				}
+				world->PlaceBlockAtPosition(lastAirBlock, 2); 
+				canBreakBlock = false;
+				blockTimer = 0;
+				break;
+			}
+			lastAirBlock = glm::vec3(blockX, blockY, blockZ);
 		}
 	}
 

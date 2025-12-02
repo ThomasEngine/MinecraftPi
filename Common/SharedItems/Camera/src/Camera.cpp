@@ -61,7 +61,9 @@ glm::mat4 Camera::GetViewMatrix() const
     direction.x = cos(m_pitch) * sin(m_yaw);
     direction.y = sin(m_pitch);
     direction.z = cos(m_pitch) * cos(m_yaw);
-    return glm::lookAt(m_position, m_position + direction, glm::vec3(0, 1, 0));
+	glm::vec3 position = m_position;
+	position.y += .9f; 
+    return glm::lookAt(position, position + direction, glm::vec3(0, 1, 0));
 }
 
 glm::mat4 Camera::GetProjectionMatrix() const 

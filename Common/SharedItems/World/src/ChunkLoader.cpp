@@ -47,8 +47,9 @@ void ChunkLoader::SetBlockAtPosition(const glm::vec3& worldPos, const uint8_t& b
 	auto it = m_ChunkLoadTasks.find(chunkPos);
 	if (it != m_ChunkLoadTasks.end()) {
 		it->second.chunk->SetBlock(int(position.x), int(position.y), int(position.z), block);
-		it->second.pendingSunlight = true;
-		it->second.pendingSunlightFill = false;
+        it->second.chunk->NeigbourVoxelQueue(int(position.x), int(position.y), int(position.z), *this);
+        ReloadNeighborChunks(chunkPos);
+		it->second.pendingSunlightFill = true;
 		it->second.pendingMesh = false;
 		it->second.renderReady = false;
 		it->second.reloaded = false;
@@ -67,10 +68,26 @@ void ChunkLoader::RemoveBlockAtPosition(const glm::vec3& worldPos)
 	if (it != m_ChunkLoadTasks.end()) {
 		it->second.chunk->SetBlock(int(position.x), int(position.y), int(position.z), B_AIR);
 		it->second.chunk->NeigbourVoxelQueue(int(position.x), int(position.y), int(position.z), *this);
+		ReloadNeighborChunks(chunkPos);
 		it->second.pendingSunlightFill = true;
 		it->second.pendingMesh = false;
 		it->second.renderReady = false;
 		it->second.reloaded = false;
+	}
+}
+
+void ChunkLoader::AddToSunlightQueue(const glm::ivec3& worldPos)
+{
+	glm::ivec3 chunkPos = WorldToChunkPos(glm::vec3(worldPos));
+	glm::vec3 position = glm::vec3(
+		int(std::floor(worldPos.x)) - chunkPos.x * CHUNK_SIZE_X,
+		int(std::floor(worldPos.y)),
+		int(std::floor(worldPos.z)) - chunkPos.z * CHUNK_SIZE_Z
+	);
+	auto it = m_ChunkLoadTasks.find(chunkPos);
+	if (it != m_ChunkLoadTasks.end()) {
+        int idx = position.x + CHUNK_SIZE_X * (position.y + CHUNK_SIZE_Y * position.z);
+		it->second.chunk->sunlightBfsQueue.push(idx);
 	}
 }
 
@@ -232,6 +249,7 @@ void ChunkLoader::ReloadNeighborChunks(const glm::ivec3& chunkPos)
 		if (it != m_ChunkLoadTasks.end() && it->second.reloaded) {
 			ChunkLoadTask& task = it->second;
 			task.pendingSunlightFill = true;
+			task.reloaded = false;
 		}
 	}
 }

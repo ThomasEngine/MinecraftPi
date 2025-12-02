@@ -40,6 +40,7 @@ public:
 	uint8_t GetBlockAtPosition(const glm::vec3& position);
 
 	glm::vec3 WorldToChunkPos(const glm::vec3& pos) const;
+	glm::ivec3 vec3ToIvec3(const glm::vec3& vec) const;
 private:  
 	// List of noise maps
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;

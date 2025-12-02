@@ -23,4 +23,18 @@ bool CollisionSystem::CheckGridCollision(glm::vec3 posToCheck)
     return false; // No collision
 }
 
+bool CollisionSystem::CehckPlayerToBlock(const glm::vec3& PlayerPos, const glm::vec3& blockPos)
+{
+	glm::vec3 halfDims = m_PlayerDimensions * 0.5f;
+	glm::vec3 minCorner = PlayerPos - halfDims;
+	glm::vec3 maxCorner = PlayerPos + halfDims;
+	if (minCorner.x <= blockPos.x + 1 && maxCorner.x >= blockPos.x &&
+		minCorner.y <= blockPos.y + 1 && maxCorner.y >= blockPos.y &&
+		minCorner.z <= blockPos.z + 1 && maxCorner.z >= blockPos.z)
+	{
+		return true;
+	}
+    return false;
+}
+
 

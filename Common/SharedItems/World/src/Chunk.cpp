@@ -75,10 +75,16 @@ void Chunk::NeigbourVoxelQueue(int x, int y, int z, ChunkLoader& owner)
 		int nz = z + faceDirs[d][2];
 
 		int neighborIdx = GetBlockIndex(nx, ny, nz);
-        if (neighborIdx != -1)
+        if (neighborIdx == -1) // other chunk
         {
-			sunlightBfsQueue.push(neighborIdx);
+			glm::ivec3 chunkSize{ 16,0,16 };
+			glm::ivec3 worldPos = chunkPos * chunkSize + glm::ivec3(nx, ny, nz);
+			owner.AddToSunlightQueue(worldPos);
+            continue;
         }
+        
+        sunlightBfsQueue.push(neighborIdx);
+
     }
 }
 
@@ -167,47 +173,6 @@ void Chunk::GenerateTerrain(ChunkLoader & owner)
     }
 }
 
-//void Chunk::ApplySunlight(ChunkLoader& owner)
-//{
-//    while (!sunlightBfsQueue.empty()) {
-//        unsigned int index = sunlightBfsQueue.front();
-//        sunlightBfsQueue.pop();
-//
-//        int vx = index % CHUNK_SIZE_X;
-//        int vy = (index / CHUNK_SIZE_X) % CHUNK_SIZE_Y;
-//        int vz = index / (CHUNK_SIZE_X * CHUNK_SIZE_Y);
-//
-//        uint8_t lightLevel = blocks[index].lightLevel;
-//        if (lightLevel <= 1) continue;
-//
-//        for (int d = 0; d < 6; ++d) {
-//            int nx = vx + faceDirs[d][0];
-//            int ny = vy + faceDirs[d][1];
-//            int nz = vz + faceDirs[d][2];
-//            int neighborIdx = GetBlockIndex(nx, ny, nz);
-//            if (neighborIdx == -1) {
-//                // Calculate world position of neighbor
-//                glm::ivec3 chunkSize{ 16,0,16 };
-//                glm::ivec3 worldPos = chunkPos * chunkSize + glm::ivec3(nx, ny, nz);
-//                glm::ivec3 neighborChunkPos = owner.WorldToChunkPos(worldPos);
-//                uint8_t newLight = (lightLevel > 0) ? lightLevel - 1 : 0;
-//				uint8_t oldLight = owner.GetBlockLightLevel(worldPos);
-//				if (oldLight >= newLight) continue;
-//                owner.SetBlockLightLevel(worldPos, newLight);
-//                continue;
-//            }
-//
-//            Voxel& neighbor = blocks[neighborIdx];
-//            if (!g_BlockTypes[neighbor.blockID].isTransparent) continue;
-//            uint8_t newLight = (d == 2) ? lightLevel : (lightLevel > 0 ? lightLevel - 1 : 0); // d==4 is -Y (down)
-//            if (neighbor.lightLevel >= newLight) continue;
-//
-//            neighbor.lightLevel = newLight;
-//            sunlightBfsQueue.emplace(neighborIdx);
-//        }
-//    }
-//}
-
 void Chunk::ApplySunlight(ChunkLoader& owner)
 {
     while (!sunlightBfsQueue.empty()) {
@@ -235,7 +200,9 @@ void Chunk::ApplySunlight(ChunkLoader& owner)
                 glm::ivec3 worldPos = chunkPos * chunkSize + glm::ivec3(nx, ny, nz);
                 uint8_t oldLight = owner.GetBlockLightLevel(worldPos);
                 if (oldLight < newLight)
+                {
                     owner.SetBlockLightLevel(worldPos, newLight);
+                }
                 continue;
             }
 

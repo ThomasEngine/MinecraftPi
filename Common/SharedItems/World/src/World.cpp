@@ -74,3 +74,12 @@ glm::vec3 World::WorldToChunkPos(const glm::vec3& pos) const
 {
 	return m_ChunkLoader->WorldToChunkPos(pos);
 }
+
+glm::ivec3 World::vec3ToIvec3(const glm::vec3& vec) const  
+{  
+   return glm::ivec3(  
+       int(floor(vec.x)),  
+       int(floor(vec.y)),  
+       int(floor(vec.z))  
+   );  
+}
