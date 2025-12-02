@@ -26,6 +26,7 @@ class Chunk;
 class Gui;
 class ICommand;
 class CollisionSystem;
+class World;
 enum class Key;
 
 constexpr unsigned int WINDOW_WIDTH = 1024;
@@ -59,6 +60,7 @@ private:
 	void InitializeOpenGLES();
 	void ClearScreen();
 
+	World* world;
 	Player player;
 	std::map<Key, std::unique_ptr<ICommand>> keyCommandMap;
 	CollisionSystem* collisionSystem = nullptr;

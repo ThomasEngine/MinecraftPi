@@ -74,6 +74,11 @@ glm::mat4 Camera::GetViewProjectionMatrix() const
     return m_proj * GetViewMatrix();
 }
 
+glm::vec3 Camera::GetRight() const
+{
+	return glm::normalize(glm::vec3(cos(m_yaw), 0, -sin(m_yaw)));
+}
+
 void Camera::MoveForward(float amount) 
 {
     glm::vec3 forward = glm::normalize(glm::vec3(sin(m_yaw), 0, cos(m_yaw)));

@@ -58,10 +58,12 @@ public:
 	uint8_t GetBlockLightLevel(const glm::ivec3& worldPos);
 	bool AreNeighborsLoaded(const glm::ivec3& pos) const;
 	glm::ivec3 WorldToChunkPos(const glm::vec3& pos) const;
+	void SetBlockAtPosition(const glm::vec3& worldPos, const uint8_t& block);
+	void RemoveBlockAtPosition(const glm::vec3& worldPos);
 	
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;
 private:
-	uint8_t VIEW_DISTANCE = 8;
+	uint8_t VIEW_DISTANCE = 2;
 	uint8_t HALF_X = 0;
 	uint8_t HALF_Z = 0;
 	uint8_t HALF_Y = 0;

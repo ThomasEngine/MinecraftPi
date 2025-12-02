@@ -35,6 +35,8 @@ public:
     uint8_t GetBlock(int x, int y, int z) const;
 	Voxel GetVoxel(int x, int y, int z) const;
 
+	void NeigbourVoxelQueue(int x, int y, int z, ChunkLoader& owner);
+
     void destroyMesh(Renderer& ren);
     void createChunkMesh(Renderer& renderer, ChunkLoader& owner);
 	void createTransparentMesh(Renderer& renderer, ChunkLoader& owner);

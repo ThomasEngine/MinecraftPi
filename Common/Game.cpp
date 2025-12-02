@@ -59,7 +59,7 @@ void Game::Start()
 	auto lastTime = startTime;
 
 	float averageFPS{ 0 };
-	float moveSpeed = 6.f;
+	float moveSpeed = 5.f;
 
 	
 	Renderer renderer;
@@ -95,9 +95,9 @@ void Game::Start()
 	shader.SetUniform1f("u_CellHeight", 1.f / 16.f);
 	testTex->Bind(0);
 
-	World world(renderer);
+	world = new World(renderer);
 	collisionSystem = new CollisionSystem();
-	//collisionSystem->SetTarget(&world);
+	collisionSystem->SetBlockTarget(*world);
 	player.SetCollisionSystem(collisionSystem);
 
 
@@ -110,7 +110,7 @@ void Game::Start()
 
 	Initialize();
 
-	float dayTime = 12.f; // Noon
+	float dayTime = 11.9f; // Noon
 
 	while(!quitting)
 	{
@@ -143,11 +143,11 @@ void Game::Start()
 		shader.SetUniform1f("u_DayTime", timeOfDay);
 		shader.Unbind();
 		glm::mat4 projView = player.GetCamera().GetViewProjectionMatrix();
-		world.Update(player.GetCamera().GetDirection(), player.GetCamera().GetPosition(), projView);
-
+		world->Update(player.GetCamera().GetDirection(), player.GetCamera().GetPosition(), projView);
+		player.Update(gameDeltaTime);
 		// Render
 		Render();
-		world.Draw(projView, shader, *testTex);
+		world->Draw(projView, shader, *testTex);
 
 
 		// Post Render
@@ -166,7 +166,7 @@ void Game::Start()
 				ImGui::Text("Z: %f", playerPos.z);
 
 				// Chunk position
-				glm::ivec3 chunkPos = world.WorldToChunkPos(playerPos);
+				glm::ivec3 chunkPos = world->WorldToChunkPos(playerPos);
 				ImGui::Text("--Chunk Pos--");
 				ImGui::Text("X: %d", chunkPos.x);
 				ImGui::Text("Y: %d", chunkPos.y);
@@ -213,12 +213,12 @@ void Game::Quit()
 
 
 //example of using the key and mouse
-void Game::ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& chunk*/, float deltaTime, float speed)
+void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float speed)
 {
 	const Input& input = GetInput();
 	const IMouse& mouse = input.GetMouse();
 	const IKeyboard& keyboard = input.GetKeyboard();
-	float moveSpeed = speed * gameDeltaTime;
+	float moveSpeed = speed;
 	float lookSpeed = 1.12f;
 
 	static glm::vec2 lastMouse = mouse.GetPosition();
@@ -234,13 +234,12 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& chunk*/, float
 	else speedBoost = false;
 
 	if (speedBoost)
-		moveSpeed *= 3;
-
+		moveSpeed = 8;
 
 	player.SetMoveSpeed(moveSpeed);
 	for (const auto& pair : keyCommandMap) {
 		if (keyboard.GetKey(pair.first)) {
-			pair.second->Execute(player, deltaTime);
+			pair.second->Execute(player, gameDeltaTime);
 		}
 	}
 
@@ -268,6 +267,29 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& chunk*/, float
 		blockTimer += deltaTime;
 	if (blockTimer >= .2f)
 		canBreakBlock = true;
+
+	// Break blocks
+	if (mouse.GetButtonDown(MouseButtons::LEFT) && canBreakBlock)
+	{
+		glm::vec3 camPos = cam.GetPosition();
+		glm::vec3 camDir = cam.GetDirection();
+		float maxDistance = 5.0f;
+		float step = 1.f;
+		for (float i = 0; i < maxDistance; i += step)
+		{
+			glm::vec3 pos = camPos + camDir * i;
+			int blockX = static_cast<int>(floor(pos.x));
+			int blockY = static_cast<int>(floor(pos.y));
+			int blockZ = static_cast<int>(floor(pos.z));
+			if (world->GetBlockAtPosition(glm::vec3(blockX, blockY, blockZ)) != 0) // 0 == air
+			{
+				world->RemoveBlockAtPosition(glm::vec3(blockX, blockY, blockZ));
+				canBreakBlock = false;
+				blockTimer = 0;
+				break;
+			}
+		}
+	}
 
 	// Break blocks
 	//if ((mouse.GetButtonDown(MouseButtons::LEFT) || mouse.GetButtonDown(MouseButtons::RIGHT)) && canBreakBlock)

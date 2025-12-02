@@ -3,6 +3,7 @@
 #include <cmath>
 #include "Camera/include/Frustum.h"
 #include "Camera/include/Camera.h"
+#include "World/include/BlockRegistery.h"
 
 const glm::ivec3 offsets[] = {
     { 1, 0, 0 }, { -1, 0, 0 },
@@ -33,6 +34,44 @@ glm::ivec3 ChunkLoader::WorldToChunkPos(const glm::vec3& pos) const
         0,
         int(std::floor(pos.z / CHUNK_SIZE_Z))
     );
+}
+
+void ChunkLoader::SetBlockAtPosition(const glm::vec3& worldPos, const uint8_t& block)
+{
+	glm::ivec3 chunkPos = WorldToChunkPos(worldPos);
+	glm::vec3 position = glm::vec3(
+		int(std::floor(worldPos.x)) - chunkPos.x * CHUNK_SIZE_X,
+		int(std::floor(worldPos.y)),
+		int(std::floor(worldPos.z)) - chunkPos.z * CHUNK_SIZE_Z
+	);
+	auto it = m_ChunkLoadTasks.find(chunkPos);
+	if (it != m_ChunkLoadTasks.end()) {
+		it->second.chunk->SetBlock(int(position.x), int(position.y), int(position.z), block);
+		it->second.pendingSunlight = true;
+		it->second.pendingSunlightFill = false;
+		it->second.pendingMesh = false;
+		it->second.renderReady = false;
+		it->second.reloaded = false;
+	}
+}
+
+void ChunkLoader::RemoveBlockAtPosition(const glm::vec3& worldPos)
+{
+	glm::ivec3 chunkPos = WorldToChunkPos(worldPos);
+	glm::vec3 position = glm::vec3(
+		int(std::floor(worldPos.x)) - chunkPos.x * CHUNK_SIZE_X,
+		int(std::floor(worldPos.y)),
+		int(std::floor(worldPos.z)) - chunkPos.z * CHUNK_SIZE_Z
+	);
+	auto it = m_ChunkLoadTasks.find(chunkPos);
+	if (it != m_ChunkLoadTasks.end()) {
+		it->second.chunk->SetBlock(int(position.x), int(position.y), int(position.z), B_AIR);
+		it->second.chunk->NeigbourVoxelQueue(int(position.x), int(position.y), int(position.z), *this);
+		it->second.pendingSunlightFill = true;
+		it->second.pendingMesh = false;
+		it->second.renderReady = false;
+		it->second.reloaded = false;
+	}
 }
 
 void ChunkLoader::Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& viewProjMatrix)
@@ -100,6 +139,7 @@ void ChunkLoader::FindChunksToLoadAndUnload(const glm::vec3& camPos)
 
 void ChunkLoader::ProccessChunkLoadingAsync(Renderer& renderer)
 {
+	int tasksProcessed = 0;
     for (auto& pair : m_ChunkLoadTasks) {
         ChunkLoadTask& task = pair.second;
         if (task.pendingSunlight && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
@@ -111,7 +151,8 @@ void ChunkLoader::ProccessChunkLoadingAsync(Renderer& renderer)
             task.chunk->ApplySunlight(*this);
             task.pendingSunlightFill = false;
             task.pendingMesh = true;
-            return;
+			tasksProcessed++;
+			return;
         }
         else if (task.pendingMesh && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
             task.chunk->createChunkMesh(renderer, *this);

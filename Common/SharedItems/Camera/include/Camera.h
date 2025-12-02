@@ -18,6 +18,7 @@ public:
     glm::mat4 GetViewMatrix() const;
     glm::mat4 GetProjectionMatrix() const;
     glm::mat4 GetViewProjectionMatrix() const;
+	glm::vec3 GetRight() const;
 
     // Controls
     void MoveForward(float amount);

@@ -49,12 +49,25 @@ void World::Draw(const glm::mat4 viewProj, Shader& shader, Texture& tex)
 	m_ChunkLoader->Draw(viewProj, shader, tex);
 }
 
-void World::PlaceBlockAtPosition(const glm::vec3& worldPos)
+void World::PlaceBlockAtPosition(const glm::vec3& worldPos, const uint8_t& block)
 {
+	m_ChunkLoader->SetBlockAtPosition(worldPos, block);
 }
 
 void World::RemoveBlockAtPosition(const glm::vec3& worldPos)
 {
+	m_ChunkLoader->RemoveBlockAtPosition(worldPos);
+}
+
+uint8_t World::GetBlockAtPosition(const glm::vec3& worldPos)
+{
+	glm::ivec3 chunkPos = WorldToChunkPos(worldPos);
+	glm::vec3 position = glm::vec3(
+		int(std::floor(worldPos.x)) - chunkPos.x * 16,
+		int(std::floor(worldPos.y)),
+		int(std::floor(worldPos.z)) - chunkPos.z * 16
+	);
+	return m_ChunkLoader->GetBlockAtPosition(position, chunkPos);
 }
 
 glm::vec3 World::WorldToChunkPos(const glm::vec3& pos) const

@@ -65,6 +65,23 @@ Voxel Chunk::GetVoxel(int x, int y, int z) const
     return blocks[idx];
 }
 
+void Chunk::NeigbourVoxelQueue(int x, int y, int z, ChunkLoader& owner)
+{
+    glm::ivec3 pos = { x, y, z };
+    for (int d = 0; d < 6; d++)
+    {
+		int nx = x + faceDirs[d][0];
+		int ny = y + faceDirs[d][1];
+		int nz = z + faceDirs[d][2];
+
+		int neighborIdx = GetBlockIndex(nx, ny, nz);
+        if (neighborIdx != -1)
+        {
+			sunlightBfsQueue.push(neighborIdx);
+        }
+    }
+}
+
 void Chunk::GenerateTerrain(ChunkLoader & owner)
 {
     blocks.resize(CHUNKSIZE, { 0,0 });
