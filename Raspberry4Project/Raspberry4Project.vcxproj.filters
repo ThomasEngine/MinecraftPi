@@ -14,6 +14,24 @@
     <ClCompile Include="..\Raspberry\RaspMouse.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\imgui\imgui.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\imgui\imgui_demo.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\imgui\imgui_draw.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\imgui\imgui_impl_opengl3.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\imgui\imgui_tables.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\imgui\imgui_widgets.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
@@ -43,6 +61,33 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\Raspberry\XWindow.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\noise\FastNoiseLite.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\imgui\imgui_internal.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\imgui\imconfig.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\imgui\imgui.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\imgui\imgui_impl_opengl3.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\imgui\imgui_impl_opengl3_loader.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\imgui\imstb_truetype.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\imgui\imstb_rectpack.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\imgui\imstb_textedit.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,26 +2,25 @@
 #version 300 es
 precision mediump float;
 
-layout(location = 0) in vec4 position;
-layout(location = 1) in vec2 texCoord;
-layout(location = 2) in uint blockType;
-layout(location = 3) in uint face;
-layout(location = 4) in uint facesPerBlock;
+layout(location = 0) in vec3 a_Position;
+layout(location = 1) in vec2 a_TexCoord;
+layout(location = 2) in float a_CellX;
+layout(location = 3) in float a_CellY;
+layout(location = 4) in float a_Light;
 
-out vec2 v_TexCoord;
-flat out uint v_FacesPerBlock;
-flat out uint v_BlockType;
-flat out uint v_Face;
+out vec2 v_AtlasUV;
+out float v_LightLevel;
 
 uniform mat4 u_MVP;
+uniform float u_CellWidth;
+uniform float u_CellHeight;
+uniform float u_DayTime;
 
 void main()
 {
-	gl_Position = u_MVP * position;
-	v_TexCoord = texCoord;
-    v_BlockType = blockType;
-    v_Face = face;
-	v_FacesPerBlock = facesPerBlock;
+    gl_Position = u_MVP * vec4(a_Position, 1.0);
+    v_AtlasUV = a_TexCoord * vec2(u_CellWidth, u_CellHeight) + vec2(a_CellX * u_CellWidth, a_CellY * u_CellHeight);
+    v_LightLevel = a_Light * u_DayTime;
 }
 
 #shader fragment
@@ -29,30 +28,15 @@ void main()
 precision mediump float;
 
 layout(location = 0) out vec4 color;
-
-in vec2 v_TexCoord;
-flat in uint v_BlockType;
-flat in uint v_Face;
-flat in uint v_FacesPerBlock;
-
+in float v_LightLevel;
+in vec2 v_AtlasUV;
 uniform sampler2D u_TextureAtlas;
-uniform int u_AtlasCols;
-uniform int u_AtlasRows;
 
 void main()
 {
-    int facesPerBlock = int(v_FacesPerBlock);
-    int faceIndex = (facesPerBlock == 1) ? 0 : int(v_Face);
-    int atlasIndex = int(v_BlockType) * facesPerBlock + faceIndex;
-    int cols = u_AtlasCols;
-    int rows = u_AtlasRows;
-    float cellWidth = 1.0 / float(cols);
-
-    float cellHeight = 1.0 / float(rows);
-    int cellX = atlasIndex % cols;
-    int cellY = atlasIndex / cols;
-	vec2 atlasUV = v_TexCoord * vec2(cellWidth, cellHeight) + vec2(float(cellX) * cellWidth, float(cellY) * cellHeight);
-
-    color = texture(u_TextureAtlas, atlasUV);
+    color = texture(u_TextureAtlas, v_AtlasUV);
+    color.rgb *= v_LightLevel;
 }
+
+
 

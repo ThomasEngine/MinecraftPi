@@ -83,6 +83,12 @@
     </RemotePostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Common\imgui\imgui.cpp" />
+    <ClCompile Include="..\Common\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\Common\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\Common\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\Common\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\Common\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\Raspberry\RaspGraphics.cpp" />
     <ClCompile Include="..\Raspberry\RaspKeyboard.cpp" />
     <ClCompile Include="..\Raspberry\RaspMouse.cpp" />
@@ -90,6 +96,15 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Common\imgui\imconfig.h" />
+    <ClInclude Include="..\Common\imgui\imgui.h" />
+    <ClInclude Include="..\Common\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\Common\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\Common\imgui\imgui_internal.h" />
+    <ClInclude Include="..\Common\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\Common\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\Common\imgui\imstb_truetype.h" />
+    <ClInclude Include="..\Common\noise\FastNoiseLite.h" />
     <ClInclude Include="..\Raspberry\EGLState.h" />
     <ClInclude Include="..\Raspberry\RaspGraphics.h" />
     <ClInclude Include="..\Raspberry\RaspKeyboard.h" />
@@ -108,6 +123,7 @@
     <ClCompile>
       <PreprocessorDefinitions>DEBUG;Raspberry_BUILD;GLES3</PreprocessorDefinitions>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

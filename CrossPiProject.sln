@@ -9,8 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharedItems", "Common\Share
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Rasp4Project", "Raspberry4Project\Raspberry4Project.vcxproj", "{2CE26E1C-FDAE-473A-90AA-11A0436CFE21}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "..\Game\Game.vcxitems", "{22A4A1B8-C25D-45D9-85CA-5CEF7A5F5E8D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -44,6 +42,7 @@ Global
 		{2CE26E1C-FDAE-473A-90AA-11A0436CFE21}.Debug|ARM64.ActiveCfg = Debug|ARM64
 		{2CE26E1C-FDAE-473A-90AA-11A0436CFE21}.Debug|ARM64.Build.0 = Debug|ARM64
 		{2CE26E1C-FDAE-473A-90AA-11A0436CFE21}.Debug|x64.ActiveCfg = Debug|ARM64
+		{2CE26E1C-FDAE-473A-90AA-11A0436CFE21}.Debug|x64.Build.0 = Debug|ARM64
 		{2CE26E1C-FDAE-473A-90AA-11A0436CFE21}.Debug|x86.ActiveCfg = Debug|ARM
 		{2CE26E1C-FDAE-473A-90AA-11A0436CFE21}.Release|ARM.ActiveCfg = Release|ARM
 		{2CE26E1C-FDAE-473A-90AA-11A0436CFE21}.Release|ARM.Build.0 = Release|ARM
@@ -65,7 +64,6 @@ Global
 		SolutionGuid = {E8D8BF2B-6929-4D35-B29A-84E059B586D3}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\Game\Game.vcxitems*{22a4a1b8-c25d-45d9-85ca-5cef7a5f5e8d}*SharedItemsImports = 9
 		Common\SharedItems\SharedItems.vcxitems*{2ce26e1c-fdae-473a-90aa-11a0436cfe21}*SharedItemsImports = 4
 		Common\SharedItems\SharedItems.vcxitems*{a001fcaf-2399-4412-a986-3e56ae0c15d4}*SharedItemsImports = 9
 		Common\SharedItems\SharedItems.vcxitems*{ce43d08d-16ea-4473-892a-dbd8d5c588a5}*SharedItemsImports = 4

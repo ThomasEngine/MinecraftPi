@@ -6,5 +6,10 @@ public:
 	virtual ~IGraphics() = default;
 	virtual void SwapBuffer() = 0;
 	virtual void Quit() = 0;
+
+#ifdef WINDOWS_BUILD
+	virtual GLFWwindow& GetWindow() = 0;
+#endif 
+
 };
 

@@ -16,20 +16,9 @@ GLFWwindow& WindowsGraphics::Window() const
 {
 	return *window;
 }
-
-void WindowsGraphics::ToggleCurser() const
+void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
-	static bool cursorVisible = false;
-	if (cursorVisible)
-	{
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		cursorVisible = false;
-	}
-	else
-	{
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		cursorVisible = true;
-	}
+	glViewport(0, 0, width, height);
 }
 
 WindowsGraphics::WindowsGraphics()
@@ -44,7 +33,7 @@ WindowsGraphics::WindowsGraphics()
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 //	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
 	// Creates the window.
-	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Minecraft", NULL, NULL);
+	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "PC Based OpenGLES", NULL, NULL);
 
 	// Error handling for if window creation failed.
 	if (window == NULL)
@@ -52,17 +41,25 @@ WindowsGraphics::WindowsGraphics()
 		std::cout << "Failed to create GLFW window!" << std::endl;
 		glfwTerminate();
 	}
-
+	
 	// Set the window to be the current context.
 	glfwMakeContextCurrent(window);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Error handling for if GLAD failed to initialize.
 	if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD!" << std::endl;
 	}
+	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+
+	// Set initial viewport size.
+
 }
+
+
 
 void WindowsGraphics::Quit()
 {

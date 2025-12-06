@@ -19,9 +19,9 @@ public:
 
 	void Quit() override;
 	void SwapBuffer() override;
+	GLFWwindow& GetWindow() override { return Window(); }
 	GLFWwindow& Window() const;
 
-	void ToggleCurser() const;
 
 private:
 	GLFWwindow* window;

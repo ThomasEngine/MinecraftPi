@@ -1,5 +1,5 @@
 #include "CollisionSystem.h"
-#include "World/include/World.h"	
+#include "World.h"	
 
 bool CollisionSystem::CheckGridCollision(glm::vec3 posToCheck)
 {

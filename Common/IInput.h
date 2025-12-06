@@ -1,8 +1,7 @@
 #pragma once
 // group these 2 togeter
-
 #include <glm/vec2.hpp>
-#ifdef WINDOWS
+#ifdef WINDOWS_BUILD
 #include <GLFW/glfw3.h>
 #endif
 

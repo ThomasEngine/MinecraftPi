@@ -6,8 +6,6 @@
 #include <GLFW/glfw3.h>
 #include <glm/common.hpp>
 #include "Game.h"
-#include "Game/Application.h"
-#include "ui/include/gui.h"
 #include "WindowsGraphics.h"
 #include "WindowsInput.h"
 
@@ -36,18 +34,11 @@ int main()
 	WinGraphics = new WindowsGraphics();
 	glfwSwapInterval(1); // stop the windows build updating without vblank so its the same speed as pi
 
-	Gui gui(&WinGraphics->Window());
-
 	input = new Input(new WindowsKeyboard(WinGraphics->Window()), new WindowsMouse(WinGraphics->Window()));
 
-	game = new Application(input, WinGraphics, &gui);
+	game = new Game(input, WinGraphics);
 
 	game->Start();
 
 	return 0;
-}
-
-void framebufferSizeCallback(GLFWwindow* /*window*/, int width, int height)
-{
-	glViewport(0, 0, width, height);
 }
