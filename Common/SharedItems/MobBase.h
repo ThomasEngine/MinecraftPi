@@ -12,6 +12,7 @@ struct InstanceData {
     glm::vec3 position;
     //State* aiState;
 	uint8_t health;
+	glm::vec3 direction;
 };
 
 class Mob {

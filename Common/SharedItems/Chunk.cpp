@@ -3,6 +3,7 @@
 #include <noise/FastNoiseLite.h>
 #include "ChunkLoader.h"
 
+
 static const FaceVertex faceVertices[6][4] = {
     // -Z (Back)
     { { {0,0,0}, {0,0} }, { {0,1,0}, {0,1} }, { {1,1,0}, {1,1} }, { {1,0,0}, {1,0} } },
@@ -242,25 +243,6 @@ void Chunk::PropagateLight(ChunkLoader& owner)
     }
 }
 
-    /*for (int x = 0; x < CHUNK_SIZE_X; ++x) {
-        for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
-            for (int y = CHUNK_SIZE_Y - 1; y >= 0; --y) {
-                int idx = GetBlockIndex(x, y, z);
-                if (idx == -1) break;
-                Voxel& v = blocks[idx];
-                if (g_BlockTypes[v.blockID].isTransparent) {
-                    v.lightLevel = 15;
-                }
-                else {
-                    int nIdx = GetBlockIndex(x, y + 1, z);
-                    sunlightBfsQueue.push(nIdx);
-                    break;
-                }
-            }
-        }
-    }*/
-//}
-
 void Chunk::ReapplyBorderLight(ChunkLoader& owner)
 {
 	for (int x = 0; x < CHUNK_SIZE_X; ++x) {
@@ -407,7 +389,8 @@ void Chunk::createTransparentMesh(Renderer& renderer, ChunkLoader& owner)
             }
         }
     }
-    transparentMesh = std::make_unique<Mesh>(renderer.uploadMesh(vertices, indices));
+    transparentMesh = std::make_unique<Mesh>(vertices, indices);
+    renderer.uploadMesh(*transparentMesh);
     vertices.clear();
     indices.clear();
 }
@@ -501,7 +484,9 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkLoader& owner)
             }
         }
     }
-    mesh = std::make_unique<Mesh>(renderer.uploadMesh(vertices, indices));
+
+    mesh = std::make_unique<Mesh>(vertices, indices);
+    renderer.uploadMesh(*mesh);
     vertices.clear();
     indices.clear();
 }

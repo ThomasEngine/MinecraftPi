@@ -18,6 +18,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\IInput.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Input.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\tiny_obj_loader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Mesh.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MobBase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BlockRegistery.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BlockType.h" />
@@ -49,6 +50,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Game.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ICommand.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Mesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MobFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Player.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Renderer.cpp" />

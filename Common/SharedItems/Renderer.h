@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <functional>
 #include <cstddef>
+#include "Mesh.h"
 
 #ifdef WINDOWS_BUILD
 //include glad and glfw for Windows build
@@ -36,35 +37,6 @@ void GLCheckError();
 bool GLLogCall(const char* function, const char* file, int line);
 
 
-struct Mesh {
-    GLuint vao = 0;
-    GLuint vbo = 0;
-    GLuint ibo = 0;
-    GLsizei indexCount = 0;
-};
-
-//struct FaceVertex {
-//    glm::vec3 pos;
-//    glm::vec2 tex;
-//    uint8_t atlasIndex;   
-//};
-
-struct FaceVertex {
-    glm::vec3 pos;
-    glm::vec2 tex;
-    float cellX;
-    float cellY;
-    float light;
-};
-
-enum FaceDirection {
-	FACE_BACK = 0,
-	FACE_FRONT = 1,
-	FACE_BOTTOM = 2,
-	FACE_TOP = 3,
-	FACE_LEFT = 4,
-	FACE_RIGHT = 5
-};
 
 struct BlockInstanceData;
 class Chunk;
@@ -83,14 +55,11 @@ public:
     void endFrame();
 
     // Mesh helpers
-    Mesh createCubeMesh();
-    void uploadInstanceBuffer(const std::vector<BlockInstanceData>& instances, Chunk* chunk);
-    Mesh uploadMesh(const std::vector<float>& vertexData, const std::vector<unsigned int>& indices);
-    Mesh uploadMesh(const std::vector<FaceVertex>& vertexData, const std::vector<unsigned int>& indices);
+    //Mesh uploadMesh(const std::vector<FaceVertex>& vertexData, const std::vector<unsigned int>& indices);
+    void uploadMesh(Mesh& mesh);
     void destroyMesh(Mesh& m);
 
     // Draw
-    void drawInstancedMesh(const glm::mat4& mvp, const Shader& sh, const Texture& texture, size_t instanceCount, GLuint instanceVBO);
     void drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, const Texture& texture);
 
 private:
