@@ -28,6 +28,7 @@ class Gui;
 class ICommand;
 class CollisionSystem;
 class World;
+class MobFactory;
 enum class Key;
 
 constexpr unsigned int WINDOW_WIDTH = 1920;
@@ -64,6 +65,7 @@ private:
 	Camera m_Camera;
 	World* world;
 	Player m_Player;
+	MobFactory* mobFactory = nullptr;
 	float dayTime;
 	std::map<Key, std::unique_ptr<ICommand>> keyCommandMap;
 	CollisionSystem* collisionSystem = nullptr;

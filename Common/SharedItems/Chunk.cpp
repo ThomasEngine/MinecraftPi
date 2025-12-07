@@ -4,7 +4,7 @@
 #include "ChunkLoader.h"
 
 
-static const FaceVertex faceVertices[6][4] = {
+const FaceVertex faceVertices[6][4] = {
     // -Z (Back)
     { { {0,0,0}, {0,0} }, { {0,1,0}, {0,1} }, { {1,1,0}, {1,1} }, { {1,0,0}, {1,0} } },
     // +Z (Front)
@@ -19,7 +19,7 @@ static const FaceVertex faceVertices[6][4] = {
     { { {1,0,0}, {0,0} }, { {1,1,0}, {0,1} }, { {1,1,1}, {1,1} }, { {1,0,1}, {1,0} } }
 };
 
-static const int faceDirs[6][3] = {
+const int faceDirs[6][3] = {
     {  0,  0, -1 }, // -Z (Back)
     {  0,  0,  1 }, // +Z (Front)
     {  0, -1,  0 }, // -Y (Bottom)

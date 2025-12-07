@@ -19,7 +19,7 @@ void JumpCommand::Execute(Player& player, float dt)
 
 void CrouchCommand::Execute(Player& player, float dt)
 {
-	player.Crouch();
+	player.Crouch(dt);
 }
 
 void StartFlyingCommand::Execute(Player& player, float dt)

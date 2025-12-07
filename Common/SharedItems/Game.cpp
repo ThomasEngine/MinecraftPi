@@ -28,6 +28,7 @@
 #include "BlockRegistery.h"
 #include "World.h"
 #include "CollisionSystem.h"
+#include "MobFactory.h"
 
 
 Game::Game(const Input* const input, IGraphics* graphics/*, Gui* mGui*/) :
@@ -110,10 +111,14 @@ void Game::Start()
 	keyCommandMap[Key::SPACE] = std::make_unique<JumpCommand>();
 
 	Initialize();
+	mobFactory = new MobFactory(renderer);
+	Mob* sheepPrototype = mobFactory->create("Sheep", {0, 170, 0});
+	sheepPrototype->setPosition(glm::vec3(0, 100, 0));
 
 	dayTime = 11.9f; // Noon
 
 	gui = new Gui(&m_Player, world);
+	
 
 #ifdef WINDOWS_BUILD
 	gui->SetupPc(&graphics->GetWindow());
@@ -155,6 +160,7 @@ void Game::Start()
 		Render();
 		
 		world->Draw(projView, shader, *testTex);
+		sheepPrototype->render(renderer, shader, *testTex, m_Camera.GetViewProjectionMatrix());
 
 
 		// Post Render

@@ -7,6 +7,8 @@
 #include <memory>
 #include <queue>
 
+extern const FaceVertex faceVertices[6][4];
+extern const int faceDirs[6][3];
 
 // Chunk dimensions
 constexpr int CHUNK_SIZE_X = 16;

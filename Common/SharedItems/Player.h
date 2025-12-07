@@ -22,7 +22,7 @@ public:
 	void MoveRight(float deltaTime);
 	void Jump(float deltaTime);
 	void UpdateMoveY(float deltaTime);
-	void Crouch();
+	void Crouch(float deltaTime);
 	void SetFlying(bool b);
 	void SetMoveSpeed(float s) { m_MovementSpeed = s; }
 	void SetCollisionSystem(CollisionSystem* CS) { m_CS = CS; }

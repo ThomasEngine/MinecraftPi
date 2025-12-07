@@ -1,8 +1,8 @@
 #pragma once
 #include <unordered_map>
 #include "MobBase.h"
+#include "Mobs.h"
 #include <string>
-
 
 class MobPrototypeRegistry {
 public:
@@ -18,10 +18,14 @@ private:
 	std::unordered_map<std::string, Mob*> prototypes;
 };
 
+class Renderer;
+void InitializeMobPrototypes(MobPrototypeRegistry& registry, Renderer& ren);
 
 class MobFactory {
 public:
-    MobFactory(MobPrototypeRegistry& reg) : registry(reg) {}
+    MobFactory(Renderer& ren) {
+		InitializeMobPrototypes(registry, ren);
+	}
 
     Mob* create(std::string type, glm::vec3 pos) {
         Mob* proto = registry.getPrototype(type);
@@ -31,7 +35,6 @@ public:
     }
 
 private:
-	MobPrototypeRegistry& registry;
+	MobPrototypeRegistry registry;
 };
 
-void InitializeMobPrototypes(MobPrototypeRegistry& registry);

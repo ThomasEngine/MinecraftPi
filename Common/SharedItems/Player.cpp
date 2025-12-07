@@ -100,9 +100,9 @@ void Player::Jump(float deltaTime)
 {
 	if (m_Flying)
 	{
-		glm::vec3 nextPos = m_Camera->GetPosition() + glm::vec3(0.f, 1.f, 0.f) * m_MovementSpeed;
+		glm::vec3 nextPos = m_Camera->GetPosition() + glm::vec3(0.f, 1.f, 0.f) * m_MovementSpeed * deltaTime;
 		if (!m_CS->CheckGridCollision(nextPos))
-			m_Camera->Move(glm::vec3(0, m_MovementSpeed, 0));
+			SetPosition(nextPos);
 	}
 	else
 	{
@@ -139,12 +139,12 @@ void Player::UpdateMoveY(float deltaTime)
 	}
 }
 
-void Player::Crouch()
+void Player::Crouch(float deltaTime)
 {
 	glm::vec3 nextPos = m_Camera->GetPosition() + glm::vec3(0.f, 1.f, 0.f) * -m_MovementSpeed;
 	if (!m_CS->CheckGridCollision(nextPos))
 		if (m_Flying)
-			m_Camera->Move(glm::vec3(0, -m_MovementSpeed, 0));
+			SetPosition(nextPos);
 }
 
 void Player::SetFlying(bool b)

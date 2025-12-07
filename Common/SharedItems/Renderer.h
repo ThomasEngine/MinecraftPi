@@ -61,6 +61,4 @@ public:
 
     // Draw
     void drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, const Texture& texture);
-
-private:
 };
