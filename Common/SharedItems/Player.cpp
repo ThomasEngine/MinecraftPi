@@ -141,7 +141,7 @@ void Player::UpdateMoveY(float deltaTime)
 
 void Player::Crouch(float deltaTime)
 {
-	glm::vec3 nextPos = m_Camera->GetPosition() + glm::vec3(0.f, 1.f, 0.f) * -m_MovementSpeed;
+	glm::vec3 nextPos = m_Camera->GetPosition() + glm::vec3(0.f, 1.f, 0.f) * -m_MovementSpeed * deltaTime;
 	if (!m_CS->CheckGridCollision(nextPos))
 		if (m_Flying)
 			SetPosition(nextPos);

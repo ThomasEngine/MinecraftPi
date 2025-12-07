@@ -15,7 +15,7 @@ namespace {
                 glm::vec3 p = faceVertices[face][v].pos;
 				glm::vec3 pos = glm::mix(min, max, p); // Linear interpolation
                 glm::vec2 tex = faceVertices[face][v].tex;
-                mesh.vertices.push_back({ pos, tex, cellX, cellY });
+                mesh.vertices.push_back({ pos, tex, cellX, cellY, 1 });
             }
             mesh.indices.push_back(indexOffset + 0);
             mesh.indices.push_back(indexOffset + 1);
@@ -28,17 +28,46 @@ namespace {
     }
 	Mesh LoadSheepModel(Renderer& ren) {
 		Mesh mesh;
-        // Add body
-		AddCuboid(mesh, glm::vec3(-0.5f, 0.0f, -1.0f), glm::vec3(0.5f, 0.7f, 1.0f), 0.0f, 0.0f);
 
-		// Add head
-		AddCuboid(mesh, glm::vec3(-0.3f, 0.5f, 1.0f), glm::vec3(0.3f, 0.9f, 1.5f), 1.0f, 0.0f);
+		const int atlasIndex = 2;
+		float cellX = float(atlasIndex % 16);
+		float cellY = 15 - (atlasIndex / 16);
 
-		// Add legs
-		AddCuboid(mesh, glm::vec3(-0.4f, 0.0f, -0.8f), glm::vec3(-0.2f, 0.4f, -0.6f), 2.0f, 0.0f);
-		AddCuboid(mesh, glm::vec3(0.2f, 0.0f, -0.8f), glm::vec3(0.4f, 0.4f, -0.6f), 2.0f, 0.0f);
-		AddCuboid(mesh, glm::vec3(-0.4f, 0.0f, 0.6f), glm::vec3(-0.2f, 0.4f, 0.8f), 2.0f, 0.0f);
-		AddCuboid(mesh, glm::vec3(0.2f, 0.0f, 0.6f), glm::vec3(0.4f, 0.4f, 0.8f), 2.0f, 0.0f);
+		// Mins and maxes
+		// Body
+		glm::vec3 bodyMin(-0.45f, 0.4f, -0.65f);
+		glm::vec3 bodyMax(0.45f, 1.1f, 0.65f);
+
+		// Head length: 0.6, 2/3 inside body
+		float headLength = 0.6f;
+		float headInside = headLength * (2.0f / 3.0f); 
+		float headOutside = headLength * (1.0f / 3.0f); 
+		float bodyFrontZ = 0.65f;
+		float headBackZ = bodyFrontZ - headInside; 
+		float headFrontZ = bodyFrontZ + headOutside;
+
+		glm::vec3 headMin(-0.3f, 0.8f, headBackZ); 
+		glm::vec3 headMax(0.3f, 1.4f, headFrontZ); 
+
+		// Legs
+        glm::vec3 legFLMin(-0.4f, 0.0f, 0.35f); // Front Left
+        glm::vec3 legFLMax(-0.1f, 0.4f, 0.65f);
+
+        glm::vec3 legFRMin(0.1f, 0.0f, 0.35f); // Front Right
+        glm::vec3 legFRMax(0.4f, 0.4f, 0.65f);
+
+        glm::vec3 legBLMin(-0.4f, 0.0f, -0.65f); // Back Left
+        glm::vec3 legBLMax(-0.1f, 0.4f, -0.35f);
+
+        glm::vec3 legBRMin(0.1f, 0.0f, -0.65f); // Back Right
+        glm::vec3 legBRMax(0.4f, 0.4f, -0.35f);
+
+		AddCuboid(mesh, bodyMin, bodyMax, cellX, cellY);
+		AddCuboid(mesh, headMin, headMax, cellX, cellY);
+		AddCuboid(mesh, legFLMin, legFLMax, cellX, cellY);
+		AddCuboid(mesh, legFRMin, legFRMax, cellX, cellY);
+		AddCuboid(mesh, legBLMin, legBLMax, cellX, cellY);
+		AddCuboid(mesh, legBRMin, legBRMax, cellX, cellY);
 
 		ren.uploadMesh(mesh);
 

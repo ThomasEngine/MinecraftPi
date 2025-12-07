@@ -113,7 +113,7 @@ void Game::Start()
 	Initialize();
 	mobFactory = new MobFactory(renderer);
 	Mob* sheepPrototype = mobFactory->create("Sheep", {0, 170, 0});
-	sheepPrototype->setPosition(glm::vec3(0, 100, 0));
+	sheepPrototype->setPosition(glm::vec3(5, 95, 1));
 
 	dayTime = 11.9f; // Noon
 
