@@ -26,9 +26,8 @@ namespace {
             indexOffset += 4;
         }
     }
-	Mesh LoadSheepModel(Renderer& ren) {
-		Mesh mesh;
-
+	void LoadSheepModel(Renderer& ren, SharedModelData& sheepModel) {
+		
 		const int atlasIndex = 2;
 		float cellX = float(atlasIndex % 16);
 		float cellY = 15 - (atlasIndex / 16);
@@ -62,16 +61,19 @@ namespace {
         glm::vec3 legBRMin(0.1f, 0.0f, -0.65f); // Back Right
         glm::vec3 legBRMax(0.4f, 0.4f, -0.35f);
 
-		AddCuboid(mesh, bodyMin, bodyMax, cellX, cellY);
-		AddCuboid(mesh, headMin, headMax, cellX, cellY);
-		AddCuboid(mesh, legFLMin, legFLMax, cellX, cellY);
-		AddCuboid(mesh, legFRMin, legFRMax, cellX, cellY);
-		AddCuboid(mesh, legBLMin, legBLMax, cellX, cellY);
-		AddCuboid(mesh, legBRMin, legBRMax, cellX, cellY);
+		AddCuboid(sheepModel.bodyMesh, bodyMin, bodyMax, cellX, cellY);
+		AddCuboid(sheepModel.headMesh, headMin, headMax, cellX, cellY);
+		AddCuboid(sheepModel.legMesh[Legs::FL], legFLMin, legFLMax, cellX, cellY);
+		AddCuboid(sheepModel.legMesh[Legs::FR], legFRMin, legFRMax, cellX, cellY);
+		AddCuboid(sheepModel.legMesh[Legs::BL], legBLMin, legBLMax, cellX, cellY);
+		AddCuboid(sheepModel.legMesh[Legs::BR], legBRMin, legBRMax, cellX, cellY);
 
-		ren.uploadMesh(mesh);
-
-		return mesh;
+		ren.uploadMesh(sheepModel.bodyMesh);
+		ren.uploadMesh(sheepModel.headMesh);
+		ren.uploadMesh(sheepModel.legMesh[Legs::FL]);
+		ren.uploadMesh(sheepModel.legMesh[Legs::FR]);
+		ren.uploadMesh(sheepModel.legMesh[Legs::BL]);
+		ren.uploadMesh(sheepModel.legMesh[Legs::BR]);
 	}
 
 	Mesh LoadVillagerModel(Renderer& ren) {
@@ -94,11 +96,11 @@ namespace {
 void InitializeMobPrototypes(MobPrototypeRegistry& registry, Renderer& ren)
 {
 	SharedModelData* sheepModel = new SharedModelData();
-	sheepModel->mesh = LoadSheepModel(ren);
+	LoadSheepModel(ren, *sheepModel);
 	registry.registerPrototype("Sheep", new Sheep(sheepModel));
 
 
 	SharedModelData* villagerModel = new SharedModelData();
-	villagerModel->mesh = LoadVillagerModel(ren);
+	//villagerModel->mesh = LoadVillagerModel(ren);
 	registry.registerPrototype("Villager", new Villager(villagerModel));
 }
