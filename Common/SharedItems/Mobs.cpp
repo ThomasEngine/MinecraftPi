@@ -13,6 +13,7 @@ Sheep::Sheep(SharedModelData* sharedData)
 	this->instanceData.speed = 2.0f;
 	this->instanceData.lastIndexChecked = 1;
 	this->instanceData.timer = 0.f;
+	this->pose.bodyRotation = 0.f;
 }
 
 void Sheep::render(Renderer& ren, Shader& sh, Texture& tex, glm::mat4 viewProj)
@@ -23,7 +24,25 @@ void Sheep::render(Renderer& ren, Shader& sh, Texture& tex, glm::mat4 viewProj)
 	glm::vec3 pos = instanceData.position;
 	glm::vec3 up = glm::vec3(0, 1, 0);
 
-	sheepModel = glm::rotate(sheepModel, std::atan2(forward.x, forward.z), up);
+	float targetAngle = std::atan2(forward.x, forward.z);
+	float angleDiff = targetAngle - pose.bodyRotation;
+	if (fabs(angleDiff) > 0.05f) // ~3 degrees
+	{
+		// Smoothly rotate towards targetAngle
+		float turnSpeed = 0.1; // adjust as needed
+		if (angleDiff > 0)
+			pose.bodyRotation += std::min(angleDiff, turnSpeed);
+		else
+			pose.bodyRotation += std::max(angleDiff, -turnSpeed);
+	}
+	else
+	{
+		pose.bodyRotation = targetAngle;
+	}
+
+	// current angle
+	sheepModel = glm::rotate(sheepModel, pose.bodyRotation, up);
+	//sheepModel = glm::rotate(sheepModel, std::atan2(forward.x, forward.z), up);
 
 	// Body
 	glm::mat4 bodyMat = sheepModel; 
@@ -31,6 +50,7 @@ void Sheep::render(Renderer& ren, Shader& sh, Texture& tex, glm::mat4 viewProj)
 
 	// Head
 	glm::mat4 headMat = sheepModel; 
+	headMat = glm::rotate(headMat, glm::radians(pose.headRotation), glm::vec3(0, 1, 0));
 	ren.drawMesh(sharedData->headMesh, sh, viewProj * headMat, tex);
 
 	for (int i = 0; i < 4; ++i) {
@@ -98,12 +118,14 @@ void Sheep::UpdateWalkingAnimation(float deltaTime)
 
 	float amplitude = 30.0f; 
 	float speed = 5.0f;      
-
+	float headSpeed = 0.1f;
 	// Animate legs with phase offsets for natural movement
 	pose.legRotation[Legs::FL] = amplitude * std::sin(speed * pose.walkTime);
 	pose.legRotation[Legs::BR] = amplitude * std::sin(speed * pose.walkTime);
 	pose.legRotation[Legs::FR] = -amplitude * std::sin(speed * pose.walkTime);
 	pose.legRotation[Legs::BL] = -amplitude * std::sin(speed * pose.walkTime);
+
+	pose.headRotation = 15.0f * std::sin(headSpeed * pose.walkTime);
 
 	printf("Walking\r");
 }
@@ -135,6 +157,10 @@ void Sheep::UpdateIdleAnimation(float deltaTime)
 			pose.legRotation[i] = 0.0f;
 		}
 	}
+
+	// Randomly look around
+	float headSpeed = 1.0f;
+	pose.headRotation = 15.0f * std::sin(headSpeed * pose.walkTime);
 }
 
 void Sheep::UpdateRunningAnimation(float deltaTime)
