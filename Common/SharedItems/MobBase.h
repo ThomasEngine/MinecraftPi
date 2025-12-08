@@ -9,6 +9,7 @@ struct SharedModelData
 	Mesh bodyMesh;
 	Mesh headMesh;
 	Mesh legMesh[4]; 
+	glm::vec3 hitbox;
 };
 
 enum Legs {
@@ -29,12 +30,14 @@ struct InstanceData {
 	AiState aiState;
 	uint8_t health;
 	glm::vec3 direction;
+	glm::vec3 velocity;
 	float speed;
 	glm::vec3 moveTarget;
 	bool hasMovetarget = false;
 	std::vector<glm::vec3> path;
 	uint8_t pathIndex = 0;
 	uint8_t lastIndexChecked = 0;
+	bool onGround = true;
 };
 
 class Mob {
@@ -49,8 +52,10 @@ public:
 	void setPosition(const glm::vec3& pos) {
 		instanceData.position = pos;
 	}
+	void Move(float deltaTime);
 
 	void moveTo(const glm::vec3& target);
+	void Jump(float deltaTime);
 
 	virtual void UpdateWanderingBehavior(float deltaTime) = 0;
 	virtual void UpdateChasingBehavior(float deltaTime) = 0;
@@ -61,16 +66,19 @@ public:
 	virtual void UpdateMatingAnimation(float deltaTime) = 0;
 
 	virtual void CheckStateTransition() = 0;
+	void SetCollisionSystem(CollisionSystem* cs) { m_CS = cs; }
 protected:
 	CollisionSystem* m_CS;
 
 	void FindPath(const glm::vec3& target);
 
-	void UpdateMovement(float deltaTime);
-
-
 	void UpdateBehavior(float deltaTime);
 	void UpdateAnimation(float deltaTime);
+
+private:
+
+	void UpdateMovement(float deltaTime);
+	void UpdateYMovement(float deltaTime);
 
 };
 

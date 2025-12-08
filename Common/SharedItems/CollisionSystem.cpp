@@ -1,11 +1,16 @@
 #include "CollisionSystem.h"
 #include "World.h"	
 
-bool CollisionSystem::CheckGridCollision(glm::vec3 posToCheck)
+// Bullit collision with world grid
+
+bool CollisionSystem::CheckGridCollision(const glm::vec3& posToCheck, const glm::vec3& dimension)
 {
     if (!m_TargetWorld) return false;
-
-    glm::vec3 halfDims = m_PlayerDimensions * 0.5f;
+    if (!m_WorldReady)
+    {
+        m_WorldReady = m_TargetWorld->GetReady(); return true;
+    }
+    glm::vec3 halfDims = dimension * 0.5f;
     glm::vec3 minCorner = posToCheck - halfDims;
     glm::vec3 maxCorner = posToCheck + halfDims;
 
@@ -23,9 +28,9 @@ bool CollisionSystem::CheckGridCollision(glm::vec3 posToCheck)
     return false; // No collision
 }
 
-bool CollisionSystem::CehckPlayerToBlock(const glm::vec3& PlayerPos, const glm::vec3& blockPos)
+bool CollisionSystem::CehckPlayerToBlock(const glm::vec3& PlayerPos, const glm::vec3& blockPos, const glm::vec3& playerDim)
 {
-	glm::vec3 halfDims = m_PlayerDimensions * 0.5f;
+	glm::vec3 halfDims = playerDim * 0.5f;
 	glm::vec3 minCorner = PlayerPos - halfDims;
 	glm::vec3 maxCorner = PlayerPos + halfDims;
 	if (minCorner.x <= blockPos.x + 1 && maxCorner.x >= blockPos.x &&

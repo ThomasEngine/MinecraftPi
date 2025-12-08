@@ -10,12 +10,14 @@ const glm::ivec3 offsets[] = {
     { 0, 0, 1 }, { 0, 0, -1 }
 };
 
-ChunkLoader::ChunkLoader(Renderer& rend, std::shared_ptr<NoiseMaps> noiseMaps)
+ChunkLoader::ChunkLoader(Renderer& rend, std::shared_ptr<NoiseMaps> noiseMaps, bool& isReady)
 	: m_CameraPos(-1.0f), m_CameraDir(0.0f), m_Renderer(rend), m_NoiseMaps(noiseMaps), frustum()
 {
-   HALF_X = CHUNK_SIZE_X / 2;
-   HALF_Y = CHUNK_SIZE_Y / 2;
-   HALF_Z = CHUNK_SIZE_Z / 2;
+	   m_WorldReady = &isReady;
+
+       HALF_X = CHUNK_SIZE_X / 2;
+       HALF_Y = CHUNK_SIZE_Y / 2;
+       HALF_Z = CHUNK_SIZE_Z / 2;
 }
 
 
@@ -164,6 +166,8 @@ void ChunkLoader::ProccessChunkLoadingAsync(Renderer& renderer)
             task.chunk->PropagateLight(*this);
             task.pendingSunlight = false;
             task.pendingSunlightFill = true;
+			if (!*m_WorldReady )
+				*m_WorldReady = true;
         }
         else if (task.pendingSunlightFill && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
             task.chunk->ApplySunlight(*this);

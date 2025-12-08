@@ -74,6 +74,8 @@ namespace {
 		ren.uploadMesh(sheepModel.legMesh[Legs::FR]);
 		ren.uploadMesh(sheepModel.legMesh[Legs::BL]);
 		ren.uploadMesh(sheepModel.legMesh[Legs::BR]);
+
+		sheepModel.hitbox = glm::vec3(0.9f, 1.4f, 1.3f);
 	}
 
 	Mesh LoadVillagerModel(Renderer& ren) {
@@ -100,7 +102,7 @@ void InitializeMobPrototypes(MobPrototypeRegistry& registry, Renderer& ren)
 	registry.registerPrototype("Sheep", new Sheep(sheepModel));
 
 
-	SharedModelData* villagerModel = new SharedModelData();
+	//SharedModelData* villagerModel = new SharedModelData();
 	//villagerModel->mesh = LoadVillagerModel(ren);
-	registry.registerPrototype("Villager", new Villager(villagerModel));
+	//registry.registerPrototype("Villager", new Villager(villagerModel));
 }

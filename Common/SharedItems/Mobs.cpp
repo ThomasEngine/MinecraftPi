@@ -4,6 +4,7 @@
 #pragma once
 
 Sheep::Sheep(SharedModelData* sharedData)
+	: pose()
 {
 	this->sharedData = sharedData;
 	this->instanceData.health = 10;
@@ -23,7 +24,8 @@ void Sheep::render(Renderer& ren, Shader& sh, Texture& tex, glm::mat4 viewProj)
 
 	// Legs
 	for (int i = 0; i < 4; ++i) {
-		glm::mat4 legMat = sheepModel; // leg transform from pose
+		glm::mat4 legMat = sheepModel;
+		legMat = glm::rotate(legMat, glm::radians(pose.legRotation[i]), glm::vec3(1, 0, 0));
 		ren.drawMesh(sharedData->legMesh[i], sh, viewProj * legMat, tex);
 	}
 }
@@ -31,8 +33,9 @@ void Sheep::render(Renderer& ren, Shader& sh, Texture& tex, glm::mat4 viewProj)
 void Sheep::update(float deltaTime)
 {
 	UpdateBehavior(deltaTime);
-	UpdateMovement(deltaTime);
+	Move(deltaTime);
 	UpdateAnimation(deltaTime);
+	UpdateWalkingAnimation(deltaTime);
 }
 
 Mob* Sheep::clone()
@@ -60,7 +63,18 @@ void Sheep::UpdateWanderingBehavior(float deltaTime)
 
 void Sheep::UpdateWalkingAnimation(float deltaTime)
 {
-	// Legs move back and forth 
+	// Legs move back and forth
+	// Advance the walk cycle timer
+	pose.walkTime += deltaTime;
+
+	float amplitude = 30.0f; 
+	float speed = 5.0f;      
+
+	// Animate legs with phase offsets for natural movement
+	pose.legRotation[Legs::FL] = amplitude * std::sin(speed * pose.walkTime);
+	pose.legRotation[Legs::BR] = amplitude * std::sin(speed * pose.walkTime);
+	pose.legRotation[Legs::FR] = -amplitude * std::sin(speed * pose.walkTime);
+	pose.legRotation[Legs::BL] = -amplitude * std::sin(speed * pose.walkTime);
 }
 
 void Sheep::UpdateChasingAnimation(float deltaTime)
@@ -76,25 +90,3 @@ void Sheep::UpdateMatingAnimation(float deltaTime)
 void Sheep::CheckStateTransition()
 {
 }
-
-Villager::Villager(SharedModelData* sharedData)
-{
-	this->sharedData = sharedData;
-	this->instanceData.health = 20;
-}
-
-//void Villager::render(Renderer& ren, Shader& sh, Texture& tex, glm::mat4 viewProj)
-//{
-//}
-//
-//void Villager::update(float deltaTime)
-//{
-//}
-//
-//Mob* Villager::clone()
-//{
-//	// shallow copy
-//	Villager* v = new Villager(sharedData);
-//	v->instanceData = this->instanceData;
-//	return v;
-//}

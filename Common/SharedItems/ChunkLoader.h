@@ -44,7 +44,7 @@ class FastNoiseLite;
 class ChunkLoader
 {
 public:
-	ChunkLoader(Renderer& rend, std::shared_ptr<NoiseMaps> noiseMaps);
+	ChunkLoader(Renderer& rend, std::shared_ptr<NoiseMaps> noiseMaps, bool& isReady);
 	~ChunkLoader();
 
 	void Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& viewProj);
@@ -64,7 +64,7 @@ public:
 	
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;
 private:
-	uint8_t VIEW_DISTANCE = 5;
+	uint8_t VIEW_DISTANCE = 6;
 	uint8_t HALF_X = 0;
 	uint8_t HALF_Z = 0;
 	uint8_t HALF_Y = 0;
@@ -72,6 +72,7 @@ private:
 	Renderer& m_Renderer;
 
 	Frustum frustum;
+	bool* m_WorldReady;
 
 	glm::vec3 m_CameraPos, m_CameraDir;
 

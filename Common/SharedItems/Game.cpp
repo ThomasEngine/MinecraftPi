@@ -114,6 +114,7 @@ void Game::Start()
 	mobFactory = new MobFactory(renderer);
 	Mob* sheepPrototype = mobFactory->create("Sheep", {0, 170, 0});
 	sheepPrototype->setPosition(glm::vec3(5, 95, 1));
+	sheepPrototype->SetCollisionSystem(collisionSystem);
 
 	dayTime = 11.9f; // Noon
 
@@ -156,6 +157,7 @@ void Game::Start()
 		glm::mat4 projView = m_Camera.GetViewProjectionMatrix();
 		world->Update(m_Camera.GetDirection(), m_Camera.GetPosition(), projView);
 		m_Player.Update(gameDeltaTime);
+		sheepPrototype->update(gameDeltaTime);
 		// Render
 		Render();
 		
@@ -288,7 +290,7 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 			int blockZ = int(floor(pos.z));
 			if (world->GetBlockAtPosition(glm::vec3(blockX, blockY, blockZ)) != B_AIR)
 			{
-				if (collisionSystem->CehckPlayerToBlock(m_Camera.GetPosition(), lastAirBlock))
+				if (collisionSystem->CehckPlayerToBlock(m_Camera.GetPosition(), lastAirBlock, m_Player.getRect()))
 				{
 					break;
 				}

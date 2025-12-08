@@ -5,11 +5,10 @@ class World;
 class CollisionSystem
 {
 public:
-	bool CheckGridCollision(glm::vec3 PosToCheck);
-	bool CehckPlayerToBlock(const glm::vec3& PlayerPos, const glm::vec3& blockPos);
-	void SetPlayerDimensions(const glm::vec3& dimensions) { m_PlayerDimensions = dimensions; }
+	bool CheckGridCollision(const glm::vec3& PosToCheck, const glm::vec3& Dimensions);
+	bool CehckPlayerToBlock(const glm::vec3& PlayerPos, const glm::vec3& blockPos, const glm::vec3& playerDim);
 	void SetBlockTarget(World& world) { m_TargetWorld = &world; }
 private:
-	glm::vec3 m_PlayerDimensions = { 0.8f, 1.9f, 0.6 }; 
 	World* m_TargetWorld = nullptr;
+	bool m_WorldReady{ false };
 };

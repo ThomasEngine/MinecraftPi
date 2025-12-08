@@ -29,7 +29,7 @@ World::World(Renderer& ren)
 
 
 	m_NoiseMaps = std::make_shared<NoiseMaps>(Continentalness, Erosion, PeaksAndValleys, CaveNoise);
-	m_ChunkLoader = std::make_unique<ChunkLoader>(ren, m_NoiseMaps);
+	m_ChunkLoader = std::make_unique<ChunkLoader>(ren, m_NoiseMaps, isReady);
 }
 
 World::~World()

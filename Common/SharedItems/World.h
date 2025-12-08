@@ -21,6 +21,9 @@ struct NoiseMaps {
 };
 
 constexpr float GRAVITY = 20.f;
+constexpr int MAX_FALL_SPEED = 100;
+constexpr float JUMP_SPEED = 6.5f;
+
 
 
 class ChunkLoader;  
@@ -41,10 +44,13 @@ public:
 
 	glm::vec3 WorldToChunkPos(const glm::vec3& pos) const;
 	glm::ivec3 vec3ToIvec3(const glm::vec3& vec) const;
+
+	bool GetReady() const { return isReady; }
 private:  
 	// List of noise maps
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;
 
 	// Chunk loader  
 	std::unique_ptr<ChunkLoader> m_ChunkLoader;
+	bool isReady{ false };
 };

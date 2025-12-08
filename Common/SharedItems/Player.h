@@ -1,8 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 
-constexpr int MAX_FALL_SPEED = 100;
-constexpr float JUMP_SPEED = 6.5f;
+
 
 
 class CollisionSystem;
@@ -27,6 +26,7 @@ public:
 	void SetMoveSpeed(float s) { m_MovementSpeed = s; }
 	void SetCollisionSystem(CollisionSystem* CS) { m_CS = CS; }
 	Camera* GetCamera() { return m_Camera; }
+	glm::vec3 getRect() const { return m_PlayerRect; }
 
 private:
 	CollisionSystem* m_CS;
@@ -36,6 +36,8 @@ private:
 	float m_MovementSpeed;
 	glm::vec3 m_Vel{ 0.0f, 0.0f, 0.0f };
 	glm::vec3 m_Pos{ 0.0f, 0.0f, 0.0f };
+
+	glm::vec3 m_PlayerRect = { 0.8f, 1.9f, 0.6 };
 
 	void SetPosition(const glm::vec3& pos);
 };

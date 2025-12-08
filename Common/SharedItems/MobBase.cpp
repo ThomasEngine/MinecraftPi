@@ -1,4 +1,6 @@
 #include "MobBase.h"
+#include "World.h"
+#include "CollisionSystem.h"
 
 void Mob::UpdateAnimation(float deltaTime)
 {
@@ -14,6 +16,13 @@ void Mob::UpdateAnimation(float deltaTime)
 	}
 }
 
+void Mob::Move(float deltaTime)
+{
+	UpdateMovement(deltaTime);
+	UpdateYMovement(deltaTime);
+	Jump(deltaTime);
+}
+
 void Mob::moveTo(const glm::vec3& target)
 {
 	instanceData.moveTarget = target;
@@ -21,10 +30,17 @@ void Mob::moveTo(const glm::vec3& target)
 	FindPath(target);
 }
 
+void Mob::Jump(float deltaTime)
+{
+	if (instanceData.onGround)
+	{
+		instanceData.velocity.y = JUMP_SPEED;
+	}
+}
+
 void Mob::FindPath(const glm::vec3& target)
 {
 	instanceData.path.clear();
-	// Simple straight-line path for now
 	instanceData.path.push_back(target);
 	instanceData.pathIndex = 0;
 }
@@ -39,10 +55,30 @@ void Mob::UpdateMovement(float deltaTime)
 			float dist = glm::length(toTarget);
 
 			if (dist > 0.1f) {
+				toTarget.y = 0; // ignore y difference for horizontal movement
 				instanceData.direction = instanceData.lastIndexChecked != instanceData.pathIndex ? glm::normalize(toTarget) : instanceData.direction; // only recalculate direction if mob moved to a new path index
-				instanceData.position += instanceData.direction * instanceData.speed * deltaTime;
+
+				glm::vec3 move = instanceData.direction * instanceData.speed * deltaTime;
+
+				// X axis
+				glm::vec3 tryX = instanceData.position + glm::vec3(move.x, 0, 0);
+				bool blockedX = m_CS->CheckGridCollision(tryX, sharedData->hitbox);
+				if (!blockedX)
+					instanceData.position.x += move.x;
+
+				// Z axis
+				glm::vec3 tryZ = instanceData.position + glm::vec3(0, 0, move.z);
+				bool blockedZ = m_CS->CheckGridCollision(tryZ, sharedData->hitbox);
+				if (!blockedZ)
+					instanceData.position.z += move.z;
+
+				// If both are blocked try jumping
+				glm::vec3 above = instanceData.position + glm::vec3(0, 1.0f, 0) + instanceData.direction;
+				if (!m_CS->CheckGridCollision(above, sharedData->hitbox)) {
+					Jump(deltaTime);
+				}
 				instanceData.lastIndexChecked = instanceData.pathIndex;
-				break; 
+				break;
 			}
 			else {
 				instanceData.pathIndex++;
@@ -54,6 +90,27 @@ void Mob::UpdateMovement(float deltaTime)
 			instanceData.pathIndex = 0;
 			instanceData.path.clear();
 		}
+	}
+}
+
+void Mob::UpdateYMovement(float deltaTime)
+{
+	instanceData.velocity.y -= GRAVITY * deltaTime;
+	if (instanceData.velocity.y > MAX_FALL_SPEED) instanceData.velocity.y = MAX_FALL_SPEED;
+
+	glm::vec3 newPos = instanceData.position;
+	float changeY = instanceData.velocity.y * deltaTime;
+	newPos.y += changeY;
+
+	if (!m_CS->CheckGridCollision(newPos, sharedData->hitbox))
+	{
+		instanceData.onGround = false;
+		instanceData.position = newPos;
+	}
+	else
+	{
+		instanceData.onGround = true;
+		instanceData.velocity.y = 0;
 	}
 }
 

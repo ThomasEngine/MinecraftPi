@@ -9,6 +9,7 @@ struct SheepPose {
 	float headRotation;
 	glm::vec3 legPos[4], legScale[4];
 	float legRotation[4];
+	float walkTime;
 };
 
 class Sheep : public Mob {
