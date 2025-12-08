@@ -18,7 +18,7 @@ public:
 	void render(Renderer&, Shader&, Texture&, glm::mat4 viewProj) override;
 	void update(float deltaTime) override;
 	Mob* clone() override;
-	
+		
 private:
 	SheepPose pose;
 
@@ -27,6 +27,10 @@ private:
 	void UpdateWanderingBehavior(float deltaTime) override;
 
 	void UpdateWalkingAnimation(float deltaTime) override;
+	void UpdateIdleAnimation(float deltaTime) override;
+	void UpdateRunningAnimation(float deltaTime) override;
+
+	void UpdateWanderingAnimation(float deltaTime) override;
 	void UpdateChasingAnimation(float deltaTime) override;
 	void UpdateMatingAnimation(float deltaTime) override;
 

@@ -10,6 +10,7 @@ struct SharedModelData
 	Mesh headMesh;
 	Mesh legMesh[4]; 
 	glm::vec3 hitbox;
+	glm::vec3 legTopPosition[4];
 };
 
 enum Legs {
@@ -25,9 +26,16 @@ enum AiState {
 	Mating
 };
 
+enum WalkingState {
+	Idle,
+	Walking,
+	Running
+};
+
 struct InstanceData {
 	glm::vec3 position;
 	AiState aiState;
+	WalkingState walkState;
 	uint8_t health;
 	glm::vec3 direction;
 	glm::vec3 velocity;
@@ -38,6 +46,8 @@ struct InstanceData {
 	uint8_t pathIndex = 0;
 	uint8_t lastIndexChecked = 0;
 	bool onGround = true;
+	float timer = 0.0f;
+	float waitTime = 5.0f;
 };
 
 class Mob {
@@ -62,6 +72,10 @@ public:
 	virtual void UpdateMatingBehavior(float deltaTime) = 0;
 
 	virtual void UpdateWalkingAnimation(float deltaTime) = 0;
+	virtual void UpdateRunningAnimation(float deltaTime) = 0;
+	virtual void UpdateIdleAnimation(float deltaTime) = 0;
+
+	virtual void UpdateWanderingAnimation(float deltaTime) = 0;
 	virtual void UpdateChasingAnimation(float deltaTime) = 0;
 	virtual void UpdateMatingAnimation(float deltaTime) = 0;
 
@@ -70,6 +84,7 @@ public:
 protected:
 	CollisionSystem* m_CS;
 
+	void GetRandomWanderTarget();
 	void FindPath(const glm::vec3& target);
 
 	void UpdateBehavior(float deltaTime);

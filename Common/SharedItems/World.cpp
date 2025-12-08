@@ -1,5 +1,7 @@
 #include "World.h"
 #include "ChunkLoader.h" 
+#include <ctime> 
+
 
 World::World(Renderer& ren)
 {
@@ -27,6 +29,7 @@ World::World(Renderer& ren)
     CaveNoise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
     CaveNoise.SetFrequency(0.02f);
 
+    srand(std::time(nullptr));
 
 	m_NoiseMaps = std::make_shared<NoiseMaps>(Continentalness, Erosion, PeaksAndValleys, CaveNoise);
 	m_ChunkLoader = std::make_unique<ChunkLoader>(ren, m_NoiseMaps, isReady);

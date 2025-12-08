@@ -75,7 +75,13 @@ namespace {
 		ren.uploadMesh(sheepModel.legMesh[Legs::BL]);
 		ren.uploadMesh(sheepModel.legMesh[Legs::BR]);
 
-		sheepModel.hitbox = glm::vec3(0.9f, 1.4f, 1.3f);
+		// Leg origin
+		sheepModel.legTopPosition[Legs::FL] = glm::vec3(-0.25f, 0.4f, 0.5f);
+		sheepModel.legTopPosition[Legs::FR] = glm::vec3(0.5f, 0.4f, 0.5f);
+		sheepModel.legTopPosition[Legs::BL] = glm::vec3(-0.25f, 0.4f, -0.5f);
+		sheepModel.legTopPosition[Legs::BR] = glm::vec3(0.25f, 0.4f, -0.5f);
+
+		sheepModel.hitbox = glm::vec3(0.9f, 0.f, 1.3f);
 	}
 
 	Mesh LoadVillagerModel(Renderer& ren) {

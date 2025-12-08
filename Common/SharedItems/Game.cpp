@@ -145,8 +145,6 @@ void Game::Start()
 		}
 		ClearScreen();
 		//Update and Draw your game here
-
-
 	
 		// Updates
 		Update(gameDeltaTime);
@@ -170,7 +168,7 @@ void Game::Start()
 		gui->NewFrame();
 		gui->Window(averageFPS, moveSpeed, dayTime);
 		gui->Render();
-		printf("Average FPS: %.2f\r", averageFPS);
+		//printf("Avera/e FPS: %.2f\r", averageFPS);
 
 		graphics->SwapBuffer();
 		lastTime = time;

@@ -6,10 +6,13 @@ void Mob::UpdateAnimation(float deltaTime)
 {
 	switch (instanceData.aiState) {
 	case AiState::Chasing:
+		UpdateChasingAnimation(deltaTime);
 		break;
 	case AiState::Wandering:
+		UpdateWanderingAnimation(deltaTime);
 		break;
 	case AiState::Mating:
+		UpdateMatingAnimation(deltaTime);
 		break;
 	default:
 		break;
@@ -20,7 +23,6 @@ void Mob::Move(float deltaTime)
 {
 	UpdateMovement(deltaTime);
 	UpdateYMovement(deltaTime);
-	Jump(deltaTime);
 }
 
 void Mob::moveTo(const glm::vec3& target)
@@ -45,6 +47,14 @@ void Mob::FindPath(const glm::vec3& target)
 	instanceData.pathIndex = 0;
 }
 
+void Mob::GetRandomWanderTarget()
+{
+    float offsetX = float(rand() % 11 - 5);
+    float offsetZ = float(rand() % 11 - 5);
+    glm::vec3 randomTarget = instanceData.position + glm::vec3(offsetX, 0, offsetZ);
+    moveTo(randomTarget);
+}
+
 void Mob::UpdateMovement(float deltaTime)
 {
 	if (instanceData.hasMovetarget && !instanceData.path.empty() && instanceData.pathIndex < instanceData.path.size())
@@ -52,12 +62,13 @@ void Mob::UpdateMovement(float deltaTime)
 		while (instanceData.pathIndex < instanceData.path.size()) {
 			glm::vec3 moveTarget = instanceData.path[instanceData.pathIndex];
 			glm::vec3 toTarget = moveTarget - instanceData.position;
+			toTarget.y = 0; // ignore y difference for horizontal movement
 			float dist = glm::length(toTarget);
+			printf("Dist %.2f\n", dist);
 
-			if (dist > 0.1f) {
-				toTarget.y = 0; // ignore y difference for horizontal movement
-				instanceData.direction = instanceData.lastIndexChecked != instanceData.pathIndex ? glm::normalize(toTarget) : instanceData.direction; // only recalculate direction if mob moved to a new path index
-
+			if (dist > 0.2f) {
+				//instanceData.direction = instanceData.lastIndexChecked != instanceData.pathIndex ? toTarget / dist : instanceData.direction; // only recalculate direction if mob moved to a new path index
+				instanceData.direction = toTarget / dist;
 				glm::vec3 move = instanceData.direction * instanceData.speed * deltaTime;
 
 				// X axis
@@ -73,10 +84,18 @@ void Mob::UpdateMovement(float deltaTime)
 					instanceData.position.z += move.z;
 
 				// If both are blocked try jumping
-				glm::vec3 above = instanceData.position + glm::vec3(0, 1.0f, 0) + instanceData.direction;
-				if (!m_CS->CheckGridCollision(above, sharedData->hitbox)) {
-					Jump(deltaTime);
+				if (blockedX || blockedZ) {
+					glm::vec3 above = instanceData.position + glm::vec3(0, 1.0f, 0) + instanceData.direction;
+					if (!m_CS->CheckGridCollision(above, sharedData->hitbox)) {
+						Jump(deltaTime);
+					}
+					else
+					{
+						if (instanceData.aiState == AiState::Wandering)
+							GetRandomWanderTarget();
+					}
 				}
+	
 				instanceData.lastIndexChecked = instanceData.pathIndex;
 				break;
 			}
@@ -119,10 +138,13 @@ void Mob::UpdateBehavior(float deltaTime)
 {
 	switch (instanceData.aiState) {
 	case AiState::Chasing:
+		UpdateChasingBehavior(deltaTime);
 		break;
 	case AiState::Wandering:
+		UpdateWanderingBehavior(deltaTime);
 		break;
 	case AiState::Mating:
+		UpdateMatingBehavior(deltaTime);
 		break;
 	default:
 		break;

@@ -173,32 +173,18 @@ void ChunkLoader::ProccessChunkLoadingAsync(Renderer& renderer)
             task.chunk->ApplySunlight(*this);
             task.pendingSunlightFill = false;
             task.pendingMesh = true;
-			return;
+            return;
         }
         else if (task.pendingMesh && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
             task.chunk->createChunkMesh(renderer, *this);
             count++;
-            printf("Mesh %d\n", count);
+            //printf("Mesh %d\n", count);
             task.pendingMesh = false;
-			if (task.renderReady) 			  
-                task.reloaded = true;
-			else
-			    task.renderReady = true;
+            task.reloaded = true;
+			task.renderReady = true;
             return;
         }
     }
-
-    //if (m_ChunksToLoad.empty()) {
-    //    std::vector<glm::ivec3> finishedChunks;
-    //    for (auto& pair : m_ChunkLoadTasks) {
-    //        if (pair.second.renderReady && !pair.second.reloaded) {
-    //            finishedChunks.push_back(pair.first);
-    //        }
-    //    }
-    //    for (const auto& pos : finishedChunks) {
-    //        ReloadNeighborChunks(pos);
-    //    }
-    //}
 }
 
 void ChunkLoader::ProcessChunkLoading(Renderer& renderer)  
