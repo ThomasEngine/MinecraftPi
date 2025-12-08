@@ -112,9 +112,18 @@ void Game::Start()
 
 	Initialize();
 	mobFactory = new MobFactory(renderer);
-	Mob* sheepPrototype = mobFactory->create("Sheep", {0, 170, 0});
-	sheepPrototype->setPosition(glm::vec3(5, 95, 1));
-	sheepPrototype->SetCollisionSystem(collisionSystem);
+	std::vector<Mob*> mobs;
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			Mob* sheepPrototype = mobFactory->create("Sheep", { 0, 170, 0 });
+			sheepPrototype->setPosition(glm::vec3(-j, 95, i));
+			sheepPrototype->SetCollisionSystem(collisionSystem);
+			mobs.push_back(sheepPrototype);
+		}
+	}
+
 
 	dayTime = 11.9f; // Noon
 
@@ -155,12 +164,29 @@ void Game::Start()
 		glm::mat4 projView = m_Camera.GetViewProjectionMatrix();
 		world->Update(m_Camera.GetDirection(), m_Camera.GetPosition(), projView);
 		m_Player.Update(gameDeltaTime);
-		sheepPrototype->update(gameDeltaTime);
 		// Render
 		Render();
 		
 		world->Draw(projView, shader, *testTex);
-		sheepPrototype->render(renderer, shader, *testTex, m_Camera.GetViewProjectionMatrix());
+			
+		// 20 tik update mobs
+		static float mobUpdateTimer = 0.f;
+		mobUpdateTimer += gameDeltaTime;
+		if (mobUpdateTimer >= 0.05f)
+		{
+			for (auto& mob : mobs)
+			{
+				mob->update(mobUpdateTimer, m_Player.GetCamera()->GetPosition());
+			}
+			mobUpdateTimer = 0.f;
+		}
+
+		for (auto& mob : mobs)
+		{
+			mob->UpdateAnimation(gameDeltaTime);
+			mob->render(renderer, shader, *testTex, m_Camera.GetViewProjectionMatrix());
+		}
+
 
 
 		// Post Render

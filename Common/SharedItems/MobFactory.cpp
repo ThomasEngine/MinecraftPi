@@ -105,7 +105,7 @@ void InitializeMobPrototypes(MobPrototypeRegistry& registry, Renderer& ren)
 {
 	SharedModelData* sheepModel = new SharedModelData();
 	LoadSheepModel(ren, *sheepModel);
-	registry.registerPrototype("Sheep", new Sheep(sheepModel));
+	registry.registerPrototype("Sheep", new FourlegMob(sheepModel));
 
 
 	//SharedModelData* villagerModel = new SharedModelData();

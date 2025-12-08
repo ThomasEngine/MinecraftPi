@@ -17,8 +17,8 @@ uniform float u_CellWidth;
 uniform float u_CellHeight;
 uniform float u_DayTime;
 
-float near = 40.0f;                    
-float far = 90.0f;      
+float near = 120.0f;                    
+float far = 160.0f;      
 
 void main()
 {

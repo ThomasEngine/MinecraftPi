@@ -87,21 +87,4 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Common\Assets\Basic.shader" />
-    <None Include="Common\Assets\basicpi.shader" />
-    <None Include="Common\Assets\Ins.shader" />
-    <None Include="Common\SharedItems\Assets\Basic.shader" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Common\Assets\minecraftAtlas.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Common\Assets\MinecraftTex.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Common\SharedItems\Assets\minecraftAtlas.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-  </ItemGroup>
 </Project>

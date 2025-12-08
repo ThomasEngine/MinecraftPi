@@ -3,7 +3,6 @@
 #include "GLM/glm.hpp"
 #include "CollisionSystem.h"
 
-// Data for living entitys like players, mobs, villagers, etc.
 struct SharedModelData
 {
 	Mesh bodyMesh;
@@ -32,6 +31,29 @@ enum WalkingState {
 	Running
 };
 
+class PoseBase {
+public:
+	glm::vec3 bodyPos, bodyScale;
+	glm::vec3 headPos, headScale;
+	float headRotation;
+	glm::vec3 legPos[4], legScale[4];
+	float legRotation[4];
+	float walkTime;
+	float bodyRotation;
+
+	virtual void walkingAnimation(float deltaTime) = 0;
+	virtual void idleAnimation(float deltaTime) = 0;
+	virtual void updateHeadMovement(float deltaTime, const glm::vec3& playerPos);
+	virtual void updateBodyRotation(float targetAngle);
+};
+
+class AllFourAnimations : public PoseBase {
+public:
+	void walkingAnimation(float deltaTime) override;
+	void idleAnimation(float deltaTime) override;
+
+};
+
 struct InstanceData {
 	glm::vec3 position;
 	AiState aiState;
@@ -56,7 +78,7 @@ public:
     InstanceData instanceData;
 
     virtual void render(Renderer&, Shader&, Texture&, glm::mat4 viewProj) = 0;
-	virtual void update(float deltaTime) = 0;
+	virtual void update(float deltaTime, const glm::vec3& playerPos) = 0;
 
     virtual Mob* clone() = 0;
 	void setPosition(const glm::vec3& pos) {
@@ -71,24 +93,21 @@ public:
 	virtual void UpdateChasingBehavior(float deltaTime) = 0;
 	virtual void UpdateMatingBehavior(float deltaTime) = 0;
 
-	virtual void UpdateWalkingAnimation(float deltaTime) = 0;
-	virtual void UpdateRunningAnimation(float deltaTime) = 0;
-	virtual void UpdateIdleAnimation(float deltaTime) = 0;
-
-	virtual void UpdateWanderingAnimation(float deltaTime) = 0;
-	virtual void UpdateChasingAnimation(float deltaTime) = 0;
-	virtual void UpdateMatingAnimation(float deltaTime) = 0;
+	virtual void UpdateWanderingAnimation(float deltaTime);
+	virtual void UpdateChasingAnimation(float deltaTime);
+	virtual void UpdateMatingAnimation(float deltaTime);
 
 	virtual void CheckStateTransition() = 0;
 	void SetCollisionSystem(CollisionSystem* cs) { m_CS = cs; }
+	void UpdateAnimation(float deltaTime);
 protected:
 	CollisionSystem* m_CS;
+	PoseBase* pose;
 
 	void GetRandomWanderTarget();
 	void FindPath(const glm::vec3& target);
 
-	void UpdateBehavior(float deltaTime);
-	void UpdateAnimation(float deltaTime);
+	void UpdateBehavior(float deltaTime, const glm::vec3& playerPos);
 
 private:
 

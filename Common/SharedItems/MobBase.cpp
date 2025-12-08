@@ -1,23 +1,9 @@
 #include "MobBase.h"
 #include "World.h"
 #include "CollisionSystem.h"
+#include <cmath>
+#include <algorithm> 
 
-void Mob::UpdateAnimation(float deltaTime)
-{
-	switch (instanceData.aiState) {
-	case AiState::Chasing:
-		UpdateChasingAnimation(deltaTime);
-		break;
-	case AiState::Wandering:
-		UpdateWanderingAnimation(deltaTime);
-		break;
-	case AiState::Mating:
-		UpdateMatingAnimation(deltaTime);
-		break;
-	default:
-		break;
-	}
-}
 
 void Mob::Move(float deltaTime)
 {
@@ -49,8 +35,8 @@ void Mob::FindPath(const glm::vec3& target)
 
 void Mob::GetRandomWanderTarget()
 {
-    float offsetX = float(rand() % 11 - 5);
-    float offsetZ = float(rand() % 11 - 5);
+    float offsetX = float(rand() % 15 - 7);
+    float offsetZ = float(rand() % 15 - 7);
     glm::vec3 randomTarget = instanceData.position + glm::vec3(offsetX, 0, offsetZ);
     moveTo(randomTarget);
 }
@@ -64,7 +50,6 @@ void Mob::UpdateMovement(float deltaTime)
 			glm::vec3 toTarget = moveTarget - instanceData.position;
 			toTarget.y = 0; // ignore y difference for horizontal movement
 			float dist = glm::length(toTarget);
-			printf("Dist %.2f\n", dist);
 
 			if (dist > 0.2f) {
 				//instanceData.direction = instanceData.lastIndexChecked != instanceData.pathIndex ? toTarget / dist : instanceData.direction; // only recalculate direction if mob moved to a new path index
@@ -134,8 +119,9 @@ void Mob::UpdateYMovement(float deltaTime)
 }
 
 
-void Mob::UpdateBehavior(float deltaTime)
+void Mob::UpdateBehavior(float deltaTime, const glm::vec3& playerPos)
 {
+	pose->updateHeadMovement(deltaTime, playerPos);
 	switch (instanceData.aiState) {
 	case AiState::Chasing:
 		UpdateChasingBehavior(deltaTime);
@@ -148,5 +134,116 @@ void Mob::UpdateBehavior(float deltaTime)
 		break;
 	default:
 		break;
+	}
+}
+
+void Mob::UpdateAnimation(float deltaTime)
+{
+	switch (instanceData.aiState) {
+	case AiState::Chasing:
+		UpdateChasingAnimation(deltaTime);
+		break;
+	case AiState::Wandering:
+		UpdateWanderingAnimation(deltaTime);
+		break;
+	case AiState::Mating:
+		UpdateMatingAnimation(deltaTime);
+		break;
+	default:
+		break;
+	}
+}
+
+void Mob::UpdateWanderingAnimation(float deltaTime)
+{
+	switch (instanceData.walkState) {
+	case WalkingState::Walking:
+		pose->walkingAnimation(deltaTime);
+		break;
+	case WalkingState::Idle:
+		pose->idleAnimation(deltaTime);
+		break;
+	case WalkingState::Running:
+		pose->walkingAnimation(deltaTime * 2);
+		break;
+
+	}
+}
+
+void Mob::UpdateChasingAnimation(float deltaTime)
+{
+}
+
+void Mob::UpdateMatingAnimation(float deltaTime)
+{
+}
+
+// All fourse animation
+
+void AllFourAnimations::walkingAnimation(float deltaTime)
+{
+	walkTime += deltaTime;
+
+	float amplitude = 30.0f;
+	float speed = 5.0f;
+	float headSpeed = 0.1f;
+	// Animate legs with phase offsets for natural movement
+	legRotation[Legs::FL] = amplitude * std::sin(speed * walkTime);
+	legRotation[Legs::BR] = amplitude * std::sin(speed * walkTime);
+	legRotation[Legs::FR] = -amplitude * std::sin(speed * walkTime);
+	legRotation[Legs::BL] = -amplitude * std::sin(speed * walkTime);
+}
+
+void AllFourAnimations::idleAnimation(float deltaTime)
+{
+	walkTime += deltaTime;
+
+	float amplitude = 30.0f;
+	float speed = 5.0f;
+
+
+	walkTime += deltaTime;
+
+	float relaxSpeed = 120.0f * deltaTime; 
+	for (int i = 0; i < 4; ++i) {
+		if (std::fabs(legRotation[i]) > 1.0f) {
+			if (legRotation[i] > 0.0f) 
+				legRotation[i] = std::max(0.0f, legRotation[i] - relaxSpeed);
+			else
+				legRotation[i] = std::min(0.0f, legRotation[i] + relaxSpeed);
+		}
+		else {
+			legRotation[i] = 0.0f;
+		}
+	}
+
+
+}
+
+void PoseBase::updateHeadMovement(float targetAngle, const glm::vec3& playerPos)
+{
+	float headSpeed = 1.0f;
+	headRotation = 15.0f * std::sin(headSpeed * walkTime);
+
+	// Sometimes look at player
+
+
+}
+
+void PoseBase::updateBodyRotation(float targetAngle)
+{
+	float angleDiff = targetAngle - bodyRotation;
+	if (fabs(angleDiff) > 0.05f)
+	{
+		// Smoothly rotate towards targetAngle
+		float turnSpeed = 0.1;
+		if (angleDiff > 0)
+			bodyRotation += std::min(angleDiff, turnSpeed);
+		else
+			bodyRotation += std::max(angleDiff, -turnSpeed);
+	}
+	else
+	{
+		bodyRotation = targetAngle;
 	}
 }

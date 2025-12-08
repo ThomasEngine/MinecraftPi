@@ -173,7 +173,7 @@ void ChunkLoader::ProccessChunkLoadingAsync(Renderer& renderer)
             task.chunk->ApplySunlight(*this);
             task.pendingSunlightFill = false;
             task.pendingMesh = true;
-            return;
+            //return;
         }
         else if (task.pendingMesh && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
             task.chunk->createChunkMesh(renderer, *this);
