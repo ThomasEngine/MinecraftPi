@@ -113,9 +113,9 @@ void Game::Start()
 	Initialize();
 	mobFactory = new MobFactory(renderer);
 	std::vector<Mob*> mobs;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 5; i++)
 	{
-		for (int j = 0; j < 3; j++)
+		for (int j = 0; j < 5; j++)
 		{
 			Mob* sheepPrototype = mobFactory->create("Sheep", { 0, 170, 0 });
 			sheepPrototype->setPosition(glm::vec3(-j, 95, i));
@@ -169,21 +169,9 @@ void Game::Start()
 		
 		world->Draw(projView, shader, *testTex);
 			
-		// 20 tik update mobs
-		static float mobUpdateTimer = 0.f;
-		mobUpdateTimer += gameDeltaTime;
-		if (mobUpdateTimer >= 0.05f)
-		{
-			for (auto& mob : mobs)
-			{
-				mob->update(mobUpdateTimer, m_Player.GetCamera()->GetPosition());
-			}
-			mobUpdateTimer = 0.f;
-		}
-
 		for (auto& mob : mobs)
 		{
-			mob->UpdateAnimation(gameDeltaTime);
+			mob->update(gameDeltaTime, m_Player.GetCamera()->GetPosition());
 			mob->render(renderer, shader, *testTex, m_Camera.GetViewProjectionMatrix());
 		}
 

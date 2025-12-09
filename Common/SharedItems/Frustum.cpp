@@ -23,8 +23,7 @@ bool Frustum::BoxInFrustum(const glm::vec3& center, float halfX, float halfY, fl
         float x = p.x >= 0 ? center.x + halfX : center.x - halfX;
         float y = p.y >= 0 ? center.y + halfY : center.y - halfY;
         float z = p.z >= 0 ? center.z + halfZ : center.z - halfZ;
-        // If the positive vertex is outside, the box is outside
-        if (p.x * x + p.y * y + p.z * z + p.w < 0)
+		if (p.x * x + p.y * y + p.z * z + p.w < 0) // dot cull
             return false;
     }
     return true;

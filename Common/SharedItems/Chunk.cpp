@@ -104,8 +104,9 @@ void Chunk::NeigbourVoxelQueue(int x, int y, int z, ChunkLoader& owner)
 
 void Chunk::GenerateTerrain(ChunkLoader & owner)
 {
+	//blocks.reserve(CHUNKSIZE * sizeof(Voxel));
     blocks.resize(CHUNKSIZE, { 0,0 });
-    //memset(blocks, 0, sizeof(blocks));
+	//blocks.reserve(CHUNKSIZE, { 0,0 });
     for (int x = 0; x < CHUNK_SIZE_X; ++x) {
         for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
             // World coordinates

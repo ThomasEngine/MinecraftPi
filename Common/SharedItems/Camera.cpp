@@ -9,7 +9,7 @@ Camera::Camera(int w, int h)
     m_proj(1.0f),
     m_isPerspective(true)
 {
-    float fov = 90.f;
+    float fov = 80.f;
     float aspect = w > 0 ? (float)w / (float)h : 1.0f;
     float nearPlane = 0.1f;
     float farPlane = 4000.f;

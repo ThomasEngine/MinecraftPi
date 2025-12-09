@@ -52,7 +52,7 @@ void FourlegMob::update(float deltaTime, const glm::vec3& playerPos)
 {
 	UpdateBehavior(deltaTime, playerPos);
 	Move(deltaTime);
-	//UpdateAnimation(deltaTime);
+	UpdateAnimation(deltaTime);
 }
 
 Mob* FourlegMob::clone()
