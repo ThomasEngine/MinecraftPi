@@ -47,18 +47,16 @@ public:
     Renderer();
     ~Renderer();
 
-    // Initialize with an already created GLFW window (GL context current)
     bool init();
     void shutdown();
 
     void beginFrame();
     void endFrame();
 
-    // Mesh helpers
-    //Mesh uploadMesh(const std::vector<FaceVertex>& vertexData, const std::vector<unsigned int>& indices);
+	Mesh createCubeMesh();
+
     void uploadMesh(Mesh& mesh);
     void destroyMesh(Mesh& m);
 
-    // Draw
-    void drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, const Texture& texture);
+    void drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, const Texture& texture, GLenum primitiveType = GL_TRIANGLES);
 };

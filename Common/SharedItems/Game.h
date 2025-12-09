@@ -5,6 +5,7 @@
 #include <memory>
 #include "Player.h"
 #include "Camera.h"
+#include "OnBlock.h"
 
 
 #ifdef WINDOWS_BUILD
@@ -31,8 +32,8 @@ class World;
 class MobFactory;
 enum class Key;
 
-constexpr unsigned int WINDOW_WIDTH = 1920;
-constexpr unsigned int WINDOW_HEIGHT = 1080;
+constexpr unsigned int WINDOW_WIDTH = 854;
+constexpr unsigned int WINDOW_HEIGHT = 480;
 constexpr float ASPECT_RATIO = WINDOW_WIDTH / WINDOW_HEIGHT;
 
 class Game
@@ -63,6 +64,7 @@ private:
 	void ClearScreen();
 
 	Camera m_Camera;
+	OnBlock* m_OnBlock;
 	World* world;
 	Player m_Player;
 	MobFactory* mobFactory = nullptr;

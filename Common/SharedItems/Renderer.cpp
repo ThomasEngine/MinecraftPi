@@ -60,45 +60,6 @@ void Renderer::beginFrame() {
 void Renderer::endFrame() {
 }
 
-
-//Mesh Renderer::uploadMesh(const std::vector<FaceVertex>& vertexData, const std::vector<unsigned int>& indices) {
-//    Mesh m;
-//    m.indexCount = static_cast<GLsizei>(indices.size());
-//    GLCall(glGenVertexArrays(1, &m.vao));
-//    glBindVertexArray(m.vao);
-//
-//    glGenBuffers(1, &m.vbo);
-//    glBindBuffer(GL_ARRAY_BUFFER, m.vbo);
-//    glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(FaceVertex), vertexData.data(), GL_STATIC_DRAW);
-//
-//    glGenBuffers(1, &m.ibo);
-//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m.ibo);
-//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
-//
-//    // Attribute 0: position (vec3)
-//    glEnableVertexAttribArray(0);
-//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(FaceVertex), (const void*)offsetof(FaceVertex, pos));
-//    // Attribute 1: texcoord (vec2)
-//    glEnableVertexAttribArray(1);
-//    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(FaceVertex), (const void*)offsetof(FaceVertex, tex));
-//    // Attribute 2: cellX
-//    glEnableVertexAttribArray(2);
-//    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(FaceVertex), (const void*)offsetof(FaceVertex, cellX));
-//    // Attribute 3: cellY
-//    glEnableVertexAttribArray(3);
-//    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(FaceVertex), (const void*)offsetof(FaceVertex, cellY));
-//
-//	// Attribute 4: light
-//	glEnableVertexAttribArray(4);
-//	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(FaceVertex), (const void*)offsetof(FaceVertex, light));
-//
-//
-//    glBindVertexArray(0);
-//    glBindBuffer(GL_ARRAY_BUFFER, 0);
-//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-//    return m;
-//}
-
 void Renderer::uploadMesh(Mesh& m)
 {
     m.indexCount = static_cast<GLsizei>(m.indices.size());
@@ -143,7 +104,7 @@ void Renderer::destroyMesh(Mesh& m) {
     m.indexCount = 0;
 }
 
-void Renderer::drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, const Texture& texture) {
+void Renderer::drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, const Texture& texture, GLenum primitiveType) {
     GLuint program = sh.GetID();
     GLuint tex = texture.GetID();
     if (m.vao == 0 || m.indexCount == 0 || program == 0)
@@ -160,7 +121,7 @@ void Renderer::drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, c
     }
 
     glBindVertexArray(m.vao);
-    glDrawElements(GL_TRIANGLES, m.indexCount, GL_UNSIGNED_INT, 0);
+    glDrawElements(primitiveType, m.indexCount, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
     glUseProgram(0);
 }

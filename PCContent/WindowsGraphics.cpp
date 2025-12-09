@@ -33,7 +33,7 @@ WindowsGraphics::WindowsGraphics()
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 //	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
 	// Creates the window.
-	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "PC Based OpenGLES", NULL, NULL);
+	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Minecraft", NULL, NULL);
 
 	// Error handling for if window creation failed.
 	if (window == NULL)
@@ -44,7 +44,7 @@ WindowsGraphics::WindowsGraphics()
 	
 	// Set the window to be the current context.
 	glfwMakeContextCurrent(window);
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Error handling for if GLAD failed to initialize.
 	if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress))

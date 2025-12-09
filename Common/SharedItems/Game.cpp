@@ -16,6 +16,7 @@
 #include "Renderer.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "OnBlock.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
@@ -128,7 +129,7 @@ void Game::Start()
 	dayTime = 11.9f; // Noon
 
 	gui = new Gui(&m_Player, world);
-	
+	m_OnBlock = new OnBlock(renderer);
 
 #ifdef WINDOWS_BUILD
 	gui->SetupPc(&graphics->GetWindow());
@@ -175,7 +176,7 @@ void Game::Start()
 			mob->render(renderer, shader, *testTex, m_Camera.GetViewProjectionMatrix());
 		}
 
-
+		m_OnBlock->Render(renderer, m_Camera.GetViewProjectionMatrix(), *testTex);
 
 		// Post Render
 		PostRender();
@@ -260,9 +261,8 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 		blockTimer += deltaTime;
 	if (blockTimer >= .2f)
 		canBreakBlock = true;
-
-	// Break blocks
-	if (mouse.GetButtonDown(MouseButtons::LEFT) && canBreakBlock)
+	glm::ivec3 blockPosRayOutline{ -1, -1, -1 };
+	// Ray
 	{
 		glm::vec3 camPos = cam.GetPosition();
 		camPos.y += .95f; // m_Camera height offset
@@ -277,13 +277,24 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 			int blockZ = int(floor(pos.z));
 			if (world->GetBlockAtPosition(glm::vec3(blockX, blockY, blockZ)) != 0) // 0 == air
 			{
-				world->RemoveBlockAtPosition(glm::vec3(blockX, blockY, blockZ));
-				canBreakBlock = false;
-				blockTimer = 0;
+				blockPosRayOutline = glm::ivec3(blockX, blockY, blockZ);
+				m_OnBlock->Update(gameDeltaTime, blockPosRayOutline);
+				if (mouse.GetButtonDown(MouseButtons::LEFT) && canBreakBlock)
+				{
+					world->RemoveBlockAtPosition(glm::vec3(blockX, blockY, blockZ));
+					canBreakBlock = false;
+					blockTimer = 0;
+				}
 				break;
+			}
+			else
+			{
+				blockPosRayOutline = glm::ivec3(-1, -1, -1);
+				m_OnBlock->Update(gameDeltaTime, glm::ivec3(-1));
 			}
 		}
 	}
+	printf("Block Position Outline: [%d, %d, %d]       \r", blockPosRayOutline.x, blockPosRayOutline.y, blockPosRayOutline.z);
 
 	// Place blocks
 	if (mouse.GetButtonDown(MouseButtons::RIGHT) && canBreakBlock)

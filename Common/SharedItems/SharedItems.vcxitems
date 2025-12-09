@@ -31,6 +31,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)gui.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ICommand.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MobFactory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)OnBlock.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Player.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Renderer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Shader.h" />
@@ -53,6 +54,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Mesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MobBase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MobFactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)OnBlock.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Player.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Renderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Shader.cpp" />
@@ -66,6 +68,7 @@
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03.mtl" />
     <None Include="$(MSBuildThisFileDirectory)Assets\Basic.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\basicpi.shader" />
+    <None Include="$(MSBuildThisFileDirectory)Assets\OnBlock.shader" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.obj">
