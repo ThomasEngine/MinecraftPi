@@ -27,6 +27,18 @@ void WindowsGraphics::ToggleCurser()
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 }
+int WindowsGraphics::GetWindowWidth() const
+{
+	int width;
+	glfwGetWindowSize(window, &width, nullptr);
+	return width;
+}
+int WindowsGraphics::GetWindowHeight() const
+{
+	int height;
+	glfwGetWindowSize(window, nullptr, &height);
+	return height;
+}
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);

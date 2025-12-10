@@ -20,6 +20,24 @@ void RaspGraphics::SwapBuffer()
 	eglSwapBuffers(state.display, state.surface);
 }
 
+int RaspGraphics::GetWindowWidth() const
+{
+	int height;
+	int width;
+	EGLState state = window->GetState();
+	eglQuerySurface(state.display, state.surface, &width, &height);
+	return width;
+}
+
+int RaspGraphics::GetWindowHeight() const
+{
+	int height;
+	int width;
+	EGLState state = window->GetState();
+	eglQuerySurface(state.display, state.surface, &width, &height);
+	return height;
+}
+
 XWindow& RaspGraphics::Window() const
 {
 	return *window;

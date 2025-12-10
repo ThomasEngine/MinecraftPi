@@ -22,6 +22,8 @@ public:
 	GLFWwindow& GetWindow() override { return Window(); }
 	GLFWwindow& Window() const;
 	void ToggleCurser();
+	int GetWindowWidth() const override;
+	int GetWindowHeight() const override;
 
 
 private:

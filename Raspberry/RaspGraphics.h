@@ -12,7 +12,10 @@ public:
 
 	void Quit() override;
 
-	void SwapBuffer() override; // 
+	void SwapBuffer() override;
+	int GetWindowWidth() const override;
+	int GetWindowHeight() const override;
+
 
 	XWindow& Window() const;
 

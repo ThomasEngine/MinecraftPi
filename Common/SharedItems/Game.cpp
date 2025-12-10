@@ -176,7 +176,7 @@ void Game::Start()
 		glm::mat4 projView = m_Camera.GetViewProjectionMatrix();
 		world->Update(m_Camera.GetDirection(), m_Camera.GetPosition(), projView);
 		m_Player.Update(gameDeltaTime);
-		crosshair.Update(WINDOW_WIDTH, WINDOW_HEIGHT);
+		crosshair.Update(graphics->GetWindowWidth(), graphics->GetWindowHeight());
 		// Render
 		Render();
 		
