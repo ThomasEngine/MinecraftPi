@@ -28,8 +28,8 @@ struct ChunkLoadTask {
 	glm::ivec3 chunkPos;
 	std::shared_ptr<Chunk> chunk;
 	bool pendingMesh = false;
-	bool pendingSunlight = true;
-	bool pendingSunlightFill = false;
+	bool pendingSunlight = false;
+	bool pendingSunlightFill = true;
 	bool renderReady = false;
 	bool reloaded = false;
 };
@@ -80,7 +80,7 @@ private:
 	std::vector<std::shared_ptr<Chunk>> m_RenderList;
 	std::vector<std::shared_ptr<Chunk>> m_InShotRenderList;
 
-	std::queue<glm::ivec3> m_AsyncChunkLoadQueue;
+	std::vector<glm::ivec3> m_BuildMeshLoadQueue;
 	std::queue<glm::ivec3> m_ChunksToLoad;
 	std::queue<glm::ivec3> m_ChunksToUnload;
 	std::set<glm::ivec3, IVec3Less> m_ChunksScheduledForLoad;

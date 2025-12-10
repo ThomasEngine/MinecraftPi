@@ -41,6 +41,7 @@ public:
 
     void destroyMesh(Renderer& ren);
     void createChunkMesh(Renderer& renderer, ChunkLoader& owner);
+    void uploadChunkMesh(Renderer& renderer, ChunkLoader& owner);
 	void createTransparentMesh(Renderer& renderer, ChunkLoader& owner);
 	void createSolidMesh(Renderer& renderer, ChunkLoader& owner);
     void DrawSolid(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const;

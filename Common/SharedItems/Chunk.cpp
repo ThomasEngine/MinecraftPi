@@ -43,7 +43,7 @@ const int faceDirs[6][3] = {
 
 // https://www.redblobgames.com/maps/terrain-from-noise/
 Chunk::Chunk(glm::ivec3 pos, ChunkLoader& owner)
-	: chunkPos(pos)
+	: chunkPos(pos), mesh(nullptr), transparentMesh(nullptr)
 {
 	GenerateTerrain(owner);
 	PropagateLight(owner);
@@ -350,6 +350,13 @@ void Chunk::createChunkMesh(Renderer& renderer, ChunkLoader& owner)
 	if (hasTransparentBlocks) {
 		createTransparentMesh(renderer, owner);
 	}
+}
+
+void Chunk::uploadChunkMesh(Renderer& renderer, ChunkLoader& owner)
+{
+    if (transparentMesh) renderer.uploadMesh(*transparentMesh);
+    if (mesh) renderer.uploadMesh(*mesh);
+
 }
 
 void Chunk::createTransparentMesh(Renderer& renderer, ChunkLoader& owner)

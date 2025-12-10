@@ -10,6 +10,12 @@ const glm::ivec3 offsets[] = {
     { 0, 0, 1 }, { 0, 0, -1 }
 };
 
+#ifdef WINDOWS_BUILD
+    static const int numThreads = 8;
+#else
+	static const int numThreads = 4;
+#endif
+
 ChunkLoader::ChunkLoader(Renderer& rend, std::shared_ptr<NoiseMaps> noiseMaps, bool& isReady)
 	: m_CameraPos(-1.0f), m_CameraDir(0.0f), m_Renderer(rend), m_NoiseMaps(noiseMaps), frustum()
 {
@@ -105,14 +111,14 @@ void ChunkLoader::Update(const glm::vec3& camDir, const glm::vec3& camPos, const
     {
 		m_CameraPos = camPos;
     }
-
-    if (!m_ChunksToLoad.empty()) {
+	bool ChunksToLoadEmpty = m_ChunksToLoad.empty();
+    if (!ChunksToLoadEmpty) {
         ProcessChunkLoading(m_Renderer);
     } 
-    else if (!m_ChunksToUnload.empty()) {
+    if (!m_ChunksToUnload.empty()) {
         ProcessChunkUnloading(m_Renderer);
     }
-    else {
+    else if (ChunksToLoadEmpty) {
 		ProccessChunkLoadingAsync(m_Renderer);
     }
     UpdateInShotRenderList(viewProjMatrix);
@@ -163,18 +169,21 @@ void ChunkLoader::ProccessChunkLoadingAsync(Renderer& renderer)
 //#pragma omp parallel for
     for (auto& pair : m_ChunkLoadTasks) {
         ChunkLoadTask& task = pair.second;
-        if (task.pendingSunlight && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
-            task.chunk->PropagateLight(*this);
+        if (task.pendingSunlightFill && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
+            //task.chunk->PropagateLight(*this);
             task.pendingSunlight = false;
-            task.pendingSunlightFill = true;
-			if (!*m_WorldReady )
-				*m_WorldReady = true;
-        }
-        else if (task.pendingSunlightFill && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
+            //task.pendingSunlightFill = true;
             task.chunk->ApplySunlight(*this);
             task.pendingSunlightFill = false;
             task.pendingMesh = true;
+			if (!*m_WorldReady )
+				*m_WorldReady = true;
         }
+        //else if (task.pendingSunlightFill && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
+        //    task.chunk->ApplySunlight(*this);
+        //    task.pendingSunlightFill = false;
+        //    task.pendingMesh = true;
+        //}
         else if (task.pendingMesh && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
             task.chunk->createChunkMesh(renderer, *this);
             task.pendingMesh = false;
@@ -188,11 +197,7 @@ void ChunkLoader::ProccessChunkLoadingAsync(Renderer& renderer)
 void ChunkLoader::ProcessChunkLoading(Renderer& renderer)
 {
     if (m_ChunksToLoad.empty()) return;
-#ifdef WINDOWS_BUILD
-    static const int numThreads = 8;
-#else
-	static const int numThreads = 4;
-#endif
+
 
     std::vector<glm::ivec3> chunkPositions;
     for (int i = 0; i < numThreads && !m_ChunksToLoad.empty(); ++i) {
@@ -204,7 +209,7 @@ void ChunkLoader::ProcessChunkLoading(Renderer& renderer)
     std::vector<std::shared_ptr<Chunk>> createdChunks(chunkPositions.size());
 
     #pragma omp parallel for
-    for (int i = 0; i < static_cast<int>(chunkPositions.size()); ++i) {
+    for (int i = 0; i < int(chunkPositions.size()); ++i) {
         createdChunks[i] = std::make_shared<Chunk>(chunkPositions[i], *this);
     }
 

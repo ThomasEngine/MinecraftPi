@@ -117,17 +117,17 @@ void Game::Start()
 
 	Initialize();
 	mobFactory = new MobFactory(renderer);
-	std::vector<Mob*> mobs;
-	for (int i = 0; i < 20; i++)
-	{
-		for (int j = 0; j < 20; j++)
-		{
-			Mob* sheepPrototype = mobFactory->create("Sheep", { 0, 170, 0 });
-			sheepPrototype->setPosition(glm::vec3(-j, 95, i));
-			sheepPrototype->SetCollisionSystem(collisionSystem);
-			mobs.push_back(sheepPrototype);
-		}
-	}
+	//std::vector<Mob*> mobs;
+	//for (int i = 0; i < 20; i++)
+	//{
+	//	for (int j = 0; j < 20; j++)
+	//	{
+	//		Mob* sheepPrototype = mobFactory->create("Sheep", { 0, 170, 0 });
+	//		sheepPrototype->setPosition(glm::vec3(-j, 95, i));
+	//		sheepPrototype->SetCollisionSystem(collisionSystem);
+	//		mobs.push_back(sheepPrototype);
+	//	}
+	//}
 
 
 	dayTime = 11.9f; // Noon
@@ -175,11 +175,11 @@ void Game::Start()
 		world->Draw(projView, shader, *testTex);
 			
 
-		for (auto& mob : mobs)
-		{
-			mob->update(gameDeltaTime, m_Player.GetCamera()->GetPosition());
-			mob->render(renderer, shader, *testTex, m_Camera.GetViewProjectionMatrix());
-		}
+		//for (auto& mob : mobs)
+		//{
+		//	mob->update(gameDeltaTime, m_Player.GetCamera()->GetPosition());
+		//	mob->render(renderer, shader, *testTex, m_Camera.GetViewProjectionMatrix());
+		//}
 
 		m_OnBlock->Render(renderer, m_Camera.GetViewProjectionMatrix(), *testTex);
 
