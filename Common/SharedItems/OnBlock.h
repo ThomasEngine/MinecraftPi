@@ -13,10 +13,9 @@ public:
 	~OnBlock();
 	void StartBreaking(const glm::ivec3& blockPos, const uint8_t& breakStrength);
 	void Update(float deltaTime, const glm::ivec3& blockPos);
-	void Render(Renderer& ren, glm::mat4 viewProj, Texture& tex);
+	void Render(Renderer& ren, glm::mat4 viewProj, Texture& tex, Shader& shader);
 
 private:
-	std::unique_ptr<Shader> m_Shader;
 	glm::ivec3 m_blockPos;
 	bool m_isBreaking = false;
 	float m_breakProgress = 0.0f;

@@ -63,6 +63,8 @@ private:
 	void InitializeOpenGLES();
 	void ClearScreen();
 
+	glm::vec2 lastMouse = { 0, 0 };
+	
 	Camera m_Camera;
 	OnBlock* m_OnBlock;
 	World* world;

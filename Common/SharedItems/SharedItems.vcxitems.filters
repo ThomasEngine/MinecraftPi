@@ -37,8 +37,8 @@
     <Filter Include="Mobs\Base">
       <UniqueIdentifier>{03f9a119-6f28-4fe7-8359-3d195ab12421}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Overlays">
-      <UniqueIdentifier>{693e910e-13ee-4541-bf4a-952e7db4d44e}</UniqueIdentifier>
+    <Filter Include="Overlay">
+      <UniqueIdentifier>{4850d79b-5139-4413-8df1-79b272152523}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -108,7 +108,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Mobs.h">
       <Filter>Mobs\Base</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)OnBlock.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)OnBlock.h">
+      <Filter>Overlay</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Crosshair.h">
+      <Filter>Overlay</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Input.cpp">
@@ -162,7 +167,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Mobs.cpp">
       <Filter>Mobs\Base</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)OnBlock.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)OnBlock.cpp">
+      <Filter>Overlay</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Crosshair.cpp">
+      <Filter>Overlay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.mtl">
@@ -177,6 +187,7 @@
     <None Include="$(MSBuildThisFileDirectory)Assets\Basic.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\basicpi.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\OnBlock.shader" />
+    <None Include="$(MSBuildThisFileDirectory)Assets\crosshair.shader" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_02.obj">

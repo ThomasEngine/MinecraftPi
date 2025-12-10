@@ -17,6 +17,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "OnBlock.h"
+#include "Crosshair.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
@@ -83,6 +84,8 @@ void Game::Start()
 	Texture* testTex = new Texture("../Common/SharedItems/Assets/minecraftAtlas.png");
 #endif
 
+	Shader otherShader("Common/SharedItems/Assets/OnBlock.shader");
+
 	//Shader shader("Common/SharedItems/Assets/Basic.shader");
 	GLuint program = shader.GetID();
 	//GLuint program = renderer.createProgramFromSource(vs_src, fs_src);
@@ -117,29 +120,33 @@ void Game::Start()
 
 	Initialize();
 	mobFactory = new MobFactory(renderer);
-	//std::vector<Mob*> mobs;
-	//for (int i = 0; i < 20; i++)
-	//{
-	//	for (int j = 0; j < 20; j++)
-	//	{
-	//		Mob* sheepPrototype = mobFactory->create("Sheep", { 0, 170, 0 });
-	//		sheepPrototype->setPosition(glm::vec3(-j, 95, i));
-	//		sheepPrototype->SetCollisionSystem(collisionSystem);
-	//		mobs.push_back(sheepPrototype);
-	//	}
-	//}
+	std::vector<Mob*> mobs;
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			Mob* sheepPrototype = mobFactory->create("Sheep", { 0, 170, 0 });
+			sheepPrototype->setPosition(glm::vec3(-j, 95, i));
+			sheepPrototype->SetCollisionSystem(collisionSystem);
+			mobs.push_back(sheepPrototype);
+		}
+	}
 
 
 	dayTime = 11.9f; // Noon
 
 	gui = new Gui(&m_Player, world);
 	m_OnBlock = new OnBlock(renderer);
+	Crosshair crosshair(renderer);
+
 
 #ifdef WINDOWS_BUILD
 	gui->SetupPc(&graphics->GetWindow());
 #else
 	gui->SetupPi();
 #endif 
+
+
 
 	while(!quitting)
 	{
@@ -169,20 +176,22 @@ void Game::Start()
 		glm::mat4 projView = m_Camera.GetViewProjectionMatrix();
 		world->Update(m_Camera.GetDirection(), m_Camera.GetPosition(), projView);
 		m_Player.Update(gameDeltaTime);
+		crosshair.Update(WINDOW_WIDTH, WINDOW_HEIGHT);
 		// Render
 		Render();
 		
 		world->Draw(projView, shader, *testTex);
 			
 
-		//for (auto& mob : mobs)
-		//{
-		//	mob->update(gameDeltaTime, m_Player.GetCamera()->GetPosition());
-		//	mob->render(renderer, shader, *testTex, m_Camera.GetViewProjectionMatrix());
-		//}
 
-		m_OnBlock->Render(renderer, m_Camera.GetViewProjectionMatrix(), *testTex);
+		for (auto& mob : mobs)
+		{
+			mob->update(gameDeltaTime, m_Player.GetCamera()->GetPosition());
+			mob->render(renderer, shader, *testTex, m_Camera.GetViewProjectionMatrix());
+		}
 
+		m_OnBlock->Render(renderer, m_Camera.GetViewProjectionMatrix(), *testTex, otherShader);
+		crosshair.Render(renderer, *testTex);
 		// Post Render
 		PostRender();
 		gui->NewFrame();
@@ -218,9 +227,8 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 	const IMouse& mouse = input.GetMouse();
 	const IKeyboard& keyboard = input.GetKeyboard();
 	float moveSpeed = speed;
-	float lookSpeed = 1.12f * deltaTime;
+	float lookSpeed = 0.016;
 
-	static glm::vec2 lastMouse = mouse.GetPosition();
 	glm::vec2 currentMouse = mouse.GetPosition();
 	glm::vec2 delta = currentMouse - lastMouse;
 	lastMouse = currentMouse;
@@ -251,7 +259,6 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 		dynamic_cast<WindowsGraphics*>(graphics)->ToggleCurser();
 		canBreakBlock = false;
 		blockTimer = 0;
-
 	}
 #endif 
 
@@ -273,10 +280,10 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 	// Ray
 	{
 		glm::vec3 camPos = cam.GetPosition();
-		camPos.y += .95f; // m_Camera height offset
+		camPos.y += .8f; // m_Camera height offset
 		glm::vec3 camDir = cam.GetDirection();
 		float maxDistance = 5.0f;
-		float step = 1.f;
+		float step = 0.2f;
 		for (float i = 0; i < maxDistance; i += step)
 		{
 			glm::vec3 pos = camPos + camDir * i;

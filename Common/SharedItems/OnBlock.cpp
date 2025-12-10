@@ -35,7 +35,6 @@ static const unsigned int edgeIndices[24] = {
 OnBlock::OnBlock(Renderer& ren)
     : m_blockPos(0), m_isBreaking(false), m_breakProgress(0.0f)
 {
-    m_Shader = std::make_unique<Shader>("Common/SharedItems/Assets/OnBlock.shader");
 
 	// Create cube mesh
     float inset = 0.005f;
@@ -97,19 +96,19 @@ void OnBlock::Update(float deltaTime, const glm::ivec3& blockPos)
     }
 }
 
-void OnBlock::Render(Renderer& ren, glm::mat4 viewProj, Texture& tex)
+void OnBlock::Render(Renderer& ren, glm::mat4 viewProj, Texture& tex, Shader& sh)
 {
     if (m_blockPos == glm::ivec3(-1)) return;
 
-    m_Shader->Bind();
+    sh.Bind();
 	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_blockPos));
 	glm::mat4 mvp = viewProj * model;
-	m_Shader->SetUniformMat4f("u_MVP", mvp);
+	sh.SetUniformMat4f("u_MVP", mvp);
 
 	glDepthMask(GL_FALSE); 
 	glLineWidth(2.f);
-	ren.drawMesh(m_OutlineMesh, *m_Shader, mvp, tex, GL_LINES);
+	ren.drawMesh(m_OutlineMesh, sh, mvp, tex, GL_LINES);
 	glDepthMask(GL_TRUE);
 
-    m_Shader->Unbind();
+    sh.Unbind();
 }

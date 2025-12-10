@@ -18,6 +18,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\IInput.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Input.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\tiny_obj_loader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Crosshair.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Mesh.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MobBase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BlockRegistery.h" />
@@ -47,6 +48,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Chunk.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ChunkLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CollisionSystem.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Crosshair.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Frustum.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp" />
@@ -68,6 +70,7 @@
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03.mtl" />
     <None Include="$(MSBuildThisFileDirectory)Assets\Basic.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\basicpi.shader" />
+    <None Include="$(MSBuildThisFileDirectory)Assets\crosshair.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\OnBlock.shader" />
   </ItemGroup>
   <ItemGroup>

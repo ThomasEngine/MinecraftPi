@@ -9,7 +9,7 @@ Camera::Camera(int w, int h)
     m_proj(1.0f),
     m_isPerspective(true)
 {
-    float fov = 80.f;
+    float fov = 70.f;
     float aspect = w > 0 ? (float)w / (float)h : 1.0f;
     float nearPlane = 0.1f;
     float farPlane = 4000.f;
@@ -62,7 +62,7 @@ glm::mat4 Camera::GetViewMatrix() const
     direction.y = sin(m_pitch);
     direction.z = cos(m_pitch) * cos(m_yaw);
 	glm::vec3 position = m_position;
-	position.y += .9f; 
+	position.y += .8f; 
     return glm::lookAt(position, position + direction, glm::vec3(0, 1, 0));
 }
 
