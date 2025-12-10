@@ -144,6 +144,7 @@ void ChunkLoader::FindChunksToLoadAndUnload(const glm::vec3& camPos)
     for (const auto& pos : neededChunks) {
         if (m_ChunkLoadTasks.find(pos) == m_ChunkLoadTasks.end() && m_ChunksScheduledForLoad.find(pos) == m_ChunksScheduledForLoad.end()) {
             m_ChunksToLoad.push(pos);
+			//m_AsyncChunkLoadQueue.push(pos);
             m_ChunksScheduledForLoad.insert(pos);
         }
     }
@@ -158,8 +159,8 @@ void ChunkLoader::FindChunksToLoadAndUnload(const glm::vec3& camPos)
 
 void ChunkLoader::ProccessChunkLoadingAsync(Renderer& renderer)
 {
-	static int count = 0; // debug purposes don't hate the static pls
 
+//#pragma omp parallel for
     for (auto& pair : m_ChunkLoadTasks) {
         ChunkLoadTask& task = pair.second;
         if (task.pendingSunlight && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
@@ -173,12 +174,9 @@ void ChunkLoader::ProccessChunkLoadingAsync(Renderer& renderer)
             task.chunk->ApplySunlight(*this);
             task.pendingSunlightFill = false;
             task.pendingMesh = true;
-            //return;
         }
         else if (task.pendingMesh && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
             task.chunk->createChunkMesh(renderer, *this);
-            count++;
-            //printf("Mesh %d\n", count);
             task.pendingMesh = false;
             task.reloaded = true;
 			task.renderReady = true;
@@ -187,17 +185,33 @@ void ChunkLoader::ProccessChunkLoadingAsync(Renderer& renderer)
     }
 }
 
-void ChunkLoader::ProcessChunkLoading(Renderer& renderer)  
-{  
-   if (m_ChunksToLoad.empty()) return;  
-   glm::ivec3 pos = m_ChunksToLoad.front();  
-   m_ChunksToLoad.pop();  
-   m_ChunksScheduledForLoad.erase(pos);  
+void ChunkLoader::ProcessChunkLoading(Renderer& renderer)
+{
+    if (m_ChunksToLoad.empty()) return;
+#ifdef WINDOWS_BUILD
+    static const int numThreads = 8;
+#else
+	static const int numThreads = 4;
+#endif
 
-   std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>(pos, *this);  
-   m_RenderList.push_back(chunk);  
+    std::vector<glm::ivec3> chunkPositions;
+    for (int i = 0; i < numThreads && !m_ChunksToLoad.empty(); ++i) {
+        chunkPositions.push_back(m_ChunksToLoad.front());
+        m_ChunksScheduledForLoad.erase(m_ChunksToLoad.front());
+        m_ChunksToLoad.pop();
+    }
 
-   m_ChunkLoadTasks.emplace(pos, ChunkLoadTask{ pos, chunk });
+    std::vector<std::shared_ptr<Chunk>> createdChunks(chunkPositions.size());
+
+    #pragma omp parallel for
+    for (int i = 0; i < static_cast<int>(chunkPositions.size()); ++i) {
+        createdChunks[i] = std::make_shared<Chunk>(chunkPositions[i], *this);
+    }
+
+    for (int i = 0; i < static_cast<int>(chunkPositions.size()); ++i) {
+        m_RenderList.push_back(createdChunks[i]);
+        m_ChunkLoadTasks.emplace(chunkPositions[i], ChunkLoadTask{ chunkPositions[i], createdChunks[i] });
+    }
 }
 
 void ChunkLoader::ProcessChunkUnloading(Renderer& renderer)

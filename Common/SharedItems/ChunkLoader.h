@@ -64,7 +64,7 @@ public:
 	
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;
 private:
-	uint8_t VIEW_DISTANCE = 5;
+	uint8_t VIEW_DISTANCE = 12;
 	uint8_t HALF_X = 0;
 	uint8_t HALF_Z = 0;
 	uint8_t HALF_Y = 0;
@@ -80,6 +80,7 @@ private:
 	std::vector<std::shared_ptr<Chunk>> m_RenderList;
 	std::vector<std::shared_ptr<Chunk>> m_InShotRenderList;
 
+	std::queue<glm::ivec3> m_AsyncChunkLoadQueue;
 	std::queue<glm::ivec3> m_ChunksToLoad;
 	std::queue<glm::ivec3> m_ChunksToUnload;
 	std::set<glm::ivec3, IVec3Less> m_ChunksScheduledForLoad;

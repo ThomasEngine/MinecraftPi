@@ -52,7 +52,7 @@ OnBlock::OnBlock(Renderer& ren)
 
         // Add 4 inset vertices for this face
         for (int v = 0; v < 4; ++v) {
-            glm::vec3 pos = faceVertices[face][v].pos + normal * inset;
+			glm::vec3 pos = faceVertices[face][v].pos + normal * inset; // against z fighting
             outlineVerts.push_back({ pos, glm::vec2(0.0f), 0.0f, 0.0f, 1.0f });
         }
         outlineIndices.push_back(indexOffset + 0);
@@ -67,8 +67,11 @@ OnBlock::OnBlock(Renderer& ren)
     }
 
 
-	m_cubeMesh = Mesh(outlineVerts, outlineIndices);
-	ren.uploadMesh(m_cubeMesh);
+	m_OutlineMesh = Mesh(outlineVerts, outlineIndices);
+	ren.uploadMesh(m_OutlineMesh);
+
+    // Break mesh
+
 
 }
 
@@ -105,7 +108,7 @@ void OnBlock::Render(Renderer& ren, glm::mat4 viewProj, Texture& tex)
 
 	glDepthMask(GL_FALSE); 
 	glLineWidth(2.f);
-	ren.drawMesh(m_cubeMesh, *m_Shader, mvp, tex, GL_LINES);
+	ren.drawMesh(m_OutlineMesh, *m_Shader, mvp, tex, GL_LINES);
 	glDepthMask(GL_TRUE);
 
     m_Shader->Unbind();

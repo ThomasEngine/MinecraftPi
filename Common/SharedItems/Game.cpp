@@ -22,7 +22,11 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "gui.h"
-//#include "WindowsGraphics.h"
+
+#ifdef WINDOWS_BUILD
+#include "WindowsGraphics.h"
+#endif // 
+
 
 #include "Camera.h"
 
@@ -114,9 +118,9 @@ void Game::Start()
 	Initialize();
 	mobFactory = new MobFactory(renderer);
 	std::vector<Mob*> mobs;
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 20; i++)
 	{
-		for (int j = 0; j < 5; j++)
+		for (int j = 0; j < 20; j++)
 		{
 			Mob* sheepPrototype = mobFactory->create("Sheep", { 0, 170, 0 });
 			sheepPrototype->setPosition(glm::vec3(-j, 95, i));
@@ -170,6 +174,7 @@ void Game::Start()
 		
 		world->Draw(projView, shader, *testTex);
 			
+
 		for (auto& mob : mobs)
 		{
 			mob->update(gameDeltaTime, m_Player.GetCamera()->GetPosition());
@@ -241,9 +246,12 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 		Quit();
 
 #ifdef WINDOWS_BUILD
-	if (keyboard.GetKey(Key::ALT_LEFT))
+	if (keyboard.GetKey(Key::ALT_LEFT) && canBreakBlock)
 	{
-		//dynamic_cast<WindowsGraphics*>(graphics)->ToggleCurser();
+		dynamic_cast<WindowsGraphics*>(graphics)->ToggleCurser();
+		canBreakBlock = false;
+		blockTimer = 0;
+
 	}
 #endif 
 

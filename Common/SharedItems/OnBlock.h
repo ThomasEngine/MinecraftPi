@@ -21,6 +21,7 @@ private:
 	bool m_isBreaking = false;
 	float m_breakProgress = 0.0f;
 	uint8_t m_breakStrength = 0;
-	Mesh m_cubeMesh;
+	Mesh m_OutlineMesh;
+	Mesh m_BreakMesh;
 };
 
