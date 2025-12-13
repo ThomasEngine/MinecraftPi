@@ -3,6 +3,17 @@
 #include "CollisionSystem.h"
 #include "World.h"
 
+constexpr float GROUND_ACCEL = 20.0f;
+constexpr float AIR_ACCEL = 8.0f;
+constexpr float GROUND_FRICTION = 10.0f;
+constexpr float AIR_FRICTION = 1.0f;
+constexpr float MAX_GROUND_SPEED = 5.0f;
+constexpr float MAX_AIR_SPEED = 3.0f;
+constexpr float JUMP_SPEED = 7.0f;
+constexpr float GRAVITY = 20.0f;
+
+
+
 Player::Player(int w, int h, Camera* m_Camera)
 	: m_MovementSpeed(1.0f), m_CS(nullptr), m_Camera(m_Camera)
 {

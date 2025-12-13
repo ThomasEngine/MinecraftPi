@@ -41,10 +41,11 @@ void Crosshair::Render(Renderer& ren, Texture& tex)
 {
     m_Shader->Bind();
 
-    float aspectRatio = m_WindowWidth / m_WindowHeight;
+    float aspectRatio = (float)m_WindowWidth / (float)m_WindowHeight;
 
-    glm::mat4 orthoProj = glm::ortho(-1.0f * aspectRatio, 1.0f * aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
+    glm::mat4 orthoProj = glm::ortho(-aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
 
+    glLineWidth(3.0f);
     ren.drawMesh(m_CorsairMesh, *m_Shader, orthoProj, tex, GL_LINES);
     m_Shader->Unbind();
 }

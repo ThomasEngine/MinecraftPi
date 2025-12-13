@@ -1,9 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
 
-
-
-
 class CollisionSystem;
 class Camera;
 class Player
