@@ -227,7 +227,7 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 	const IMouse& mouse = input.GetMouse();
 	const IKeyboard& keyboard = input.GetKeyboard();
 	float moveSpeed = speed;
-	float lookSpeed = 0.016;
+	float lookSpeed = 0.008;
 
 	glm::vec2 currentMouse = mouse.GetPosition();
 	glm::vec2 delta = currentMouse - lastMouse;
@@ -237,8 +237,12 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 	cam.AddPitch(-delta.y * lookSpeed);
 
 	if (keyboard.GetKey(Key::CTRL_LEFT))
-		speedBoost = true;
-	else speedBoost = false;
+		m_Player.SetSprinting(true);
+	else m_Player.SetSprinting(false);
+
+	if (keyboard.GetKey(Key::SHIFT_LEFT))
+		m_Player.SetChrouching(true);
+	else m_Player.SetChrouching(false);
 
 	if (speedBoost)
 		moveSpeed = 8;

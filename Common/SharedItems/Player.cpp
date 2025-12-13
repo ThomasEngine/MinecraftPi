@@ -3,14 +3,7 @@
 #include "CollisionSystem.h"
 #include "World.h"
 
-constexpr float GROUND_ACCEL = 20.0f;
-constexpr float AIR_ACCEL = 8.0f;
-constexpr float GROUND_FRICTION = 10.0f;
-constexpr float AIR_FRICTION = 1.0f;
-constexpr float MAX_GROUND_SPEED = 5.0f;
-constexpr float MAX_AIR_SPEED = 3.0f;
-constexpr float JUMP_SPEED = 7.0f;
-constexpr float GRAVITY = 20.0f;
+
 
 
 
@@ -26,85 +19,130 @@ Player::~Player()
 
 void Player::Update(float deltaTime)
 {
+	// Reset wish direction
+	Move(deltaTime);
+}
+
+void Player::Move(float deltaTime)
+{
+	UpdateMoveXZ(deltaTime);
 	UpdateMoveY(deltaTime);
+}
+
+void Player::UpdateMoveXZ(float deltaTime)
+{
+	m_WishDir.y = 0;
+
+	if (glm::length(m_WishDir) > 0.0f)
+	{
+		m_WishDir = glm::normalize(m_WishDir);
+	}
+
+	// Apply acceleration and friction
+	float accel = m_OnGround ? GROUND_ACCEL : AIR_ACCEL;
+	float friction = m_OnGround ? GROUND_FRICTION : AIR_FRICTION;
+	float maxSpeed = m_OnGround ? MAX_GROUND_SPEED : MAX_AIR_SPEED;
+
+	// if sprint
+	if (m_Sprinting)
+	{
+		accel *= SPRINT_MULTIPLIER;
+		maxSpeed *= SPRINT_MULTIPLIER;
+	}
+
+	// if crouch
+	if (m_Crouching && m_OnGround)
+	{
+		accel *= CROUCH_MULTIPLIER;
+		maxSpeed *= CROUCH_MULTIPLIER;
+	}
+
+	glm::vec3 velXZ = glm::vec3(m_Vel.x, 0.0f, m_Vel.z);
+	glm::vec3 wishVel = m_WishDir * maxSpeed;
+	glm::vec3 accelVec = wishVel - velXZ;
+	float accelLen = glm::length(accelVec);
+	if (accelLen > 0.0f) {
+		accelVec = glm::normalize(accelVec) * accel * deltaTime;
+		if (glm::length(accelVec) > accelLen)
+			accelVec = glm::normalize(accelVec) * accelLen;
+		m_Vel.x += accelVec.x;
+		m_Vel.z += accelVec.z;
+	}
+
+
+	// Try to move x
+	glm::vec3 newPos = m_Camera->GetPosition();
+	newPos.x += m_Vel.x * deltaTime;
+	if (!m_CS->CheckGridCollision(newPos, m_PlayerRect))
+	{
+		if (m_Crouching && m_OnGround)
+		{
+			newPos.y += m_Crouching ? -0.5f : 0.0f;
+			if (m_CS->CheckGridCollision(newPos, m_PlayerRect))
+			{
+				newPos.y += m_Crouching ? 0.5f : 0.0f;
+				SetPosition(newPos);
+			}
+			else
+				m_Vel.x = 0;
+		}
+		else
+		{
+			SetPosition(newPos);
+		}
+	}
+	else
+		m_Vel.x = 0;
+
+	// Try to move z
+	newPos = m_Camera->GetPosition();
+	newPos.z += m_Vel.z * deltaTime;
+	if (!m_CS->CheckGridCollision(newPos, m_PlayerRect))
+	{
+		if (m_Crouching && m_OnGround)
+		{
+			newPos.y += m_Crouching ? -0.5f : 0.0f;
+			if (m_CS->CheckGridCollision(newPos, m_PlayerRect))
+			{
+				newPos.y += m_Crouching ? 0.5f : 0.0f;
+				SetPosition(newPos);
+			}
+			else
+				m_Vel.z = 0;
+		}
+		else
+		{
+			SetPosition(newPos);
+		}
+	}
+	else
+		m_Vel.z = 0;
+
+	// Apply friction
+	m_Vel.x -= m_Vel.x * friction * deltaTime;
+	m_Vel.z -= m_Vel.z * friction * deltaTime;
+
+	m_WishDir = glm::vec3(0.0f);
 }
 
 void Player::MoveForward(float deltaTime)
 {
-	glm::vec3 dir = m_Camera->GetDirection();
-	dir.y = 0;
-	glm::vec3 move = glm::normalize(dir) * m_MovementSpeed * deltaTime;
-	glm::vec3 pos = m_Camera->GetPosition();
-
-	// X axis
-	glm::vec3 tryX = pos + glm::vec3(move.x, 0, 0);
-	if (!m_CS->CheckGridCollision(tryX, m_PlayerRect))
-		pos.x += move.x;
-
-	// Z axis
-	glm::vec3 tryZ = pos + glm::vec3(0, 0, move.z);
-	if (!m_CS->CheckGridCollision(tryZ, m_PlayerRect))
-		pos.z += move.z;
-
-	SetPosition(pos);
+	m_WishDir += m_Camera->GetDirection();
 }
 
 void Player::MoveBackward(float deltaTime)
 {
-	glm::vec3 dir = m_Camera->GetDirection();
-	dir.y = 0;
-	glm::vec3 move = glm::normalize(-dir) * m_MovementSpeed * deltaTime;
-	glm::vec3 pos = m_Camera->GetPosition();
-
-	// X axis
-	glm::vec3 tryX = pos + glm::vec3(move.x, 0, 0);
-	if (!m_CS->CheckGridCollision(tryX, m_PlayerRect))
-		pos.x += move.x;
-
-	// Z axis
-	glm::vec3 tryZ = pos + glm::vec3(0, 0, move.z);
-	if (!m_CS->CheckGridCollision(tryZ, m_PlayerRect))
-		pos.z += move.z;
-
-	SetPosition(pos);
+	m_WishDir -= m_Camera->GetDirection();
 }
 
 void Player::MoveLeft(float deltatime)
 {
-	glm::vec3 right = m_Camera->GetRight(); 
-	glm::vec3 move = right * m_MovementSpeed * deltatime;
-	glm::vec3 pos = m_Camera->GetPosition();
-
-	// X axis
-	glm::vec3 tryX = pos + glm::vec3(move.x, 0, 0);
-	if (!m_CS->CheckGridCollision(tryX, m_PlayerRect))
-		pos.x += move.x;
-
-	// Z axis
-	glm::vec3 tryZ = pos + glm::vec3(0, 0, move.z);
-	if (!m_CS->CheckGridCollision(tryZ, m_PlayerRect))
-		pos.z += move.z;
-
-	SetPosition(pos);
+	m_WishDir += m_Camera->GetRight();
 }
 
 void Player::MoveRight(float deltaTime)
 {
-	glm::vec3 right = m_Camera->GetRight(); 
-	glm::vec3 move = -right * m_MovementSpeed * deltaTime;
-	glm::vec3 pos = m_Camera->GetPosition();
-
-	// X axis
-	glm::vec3 tryX = pos + glm::vec3(move.x, 0, 0);
-	if (!m_CS->CheckGridCollision(tryX, m_PlayerRect))
-		pos.x += move.x;
-
-	// Z axis
-	glm::vec3 tryZ = pos + glm::vec3(0, 0, move.z);
-	if (!m_CS->CheckGridCollision(tryZ, m_PlayerRect))
-		pos.z += move.z;
-
-	SetPosition(pos);
+	m_WishDir -= m_Camera->GetRight();
 }
 
 void Player::Jump(float deltaTime)
@@ -130,7 +168,7 @@ void Player::UpdateMoveY(float deltaTime)
 	if (m_Flying) return;
 	// Apply gravity
 	m_Vel.y -= GRAVITY * deltaTime;
-	if (m_Vel.y > MAX_FALL_SPEED) m_Vel.y =MAX_FALL_SPEED;
+	if (m_Vel.y > MAX_FALL_SPEED) m_Vel.y = MAX_FALL_SPEED;
 
 	// Create a new position to check for collisions
 	glm::vec3 newPos = m_Camera->GetPosition();
