@@ -228,13 +228,18 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 	const IKeyboard& keyboard = input.GetKeyboard();
 	float moveSpeed = speed;
 	float lookSpeed = 0.008;
+	static bool toggledCurser = false;
 
 	glm::vec2 currentMouse = mouse.GetPosition();
 	glm::vec2 delta = currentMouse - lastMouse;
 	lastMouse = currentMouse;
 
-	cam.AddYaw(-delta.x * lookSpeed);
-	cam.AddPitch(-delta.y * lookSpeed);
+	if (!toggledCurser)
+	{
+		cam.AddYaw(-delta.x * lookSpeed);
+		cam.AddPitch(-delta.y * lookSpeed);
+	}
+
 
 	if (keyboard.GetKey(Key::CTRL_LEFT))
 		m_Player.SetSprinting(true);
@@ -243,7 +248,6 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 	if (keyboard.GetKey(Key::SHIFT_LEFT))
 		m_Player.SetChrouching(true);
 	else m_Player.SetChrouching(false);
-
 	if (speedBoost)
 		moveSpeed = 8;
 
@@ -260,6 +264,7 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 #ifdef WINDOWS_BUILD
 	if (keyboard.GetKey(Key::ALT_LEFT) && canBreakBlock)
 	{
+		toggledCurser = !toggledCurser;
 		dynamic_cast<WindowsGraphics*>(graphics)->ToggleCurser();
 		canBreakBlock = false;
 		blockTimer = 0;
