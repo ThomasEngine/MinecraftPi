@@ -44,19 +44,22 @@ class Shader;
 class Texture;
 class Renderer {
 public:
+	// Constructor / Destructor
     Renderer();
     ~Renderer();
 
+	// Initialization and shutdown
     bool init();
     void shutdown();
 
+	// Frame management
     void beginFrame();
     void endFrame();
 
-	Mesh createCubeMesh();
-
+	// Mesh management
     void uploadMesh(Mesh& mesh);
     void destroyMesh(Mesh& m);
 
+	// Drawing
     void drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, const Texture& texture, GLenum primitiveType = GL_TRIANGLES);
 };

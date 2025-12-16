@@ -40,6 +40,9 @@
     <Filter Include="Overlay">
       <UniqueIdentifier>{4850d79b-5139-4413-8df1-79b272152523}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Mobs\Mobs">
+      <UniqueIdentifier>{95c4b73c-ba71-41dc-a8d5-b6b937d123cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\IInput.h">
@@ -114,6 +117,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Crosshair.h">
       <Filter>Overlay</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Pig.h">
+      <Filter>Mobs\Mobs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Input.cpp">
@@ -160,7 +166,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MobFactory.cpp">
       <Filter>Mobs</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Mesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MobBase.cpp">
       <Filter>Mobs\Base</Filter>
     </ClCompile>
@@ -172,6 +177,12 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Crosshair.cpp">
       <Filter>Overlay</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Pig.cpp">
+      <Filter>Mobs\Mobs</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Mesh.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

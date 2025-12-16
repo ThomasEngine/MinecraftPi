@@ -187,8 +187,15 @@ void Game::Start()
 		for (auto& mob : mobs)
 		{
 			mob->update(gameDeltaTime, m_Player.GetCamera()->GetPosition());
+			shader.Bind();
+			shader.SetUniform1f("u_CellWidth", 1.f / 8.f);
+			shader.SetUniform1f("u_CellHeight", 1.f / 8.f);
 			mob->render(renderer, shader, *testTex, m_Camera.GetViewProjectionMatrix());
 		}
+
+		shader.Bind();
+		shader.SetUniform1f("u_CellWidth", 1.f / 16.f);
+		shader.SetUniform1f("u_CellHeight", 1.f / 16.f);
 
 		m_OnBlock->Render(renderer, m_Camera.GetViewProjectionMatrix(), *testTex, otherShader);
 		crosshair.Render(renderer, *testTex);
@@ -367,6 +374,12 @@ void Game::InitializeOpenGLES()
 	glCullFace(GL_BACK);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
 }
 
 void Game::ClearScreen()

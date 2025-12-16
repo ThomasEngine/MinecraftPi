@@ -198,7 +198,6 @@ void ChunkLoader::ProcessChunkLoading(Renderer& renderer)
 {
     if (m_ChunksToLoad.empty()) return;
 
-
     std::vector<glm::ivec3> chunkPositions;
     for (int i = 0; i < numThreads && !m_ChunksToLoad.empty(); ++i) {
         chunkPositions.push_back(m_ChunksToLoad.front());

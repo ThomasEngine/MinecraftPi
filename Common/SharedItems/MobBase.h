@@ -10,6 +10,7 @@ struct SharedModelData
 	Mesh legMesh[4]; 
 	glm::vec3 hitbox;
 	glm::vec3 legTopPosition[4];
+	Texture* texture;
 };
 
 enum Legs {

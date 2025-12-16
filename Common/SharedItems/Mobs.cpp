@@ -31,12 +31,12 @@ void FourlegMob::render(Renderer& ren, Shader& sh, Texture& tex, glm::mat4 viewP
 
 	// Body
 	glm::mat4 bodyMat = sheepModel; 
-	ren.drawMesh(sharedData->bodyMesh, sh, viewProj * bodyMat, tex);
+	ren.drawMesh(sharedData->bodyMesh, sh, viewProj * bodyMat, *sharedData->texture);
 
 	// Head
 	glm::mat4 headMat = sheepModel; 
 	headMat = glm::rotate(headMat, glm::radians(pose->headRotation), glm::vec3(0, 1, 0));
-	ren.drawMesh(sharedData->headMesh, sh, viewProj * headMat, tex);
+	ren.drawMesh(sharedData->headMesh, sh, viewProj * headMat, *sharedData->texture);
 
 	for (int i = 0; i < 4; ++i) {
 		glm::vec3 legTopPos = sharedData->legTopPosition[i];
@@ -44,7 +44,7 @@ void FourlegMob::render(Renderer& ren, Shader& sh, Texture& tex, glm::mat4 viewP
 		legMat = glm::translate(legMat, legTopPos); 
 		legMat = glm::rotate(legMat, glm::radians(pose->legRotation[i]), glm::vec3(1, 0, 0)); 
 		legMat = glm::translate(legMat, -legTopPos);
-		ren.drawMesh(sharedData->legMesh[i], sh, viewProj * legMat, tex);
+		ren.drawMesh(sharedData->legMesh[i], sh, viewProj * legMat, *sharedData->texture);
 	}
 }
 

@@ -33,6 +33,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ICommand.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MobFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)OnBlock.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Pig.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Player.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Renderer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Shader.h" />
@@ -57,6 +58,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MobBase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MobFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)OnBlock.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Pig.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Player.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Renderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Shader.cpp" />
