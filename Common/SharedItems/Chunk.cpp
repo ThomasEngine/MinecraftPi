@@ -48,57 +48,59 @@ const int faceDirs[6][3] = {
 
 const int aoOffsets[6][4][3][3] = {
     // -Z (Back)
-    {
-        { {0,-1,0}, {-1,0,0}, {-1,-1,0} },
-        { {0,1,0}, {-1,0,0}, {-1,1,0} },  
-        { {1,0,0}, {0,1,0}, {1,1,0} },    
-        { {1,0,0}, {0,-1,0}, {1,-1,0} }   
+	{ // side 1, side 2, corner
+        { {-1,0,0}, {0,-1,0}, {-1,-1,0} }, // bottom-left
+        { {-1,0,0}, {0,1,0}, {-1,1,0} },   // top-left
+        { {1,0,0}, {0,1,0}, {1,1,0} },      // top-right
+        { {1,0,0}, {0,-1,0}, {1,-1,0} },   // bottom-right
     },
     // +Z (Front)
     {
-        { {1,0,0}, {0,-1,0}, {1,-1,0} },  
-        { {1,0,0}, {0,1,0}, {1,1,0} },    
-        { {0,1,0}, {-1,0,0}, {-1,1,0} },  
-        { {0,-1,0}, {-1,0,0}, {-1,-1,0} } 
+        { {-1,0,0}, {0,-1,0}, {-1,-1,0} }, // bottom-left
+        { {1,0,0}, {0,-1,0}, {1,-1,0} },   // bottom-right
+        { {1,0,0}, {0,1,0}, {1,1,0} },      // top-right
+        { {-1,0,0}, {0,1,0}, {-1,1,0} },   // top-left
     },
     // -Y (Bottom)
     {
-        { {0,0,-1}, {-1,0,0}, {-1,0,-1} },
-        { {0,0,1}, {-1,0,0}, {-1,0,1} },  
-        { {1,0,0}, {0,0,1}, {1,0,1} },    
-        { {1,0,0}, {0,0,-1}, {1,0,-1} }   
+        { {-1,0,0}, {0,0,-1}, {-1,0,-1} }, // bottom-left
+        { {1,0,0}, {0,0,-1}, {1,0,-1} },   // bottom-right
+        { {-1,0,0}, {0,0,1}, {-1,0,1} },   // top-left
+        { {1,0,0}, {0,0,1}, {1,0,1} },      // top-right
     },
     // +Y (Top)
     {
-        { {0,1,-1}, {-1,1,0}, {-1,1,-1} }, 
-        { {0,1,1}, {-1,1,0}, {-1,1,1} }   ,
-        { {-1,1,0}, {0,1,1}, {1,1,1} },     
-        { {1,1,0}, {0,1,-1}, {1,1,-1} }  
+        { {-1,0,0}, {0,0,-1}, {-1,0,-1} }, // bottom-left
+        { {-1,0,0}, {0,0,1}, {-1,0,1} },   // top-left
+        { {1,0,0}, {0,0,1}, {1,0,1} },      // top-right
+        { {1,0,0}, {0,0,-1}, {1,0,-1} },   // bottom-right
     },
     // -X (Left)
     {
-        { {0,-1,0}, {0,0,-1}, {0,-1,-1} },  
-        { {0,-1,0}, {0,0,1}, {0,-1,1} },   
-        { {0,1,0}, {0,0,1}, {0,1,1} },      
-        { {0,1,0}, {0,0,-1}, {0,1,-1} }   
+        { {0,-1,0}, {0,0,-1}, {0,-1,-1} }, // bottom-left
+        { {0,-1,0}, {0,0,1}, {0,-1,1} },   // top-left
+        { {0,1,0}, {0,0,1}, {0,1,1} },      // top-right
+        { {0,1,0}, {0,0,-1}, {0,1,-1} },   // bottom-right
     },
     // +X (Right)
     {
-        { {0,1,0}, {0,0,1}, {0,1,1} },     
-        { {0,1,0}, {0,0,-1}, {0,1,-1} },   
-        { {0,-1,0}, {0,0,-1}, {0,-1,-1} },  
-        { {0,-1,0}, {0,0,1}, {0,-1,1} }
+        { {0,0,0}, {0,0,-1}, {0,-1,-1} }, // bottom-left
+        { {0,0,0}, {0,0,-1}, {0,1,-1} },   // bottom-right
+        { {0,0,0}, {0,0,1}, {0,1,1} },      // top-right
+        { {0,0,0}, {0,0,1}, {0,-1,1} },   // top-left
     }
 };
 
 
-
 namespace {
+    // 0fps ambient occlusion logic
     float CalculateAO(bool side1, bool side2, bool corner) {
-        if (side1 && side2) return 0.3f;
-        int occlusion = (int)side1 + (int)side2 + (int)corner;
-        static const float aoLevels[4] = { 1.0f, 0.7f, 0.5f, 0.3f };
-        return aoLevels[occlusion];
+		float AOs[4] = { 0.45, 0.65, 0.8, 1.0 };
+        if (side1 && side2) {
+            return AOs[0];
+        }
+		int aoIndex = side1 + side2 + corner;
+		return AOs[3 - aoIndex];
     }
 }
 
@@ -398,6 +400,29 @@ float Chunk::FaceBrightness(FaceDirection face) const
 
 }
 
+AONeighbors Chunk::GetAONeighbors(int face, int vertex, int x, int y, int z, ChunkLoader& owner, int localY) const
+{
+    AONeighbors result;
+
+    auto check = [&](int dx, int dy, int dz) {
+        return !NeighborIsEmpty(x + dx, y + dy, z + dz, owner, localY);
+        };
+
+    result.side1 = check(aoOffsets[face][vertex][0][0],
+        aoOffsets[face][vertex][0][1],
+        aoOffsets[face][vertex][0][2]);
+
+    result.side2 = check(aoOffsets[face][vertex][1][0],
+        aoOffsets[face][vertex][1][1],
+        aoOffsets[face][vertex][1][2]);
+
+    result.corner = check(aoOffsets[face][vertex][2][0],
+        aoOffsets[face][vertex][2][1],
+        aoOffsets[face][vertex][2][2]);
+
+    return result;
+}
+
 void Chunk::destroyMesh(Renderer& ren)
 {
 	if (mesh) {
@@ -540,39 +565,23 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkLoader& owner)
                     for (int v = 0; v < 4; ++v) {
                         const FaceVertex& fv = faceVertices[face][v];
 
-                        glm::vec3 pos = fv.pos + glm::vec3(x, y, z) + glm::vec3(chunkPos.x * CHUNK_SIZE_X, chunkPos.y * CHUNK_SIZE_Y, chunkPos.z * CHUNK_SIZE_Z);
+                        glm::vec3 pos = fv.pos + glm::vec3(x, y, z)
+                            + glm::vec3(chunkPos.x * CHUNK_SIZE_X,
+                                chunkPos.y * CHUNK_SIZE_Y,
+                                chunkPos.z * CHUNK_SIZE_Z);
+
                         glm::vec2 tex = fv.tex;
 
-                        // ao
-						bool side1 = !NeighborIsEmpty(
-							x + aoOffsets[face][v][0][0],
-							y + aoOffsets[face][v][0][1],
-							z + aoOffsets[face][v][0][2],
-							owner, y);
-
-						bool side2 = !NeighborIsEmpty(
-							x + aoOffsets[face][v][1][0],
-							y + aoOffsets[face][v][1][1],
-							z + aoOffsets[face][v][1][2],
-							owner, y);
-
-                        bool corner = !NeighborIsEmpty(
-                            x + aoOffsets[face][v][2][0],
-                            y + aoOffsets[face][v][2][1],
-                            z + aoOffsets[face][v][2][2],
-                            owner, y);
-
-						float ao = CalculateAO(side1, side2, corner);
-
+                        // AO neighbors
+                        AONeighbors aoN = GetAONeighbors(face, v, nx, ny , nz, owner, y);
+                        float ao = CalculateAO(aoN.side1, aoN.side2, aoN.corner);
 
                         const BlockType& blockType = g_BlockTypes[blockId];
                         uint8_t atlasIndex = blockType.textureIndices[face];
-
                         const int cols = 16;
 
                         float cellX = float(atlasIndex % cols);
                         float cellY = 15 - (atlasIndex / cols);
-
 
                         vertices.push_back(FaceVertex{ pos, tex, cellX, cellY, finalLight, ao });
                     }
