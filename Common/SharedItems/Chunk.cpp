@@ -46,6 +46,63 @@ const int faceDirs[6][3] = {
     {  1,  0,  0 }  // +X (Right)
 };
 
+const int aoOffsets[6][4][3][3] = {
+    // -Z (Back)
+    {
+        { {0,-1,0}, {-1,0,0}, {-1,-1,0} },
+        { {0,1,0}, {-1,0,0}, {-1,1,0} },  
+        { {1,0,0}, {0,1,0}, {1,1,0} },    
+        { {1,0,0}, {0,-1,0}, {1,-1,0} }   
+    },
+    // +Z (Front)
+    {
+        { {1,0,0}, {0,-1,0}, {1,-1,0} },  
+        { {1,0,0}, {0,1,0}, {1,1,0} },    
+        { {0,1,0}, {-1,0,0}, {-1,1,0} },  
+        { {0,-1,0}, {-1,0,0}, {-1,-1,0} } 
+    },
+    // -Y (Bottom)
+    {
+        { {0,0,-1}, {-1,0,0}, {-1,0,-1} },
+        { {0,0,1}, {-1,0,0}, {-1,0,1} },  
+        { {1,0,0}, {0,0,1}, {1,0,1} },    
+        { {1,0,0}, {0,0,-1}, {1,0,-1} }   
+    },
+    // +Y (Top)
+    {
+        { {0,1,-1}, {-1,1,0}, {-1,1,-1} }, 
+        { {0,1,1}, {-1,1,0}, {-1,1,1} }   ,
+        { {-1,1,0}, {0,1,1}, {1,1,1} },     
+        { {1,1,0}, {0,1,-1}, {1,1,-1} }  
+    },
+    // -X (Left)
+    {
+        { {0,-1,0}, {0,0,-1}, {0,-1,-1} },  
+        { {0,-1,0}, {0,0,1}, {0,-1,1} },   
+        { {0,1,0}, {0,0,1}, {0,1,1} },      
+        { {0,1,0}, {0,0,-1}, {0,1,-1} }   
+    },
+    // +X (Right)
+    {
+        { {0,1,0}, {0,0,1}, {0,1,1} },     
+        { {0,1,0}, {0,0,-1}, {0,1,-1} },   
+        { {0,-1,0}, {0,0,-1}, {0,-1,-1} },  
+        { {0,-1,0}, {0,0,1}, {0,-1,1} }
+    }
+};
+
+
+
+namespace {
+    float CalculateAO(bool side1, bool side2, bool corner) {
+        if (side1 && side2) return 0.3f;
+        int occlusion = (int)side1 + (int)side2 + (int)corner;
+        static const float aoLevels[4] = { 1.0f, 0.7f, 0.5f, 0.3f };
+        return aoLevels[occlusion];
+    }
+}
+
+
 
 // https://www.redblobgames.com/maps/terrain-from-noise/
 Chunk::Chunk(glm::ivec3 pos, ChunkLoader& owner)
@@ -115,9 +172,7 @@ void Chunk::NeigbourVoxelQueue(int x, int y, int z, ChunkLoader& owner)
 			owner.AddToSunlightQueue(worldPos);
             continue;
         }
-        
         sunlightBfsQueue.push(neighborIdx);
-
     }
 }
 
@@ -476,9 +531,9 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkLoader& owner)
                         const uint8_t& light = owner.GetLightAtPosition(neighborBlockPos, neighborChunkPos);
                         sampledLight = light / 15.0f;
                     }
-                    float ambient = FaceBrightness((FaceDirection)face);
+                    //float ambient = FaceBrightness((FaceDirection)face);
 					sampledLight = glm::clamp(sampledLight, 0.1f, 1.0f);
-                    float finalLight = sampledLight * ambient;
+                    float finalLight = sampledLight;
 
 
                     // Add 4 vertices for each face
@@ -487,6 +542,28 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkLoader& owner)
 
                         glm::vec3 pos = fv.pos + glm::vec3(x, y, z) + glm::vec3(chunkPos.x * CHUNK_SIZE_X, chunkPos.y * CHUNK_SIZE_Y, chunkPos.z * CHUNK_SIZE_Z);
                         glm::vec2 tex = fv.tex;
+
+                        // ao
+						bool side1 = !NeighborIsEmpty(
+							x + aoOffsets[face][v][0][0],
+							y + aoOffsets[face][v][0][1],
+							z + aoOffsets[face][v][0][2],
+							owner, y);
+
+						bool side2 = !NeighborIsEmpty(
+							x + aoOffsets[face][v][1][0],
+							y + aoOffsets[face][v][1][1],
+							z + aoOffsets[face][v][1][2],
+							owner, y);
+
+                        bool corner = !NeighborIsEmpty(
+                            x + aoOffsets[face][v][2][0],
+                            y + aoOffsets[face][v][2][1],
+                            z + aoOffsets[face][v][2][2],
+                            owner, y);
+
+						float ao = CalculateAO(side1, side2, corner);
+
 
                         const BlockType& blockType = g_BlockTypes[blockId];
                         uint8_t atlasIndex = blockType.textureIndices[face];
@@ -497,7 +574,7 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkLoader& owner)
                         float cellY = 15 - (atlasIndex / cols);
 
 
-                        vertices.push_back(FaceVertex{ pos, tex, cellX, cellY, finalLight });
+                        vertices.push_back(FaceVertex{ pos, tex, cellX, cellY, finalLight, ao });
                     }
                     // 6 indices for each face square
                     indices.push_back(indexOffset + 0);

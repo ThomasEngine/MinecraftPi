@@ -20,12 +20,12 @@ struct NoiseMaps {
 	FastNoiseLite caveNoise;
 };
 
-constexpr float GROUND_ACCEL = 30.0f; 
+constexpr float GROUND_ACCEL = 35.0f; 
 constexpr float AIR_ACCEL = 8.0f;   
 constexpr float GROUND_FRICTION = 6.0f;    
 constexpr float AIR_FRICTION = 0.0f;    
-constexpr float MAX_GROUND_SPEED = 5.0f;   
-constexpr float MAX_AIR_SPEED = 5.0f;    
+constexpr float MAX_GROUND_SPEED = 5.5f;   
+constexpr float MAX_AIR_SPEED = 5.5f;    
 constexpr float MAX_FALL_SPEED = 78.4f;   
 constexpr float JUMP_SPEED = 8.4f;   
 constexpr float GRAVITY = 32.0f;   

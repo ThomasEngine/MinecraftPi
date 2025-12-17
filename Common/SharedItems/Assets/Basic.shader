@@ -6,6 +6,7 @@ layout(location = 1) in vec2 a_TexCoord;
 layout(location = 2) in float a_CellX;
 layout(location = 3) in float a_CellY;
 layout(location = 4) in float a_Light;
+layout(location = 5) in float a_AO;
 
 out vec2 v_AtlasUV;
 out float v_LightLevel;
@@ -24,7 +25,7 @@ void main()
 {
     gl_Position = u_MVP * vec4(a_Position, 1.0);
     v_AtlasUV = a_TexCoord * vec2(u_CellWidth, u_CellHeight) + vec2(a_CellX * u_CellWidth, a_CellY * u_CellHeight);
-    v_LightLevel = a_Light * u_DayTime;
+    v_LightLevel = a_Light * u_DayTime * a_AO;
     v_DayTime = u_DayTime;
     float dist = length(gl_Position.xyz);
     v_FogFactor = clamp((far - dist) / (far - near), 0.0, 1.0);

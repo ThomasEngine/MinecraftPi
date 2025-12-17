@@ -10,12 +10,15 @@
 #include <GLES3/gl3.h>
 #endif
 
+
+
 struct FaceVertex {
     glm::vec3 pos;
     glm::vec2 tex;
     float cellX;
     float cellY;
     float light;
+    float ao = 1;
 };
 
 class Mesh {
