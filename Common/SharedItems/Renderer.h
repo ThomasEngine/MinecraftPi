@@ -60,6 +60,9 @@ public:
     void uploadMesh(Mesh& mesh);
     void destroyMesh(Mesh& m);
 
+    // Settings
+	void drawBothFaces(bool enable);
+
 	// Drawing
     void drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, const Texture& texture, GLenum primitiveType = GL_TRIANGLES);
 };

@@ -108,6 +108,14 @@ void Renderer::destroyMesh(Mesh& m) {
     m.indexCount = 0;
 }
 
+void Renderer::drawBothFaces(bool enable)
+{
+	if (enable)
+		glDisable(GL_CULL_FACE);
+	else
+		glEnable(GL_CULL_FACE);
+}
+
 void Renderer::drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, const Texture& texture, GLenum primitiveType) {
     GLuint program = sh.GetID();
     GLuint tex = texture.GetID();

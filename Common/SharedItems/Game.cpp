@@ -179,6 +179,11 @@ void Game::Start()
 		crosshair.Update(graphics->GetWindowWidth(), graphics->GetWindowHeight());
 		// Render
 		Render();
+		float playerUnderwater = m_Player.GetUnderWater() ? 1.f : 0.f;
+		printf("UnderWater: %.2f       \r", playerUnderwater);
+		shader.Bind();
+		shader.SetUniform1f("u_UnderWater", playerUnderwater);
+
 		
 		world->Draw(projView, shader, *testTex);
 			

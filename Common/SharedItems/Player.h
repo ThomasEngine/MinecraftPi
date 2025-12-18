@@ -29,6 +29,7 @@ public:
 	void SetSprinting(bool s) { m_Sprinting = s; }
 	void SetChrouching(bool c) { m_Crouching = c; }
 	void SetInWater(bool w) { m_InWater = w; }
+	bool GetUnderWater() const;
 
 private:
 	CollisionSystem* m_CS;
@@ -38,6 +39,7 @@ private:
 	bool m_Sprinting{ false };
 	bool m_Crouching{ false };
 	bool m_InWater{ false };
+	bool m_UnderWater{ false };
 	bool m_SpacePressed{ false };
 	float m_MovementSpeed;
 	glm::vec3 m_Vel{ 0.0f, 0.0f, 0.0f };

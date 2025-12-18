@@ -275,9 +275,12 @@ void ChunkLoader::Draw(const glm::mat4 viewProj, Shader& shader, Texture& tex)
     for (auto chunk : m_InShotRenderList) {
         chunk->DrawSolid(m_Renderer, viewProj, shader, tex);
     }
+
+    m_Renderer.drawBothFaces(true);
     for (auto chunk : m_InShotRenderList) {
         chunk->DrawTransparent(m_Renderer, viewProj, shader, tex);
     }
+    m_Renderer.drawBothFaces(false);
 }
 
 uint8_t ChunkLoader::GetBlockAtPosition(const glm::vec3& position, const glm::ivec3& chunkPos)

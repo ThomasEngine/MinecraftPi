@@ -247,6 +247,13 @@ void Player::SetFlying(bool b)
 	m_Flying = b;
 }
 
+bool Player::GetUnderWater() const
+{
+	glm::vec3 pos = m_Camera->GetPosition();
+	pos.y += 1.9f;
+	return m_CS->IsInWater(pos, m_PlayerRect);
+}
+
 void Player::SetPosition(const glm::vec3& pos)
 {
 	m_Pos = pos;
