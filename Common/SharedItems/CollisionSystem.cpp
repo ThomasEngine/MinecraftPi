@@ -46,6 +46,7 @@ bool CollisionSystem::CehckPlayerToBlock(const glm::vec3& PlayerPos, const glm::
 
 bool CollisionSystem::IsInWater(const glm::vec3& posToCheck, const glm::vec3& dimension)
 {
+
     glm::vec3 halfDims = dimension * 0.5f;
     glm::vec3 minCorner = posToCheck - halfDims;
     glm::vec3 maxCorner = posToCheck + halfDims;

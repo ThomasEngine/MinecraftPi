@@ -38,6 +38,7 @@ private:
 	bool m_Sprinting{ false };
 	bool m_Crouching{ false };
 	bool m_InWater{ false };
+	bool m_SpacePressed{ false };
 	float m_MovementSpeed;
 	glm::vec3 m_Vel{ 0.0f, 0.0f, 0.0f };
 	glm::vec3 m_Pos{ 0.0f, 0.0f, 0.0f };

@@ -22,6 +22,7 @@ void Player::Update(float deltaTime)
 	m_CS->IsInWater(m_Camera->GetPosition(), m_PlayerRect) ? SetInWater(true) : SetInWater(false);
 	Move(deltaTime);
 
+	m_SpacePressed = false;
 }
 
 void Player::Move(float deltaTime)
@@ -39,10 +40,11 @@ void Player::UpdateMoveXZ(float deltaTime)
 		m_WishDir = glm::normalize(m_WishDir);
 	}
 
-	// Apply acceleration and friction
+	// Determen what values to use for physics calculations
 	float accel = m_OnGround ? GROUND_ACCEL : AIR_ACCEL;
 	float friction = m_OnGround ? GROUND_FRICTION : AIR_FRICTION;
 	float maxSpeed = m_OnGround ? MAX_GROUND_SPEED : MAX_AIR_SPEED;
+
 	// if in water
 	if (m_InWater)
 	{
@@ -155,11 +157,19 @@ void Player::MoveRight(float deltaTime)
 
 void Player::Jump(float deltaTime)
 {
+	m_SpacePressed = true;
 	if (m_Flying)
 	{
 		glm::vec3 nextPos = m_Camera->GetPosition() + glm::vec3(0.f, 1.f, 0.f) * m_MovementSpeed * deltaTime;
 		if (!m_CS->CheckGridCollision(nextPos, m_PlayerRect))
 			SetPosition(nextPos);
+	}
+	else if (m_InWater)
+	{
+
+		//float jumpBoost = JUMP_SPEED * 0.7f;
+		//m_Vel.y = jumpBoost;
+		//m_OnGround = false;
 	}
 	else
 	{
@@ -175,29 +185,52 @@ void Player::Jump(float deltaTime)
 void Player::UpdateMoveY(float deltaTime)
 {
 	if (m_Flying) return;
-	// Apply gravity
 
 	float grav = m_InWater ? GRAVITY * 0.1f : GRAVITY;
 	float maxFall = m_InWater ? MAX_FALL_SPEED * 0.1f : MAX_FALL_SPEED;
 
-	m_Vel.y -= grav * deltaTime;
-	if (m_Vel.y > maxFall) m_Vel.y = maxFall;
+	const float buoyancyStrength = 150.0f; 
+	const float damping = 0.85f;          
+	const float surfaceSlack = 0.8f; 
 
-	// Create a new position to check for collisions
+	float waterSurfaceY = 66.0f;
+	float playerY = m_Pos.y;
+
+	if (m_InWater && m_SpacePressed) {
+		float depth = waterSurfaceY - playerY; // positive if below surface
+		if (depth > surfaceSlack) {
+			// Apply buoyancy proportional to depth
+			m_Vel.y += buoyancyStrength * (depth / 5 + surfaceSlack) * deltaTime;
+			// Damping for bounce
+			m_Vel.y *= damping;
+		}
+		else {
+			// If above surface, let gravity pull down
+			m_Vel.y -= grav * deltaTime;
+		}
+	}
+	else {
+		// Normal gravity (or slow gravity in water)
+		m_Vel.y -= grav * deltaTime;
+	}
+
+	// Clamp fall speed
+	if (m_Vel.y < -maxFall) m_Vel.y = -maxFall;
+
+	// Move and check collision
 	glm::vec3 newPos = m_Camera->GetPosition();
 	float changeY = m_Vel.y * deltaTime;
 	newPos.y += changeY;
 
-	// Check for collisions and update position if no collision
 	if (!m_CS->CheckGridCollision(newPos, m_PlayerRect))
 	{
 		SetPosition(newPos);
-		m_OnGround = false; // in the air
+		m_OnGround = false;
 	}
 	else
 	{
 		m_Vel.y = 0;
-		m_OnGround = true; // on the ground
+		m_OnGround = true;
 	}
 }
 
@@ -222,7 +255,7 @@ void Player::SetPosition(const glm::vec3& pos)
 
 bool Player::CanJump() const
 {
-	if (m_InWater) return true;
+	if (m_InWater) return false;
 	if (m_Flying) return true;
 	if (m_OnGround) return true;
 	return false;
