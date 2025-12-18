@@ -306,7 +306,7 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 			int blockX = int(floor(pos.x));
 			int blockY = int(floor(pos.y));
 			int blockZ = int(floor(pos.z));
-			if (world->GetBlockAtPosition(glm::vec3(blockX, blockY, blockZ)) != 0) // 0 == air
+			if (g_BlockTypes[world->GetBlockAtPosition(glm::vec3(blockX, blockY, blockZ))].isSolid) 
 			{
 				blockPosRayOutline = glm::ivec3(blockX, blockY, blockZ);
 				m_OnBlock->Update(gameDeltaTime, blockPosRayOutline);
@@ -342,7 +342,7 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 			int blockX = int(floor(pos.x));
 			int blockY = int(floor(pos.y));
 			int blockZ = int(floor(pos.z));
-			if (world->GetBlockAtPosition(glm::vec3(blockX, blockY, blockZ)) != B_AIR)
+			if (g_BlockTypes[world->GetBlockAtPosition(glm::vec3(blockX, blockY, blockZ))].isSolid)
 			{
 				if (collisionSystem->CehckPlayerToBlock(m_Camera.GetPosition(), lastAirBlock, m_Player.getRect()))
 				{

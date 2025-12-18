@@ -28,7 +28,7 @@ public:
 	glm::vec3 getRect() const { return m_PlayerRect; }
 	void SetSprinting(bool s) { m_Sprinting = s; }
 	void SetChrouching(bool c) { m_Crouching = c; }
-
+	void SetInWater(bool w) { m_InWater = w; }
 
 private:
 	CollisionSystem* m_CS;
@@ -37,6 +37,7 @@ private:
 	bool m_OnGround{ false };
 	bool m_Sprinting{ false };
 	bool m_Crouching{ false };
+	bool m_InWater{ false };
 	float m_MovementSpeed;
 	glm::vec3 m_Vel{ 0.0f, 0.0f, 0.0f };
 	glm::vec3 m_Pos{ 0.0f, 0.0f, 0.0f };
@@ -46,5 +47,6 @@ private:
 	glm::vec3 m_PlayerRect = { 0.8f, 1.9f, 0.6 };
 
 	void SetPosition(const glm::vec3& pos);
+	bool CanJump() const;
 };
 

@@ -298,6 +298,11 @@ void Chunk::ApplySunlight(ChunkLoader& owner)
             }
 
             Voxel& neighbor = blocks[neighborIdx];
+            if (neighbor.blockID == B_WATER)
+            {
+				newLight = newLight > 4 ? newLight - 2 : 0;
+            }
+
             if (g_BlockTypes[neighbor.blockID].isTransparent && neighbor.lightLevel < newLight) {
                 neighbor.lightLevel = newLight;
                 sunlightBfsQueue.emplace(neighborIdx);
