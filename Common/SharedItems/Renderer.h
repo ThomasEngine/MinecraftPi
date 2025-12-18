@@ -6,6 +6,7 @@
 #include <functional>
 #include <cstddef>
 #include "Mesh.h"
+#include <imgui/imgui_impl_opengl3.h>
 
 #ifdef WINDOWS_BUILD
 //include glad and glfw for Windows build

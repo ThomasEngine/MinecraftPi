@@ -75,6 +75,8 @@ private:
 	CollisionSystem* collisionSystem = nullptr;
 	bool speedBoost;
 	bool canBreakBlock = true;
+	bool renderimGUI = false;
+	uint8_t blockToPlace = 1;
 	float blockTimer = 0;
 	int frameCount{0};
 };

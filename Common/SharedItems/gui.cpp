@@ -1,6 +1,7 @@
 #include "gui.h"
 
 #include "Player.h"
+#include "BlockRegistery.h"
 #include "World.h"
 #include "Camera.h"
 
@@ -63,10 +64,9 @@ void Gui::NewFrame()
     ImGui::NewFrame();
 }
 
-void Gui::Window(float& FPS, float& moveSpeed, float& dayTime)
+void Gui::Window(float& FPS, float& moveSpeed, float& dayTime, uint8_t& block)
 {
 	glm::vec3 camPos = player->GetCamera()->GetPosition();
-
 	ImGui::Begin("Debug");
 
 
@@ -100,6 +100,30 @@ void Gui::Window(float& FPS, float& moveSpeed, float& dayTime)
 
 	ImGui::SliderFloat("Move Speed", &moveSpeed, 6.f, 42.f);
 	ImGui::SliderFloat("Time", &dayTime, 0.f, 11.9f);
+
+	ImGui::Text("--Block to place--");
+	const char* listBlocks[] = {
+		g_BlockTypes[B_DIRT].name,
+		g_BlockTypes[B_GRASS].name,
+		g_BlockTypes[B_STONE].name,
+		g_BlockTypes[B_COBBLESTONE].name,
+		g_BlockTypes[B_OAK_LOG].name,
+		g_BlockTypes[B_OAK_PLANK].name,
+		g_BlockTypes[B_OAK_LEAF].name,
+		g_BlockTypes[B_BEDROCK].name,
+		g_BlockTypes[B_SAND].name,
+		g_BlockTypes[B_GRAVEL].name,
+		g_BlockTypes[B_WATER].name,
+		g_BlockTypes[B_GRANITE].name,
+		g_BlockTypes[B_DIORITE].name,
+		g_BlockTypes[B_GLOWSTONE].name,
+	};
+
+	static int currentBlock = block + 1;
+	if (ImGui::ListBox("##Blocks", &currentBlock, listBlocks, IM_ARRAYSIZE(listBlocks), 4))
+	{
+		block = currentBlock + 1;
+	}
 
 	ImGui::End();
 }

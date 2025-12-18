@@ -380,13 +380,13 @@ bool Chunk::NeighborIsEmpty(int nx, int ny, int nz, ChunkLoader& owner, int y) c
         neighborBlockPos.x = nx < 0 ? CHUNK_SIZE_X - 1 : (nx >= CHUNK_SIZE_X ? 0 : nx);
         neighborBlockPos.z = nz < 0 ? CHUNK_SIZE_Z - 1 : (nz >= CHUNK_SIZE_Z ? 0 : nz);
         uint8_t neighborChunkBlockId = owner.GetBlockAtPosition(neighborBlockPos, neighborChunkPos);
-        if (neighborChunkBlockId != B_AIR && neighborChunkBlockId != B_WATER)
+        if (!g_BlockTypes[neighborChunkBlockId].isTransparent)
             return false;
     }
     else
     {
         uint8_t neighborBlockId = GetBlock(nx, ny, nz);
-        if (neighborBlockId != B_AIR && neighborBlockId != B_WATER)
+        if (!g_BlockTypes[neighborBlockId].isTransparent)
             return false;
     }
     return true;
@@ -466,38 +466,79 @@ void Chunk::createTransparentMesh(Renderer& renderer, ChunkLoader& owner)
         for (int y = 0; y < CHUNK_SIZE_Y; ++y) {
             for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
                 uint8_t blockId = GetBlock(x, y, z);
-                if (blockId != B_WATER) continue;
+                if (!g_BlockTypes[blockId].isTransparent || blockId == B_AIR) continue;
 
                 // Only draw the top layer of water
                 if (blockId == B_WATER) {
                     uint8_t aboveBlock = (y + 1 < CHUNK_SIZE_Y) ? GetBlock(x, y + 1, z) : B_AIR;
                     if (aboveBlock == B_WATER) continue;
+
+                    // Add 4 vertices for each face
+                    for (int v = 0; v < 4; ++v) {
+                        const FaceVertex& fv = faceVertices[face][v];
+                        glm::vec3 pos = fv.pos + glm::vec3(x, y, z) + glm::vec3(chunkPos.x * CHUNK_SIZE_X, chunkPos.y * CHUNK_SIZE_Y, chunkPos.z * CHUNK_SIZE_Z);
+                        glm::vec2 tex = fv.tex;
+
+                        const BlockType& blockType = g_BlockTypes[blockId];
+                        uint8_t atlasIndex = blockType.textureIndices[face];
+
+                        const int cols = 16;
+
+                        float cellX = float(atlasIndex % cols);
+                        float cellY = 15 - (atlasIndex / cols);
+
+                        vertices.push_back(FaceVertex{ pos, tex, cellX, cellY, 1 });
+                    }
+                    // 6 indices for each face square
+                    indices.push_back(indexOffset + 0);
+                    indices.push_back(indexOffset + 1);
+                    indices.push_back(indexOffset + 2);
+                    indices.push_back(indexOffset + 0);
+                    indices.push_back(indexOffset + 2);
+                    indices.push_back(indexOffset + 3);
+                    indexOffset += 4;
                 }
+                else // not water
+                {
+                    for (int face = 0; face < 6; ++face) {
+						int nx = x + faceDirs[face][0];
+						int ny = y + faceDirs[face][1];
+						int nz = z + faceDirs[face][2];
 
-                // Add 4 vertices for each face
-                for (int v = 0; v < 4; ++v) {
-                    const FaceVertex& fv = faceVertices[face][v];
-                    glm::vec3 pos = fv.pos + glm::vec3(x, y, z) + glm::vec3(chunkPos.x * CHUNK_SIZE_X, chunkPos.y * CHUNK_SIZE_Y, chunkPos.z * CHUNK_SIZE_Z);
-                    glm::vec2 tex = fv.tex;
+                        // Add 4 vertices for each face
+                        for (int v = 0; v < 4; ++v) {
+                            const FaceVertex& fv = faceVertices[face][v];
 
-                    const BlockType& blockType = g_BlockTypes[blockId];
-                    uint8_t atlasIndex = blockType.textureIndices[face];
+                            glm::vec3 pos = fv.pos + glm::vec3(x, y, z)
+                                + glm::vec3(chunkPos.x * CHUNK_SIZE_X,
+                                    chunkPos.y * CHUNK_SIZE_Y,
+                                    chunkPos.z * CHUNK_SIZE_Z);
 
-                    const int cols = 16;
+                            glm::vec2 tex = fv.tex;
 
-                    float cellX = float(atlasIndex % cols);
-                    float cellY = 15 - (atlasIndex / cols);
+                            // AO neighbors
+                            AONeighbors aoN = GetAONeighbors(face, v, nx, ny, nz, owner, y);
+                            float ao = CalculateAO(aoN.side1, aoN.side2, aoN.corner);
 
-                    vertices.push_back(FaceVertex{ pos, tex, cellX, cellY, 1 });
+                            const BlockType& blockType = g_BlockTypes[blockId];
+                            uint8_t atlasIndex = blockType.textureIndices[face];
+                            const int cols = 16;
+
+                            float cellX = float(atlasIndex % cols);
+                            float cellY = 15 - (atlasIndex / cols);
+
+                            vertices.push_back(FaceVertex{ pos, tex, cellX, cellY, 1, ao });
+                        }
+                        // 6 indices for each face square
+                        indices.push_back(indexOffset + 0);
+                        indices.push_back(indexOffset + 1);
+                        indices.push_back(indexOffset + 2);
+                        indices.push_back(indexOffset + 0);
+                        indices.push_back(indexOffset + 2);
+                        indices.push_back(indexOffset + 3);
+                        indexOffset += 4;
+                    }
                 }
-                // 6 indices for each face square
-                indices.push_back(indexOffset + 0);
-                indices.push_back(indexOffset + 1);
-                indices.push_back(indexOffset + 2);
-                indices.push_back(indexOffset + 0);
-                indices.push_back(indexOffset + 2);
-                indices.push_back(indexOffset + 3);
-                indexOffset += 4;
             }
         }
     }

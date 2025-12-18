@@ -56,6 +56,8 @@ void ChunkLoader::SetBlockAtPosition(const glm::vec3& worldPos, const uint8_t& b
 	if (it != m_ChunkLoadTasks.end()) {
 		it->second.chunk->SetBlock(int(position.x), int(position.y), int(position.z), block);
         it->second.chunk->NeigbourVoxelQueue(int(position.x), int(position.y), int(position.z), *this);
+		if (g_BlockTypes[block].isTransparent) it->second.chunk->hasTransparentBlocks = true;
+		it->second.chunk->createTransparentMesh(m_Renderer, *this);
         ReloadNeighborChunks(chunkPos);
 		it->second.pendingSunlightFill = true;
 		it->second.pendingMesh = false;

@@ -53,9 +53,11 @@ vec3 underWaterColor = vec3(0.0, 0.4, 0.7);
 void main()
 {
     color = texture(u_TextureAtlas, v_AtlasUV);
+    float alpha = color.a;
     color.rgb *= v_LightLevel;
     color.rgb = mix(underWaterColor, color.rgb,  1 - v_UnderWater * 0.25);
     color.rgb = mix(fogColor, color.rgb, v_FogFactor);
+    color.a = alpha;
 }
 
 

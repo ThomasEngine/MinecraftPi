@@ -25,7 +25,7 @@ public:
 #endif
     void SetupPi();
     void NewFrame();
-    void Window(float& FPS, float& movespeed, float& daytime);
+    void Window(float& FPS, float& movespeed, float& daytime, uint8_t& block);
 	void AddTextWithData(const char* text, float&); 
     void Render();
     void ShutDown();

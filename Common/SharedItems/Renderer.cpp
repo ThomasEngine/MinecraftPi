@@ -110,8 +110,10 @@ void Renderer::destroyMesh(Mesh& m) {
 
 void Renderer::drawBothFaces(bool enable)
 {
-	if (enable)
+    if (enable)
+    {
 		glDisable(GL_CULL_FACE);
+    }
 	else
 		glEnable(GL_CULL_FACE);
 }

@@ -206,9 +206,13 @@ void Game::Start()
 		crosshair.Render(renderer, *testTex);
 		// Post Render
 		PostRender();
-		gui->NewFrame();
-		gui->Window(averageFPS, moveSpeed, dayTime);
-		gui->Render();
+		if (renderimGUI)
+		{
+			gui->NewFrame();
+			gui->Window(averageFPS, moveSpeed, dayTime, blockToPlace);
+			gui->Render();
+		}
+
 		//printf("Avera/e FPS: %.2f\r", averageFPS);
 
 		graphics->SwapBuffer();
@@ -280,6 +284,7 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 		dynamic_cast<WindowsGraphics*>(graphics)->ToggleCurser();
 		canBreakBlock = false;
 		blockTimer = 0;
+		renderimGUI = !renderimGUI;
 	}
 #endif 
 
@@ -353,7 +358,7 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 				{
 					break;
 				}
-				world->PlaceBlockAtPosition(lastAirBlock, 2); 
+				world->PlaceBlockAtPosition(lastAirBlock, blockToPlace); 
 				canBreakBlock = false;
 				blockTimer = 0;
 				break;

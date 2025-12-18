@@ -99,10 +99,12 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_OAK_LOG].name = "Oak Log";
 	g_BlockTypes[B_OAK_LOG].isSolid = true;
 	g_BlockTypes[B_OAK_LOG].isTransparent = false;
-	for (int i = 0; i < 6; i++)
-	{
-		g_BlockTypes[B_OAK_LOG].textureIndices[i] = 3;
-	}
+	g_BlockTypes[B_OAK_LOG].textureIndices[0] = 20; // Top
+	g_BlockTypes[B_OAK_LOG].textureIndices[1] = 20; // Bottom
+	g_BlockTypes[B_OAK_LOG].textureIndices[2] = 21; // Front
+	g_BlockTypes[B_OAK_LOG].textureIndices[3] = 21; // Back
+	g_BlockTypes[B_OAK_LOG].textureIndices[4] = 20; // Left
+	g_BlockTypes[B_OAK_LOG].textureIndices[5] = 20; // Right
 
 	// Oak Plank
 	g_BlockTypes[B_OAK_PLANK] = BlockType();
@@ -111,7 +113,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_OAK_PLANK].isTransparent = false;
 	for (int i = 0; i < 6; i++)
 	{
-		g_BlockTypes[B_OAK_PLANK].textureIndices[i] = 3;
+		g_BlockTypes[B_OAK_PLANK].textureIndices[i] = 4;
 	}
 
 	// Bedrock
@@ -121,7 +123,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_BEDROCK].isTransparent = false;
 	for (int i = 0; i < 6; i++)
 	{
-		g_BlockTypes[B_BEDROCK].textureIndices[i] = 3;
+		g_BlockTypes[B_BEDROCK].textureIndices[i] = 16;
 	}
 
 	// Water
@@ -144,4 +146,15 @@ void InitializeBlockTypes()
 		g_BlockTypes[B_GLOWSTONE].textureIndices[i] = 105;
 	}
 	g_BlockTypes[B_GLOWSTONE].lightStrength = 15;
+
+	// Leaves
+	g_BlockTypes[B_OAK_LEAF] = BlockType();
+	g_BlockTypes[B_OAK_LEAF].name = "Oak Leaf";
+	g_BlockTypes[B_OAK_LEAF].isSolid = true;
+	g_BlockTypes[B_OAK_LEAF].isTransparent = true;
+	for (int i = 0; i < 6; i++)
+	{
+		//g_BlockTypes[B_OAK_LEAF].textureIndices[i] = 15 * 3 + 5; diamond ore
+		g_BlockTypes[B_OAK_LEAF].textureIndices[i] = 15 * 3 + 7;
+	}	
 }
