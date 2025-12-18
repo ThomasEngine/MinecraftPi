@@ -101,6 +101,45 @@ void ChunkLoader::AddToSunlightQueue(const glm::ivec3& worldPos)
 	}
 }
 
+void ChunkLoader::PlaceTree(const glm::ivec3& worldPos)
+{
+	glm::ivec3 chunkPos = WorldToChunkPos(glm::vec3(worldPos));
+	glm::vec3 position = glm::vec3(
+		int(std::floor(worldPos.x)) - chunkPos.x * CHUNK_SIZE_X,
+		int(std::floor(worldPos.y)),
+		int(std::floor(worldPos.z)) - chunkPos.z * CHUNK_SIZE_Z
+	);
+	auto it = m_ChunkLoadTasks.find(chunkPos);
+	if (it != m_ChunkLoadTasks.end()) {
+		// Simple tree: trunk of height 5 and a 3x3 leaf canopy
+		for (int dx = -1; dx <= 1; ++dx) {
+			for (int dz = -1; dz <= 1; ++dz) {
+				for (int dy = 3; dy <= 5; ++dy) {
+                    if (dx == -1 && dz == -1 ||
+						dx == 1 && dz == 1 ||
+						dx == 1 && dz == -1 ||
+						dx == -1 && dz == 1)
+					{
+						if (dy == 5)
+                            continue;
+					}
+					this->SetBlockAtPosition(glm::vec3(
+						int(std::floor(worldPos.x)) + dx,
+						int(std::floor(worldPos.y)) + dy,
+						int(std::floor(worldPos.z)) + dz), B_OAK_LEAF);
+				}
+			}
+		}
+		for (int y = 0; y < 4; ++y) {
+			it->second.chunk->SetBlock(int(position.x), int(position.y) + y, int(position.z), B_OAK_LOG);
+		}
+		it->second.pendingSunlightFill = true;
+		it->second.pendingMesh = false;
+		it->second.renderReady = false;
+		it->second.reloaded = false;
+	}
+}
+
 void ChunkLoader::Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& viewProjMatrix)
 {
     m_CameraDir = camDir;
@@ -172,6 +211,7 @@ void ChunkLoader::ProccessChunkLoadingAsync(Renderer& renderer)
     for (auto& pair : m_ChunkLoadTasks) {
         ChunkLoadTask& task = pair.second;
         if (task.pendingSunlightFill && AreNeighborsLoaded(task.chunkPos) && !task.reloaded) {
+			task.chunk->PlaceTrees(renderer, *this);
             //task.chunk->PropagateLight(*this);
             task.pendingSunlight = false;
             //task.pendingSunlightFill = true;
@@ -218,6 +258,12 @@ void ChunkLoader::ProcessChunkLoading(Renderer& renderer)
         m_RenderList.push_back(createdChunks[i]);
         m_ChunkLoadTasks.emplace(chunkPositions[i], ChunkLoadTask{ chunkPositions[i], createdChunks[i] });
     }
+
+    //#pragma omp parallel for
+	/*for (int i = 0; i < int(chunkPositions.size()); ++i) {
+		createdChunks[i]->PlaceTrees(m_Renderer, * this);
+	}*/
+
 }
 
 void ChunkLoader::ProcessChunkUnloading(Renderer& renderer)

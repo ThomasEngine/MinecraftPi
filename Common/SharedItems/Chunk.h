@@ -65,7 +65,9 @@ public:
 	void PropagateLight(ChunkLoader& owner);
 	void ReapplyBorderLight(ChunkLoader& owner);
 
+	void PlaceTrees(Renderer& ren, ChunkLoader& owner);
 private:
+	std::vector<glm::ivec3> m_TreePositions;
 
 	void GenerateTerrain(ChunkLoader& owner);
 	inline int GetBlockIndex(int x, int y, int z) const;

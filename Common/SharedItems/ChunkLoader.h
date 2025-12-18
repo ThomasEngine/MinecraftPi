@@ -61,6 +61,7 @@ public:
 	void SetBlockAtPosition(const glm::vec3& worldPos, const uint8_t& block);
 	void RemoveBlockAtPosition(const glm::vec3& worldPos);
 	void AddToSunlightQueue(const glm::ivec3& worldPos); 
+	void PlaceTree(const glm::ivec3& worldPos);
 	
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;
 private:

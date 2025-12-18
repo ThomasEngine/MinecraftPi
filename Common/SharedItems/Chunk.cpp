@@ -102,6 +102,21 @@ namespace {
 		int aoIndex = side1 + side2 + corner;
 		return AOs[3 - aoIndex];
     }
+
+    float TreeRandom(int x, int z, int seed = 1337)
+    {
+        int n = x + z * 57 + seed;
+        n = (n << 13) ^ n;
+        int nn = (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff;
+        return float(nn) / 2147483647.0f; // [0,1]
+    }
+
+
+    glm::ivec3 GetWorldPos(int dx, int dy, int dz, glm::ivec3 chunkPos)
+    {
+        glm::ivec3 worldPos = chunkPos * glm::ivec3(CHUNK_SIZE_X, 0, CHUNK_SIZE_Z) + glm::ivec3(dx, dy, dz);
+		return worldPos;
+    }
 }
 
 
@@ -220,7 +235,16 @@ void Chunk::GenerateTerrain(ChunkLoader & owner)
                     else if (height > maxHeight - 10)
                         SetBlock(x, y, z, B_GRAVEL);
                     else
+                    {
                         SetBlock(x, y, z, B_GRASS);
+                        glm::ivec3 chunkSize = { 16, 0 ,16 };
+						glm::ivec3 worldPos = chunkPos * chunkSize + glm::ivec3(x,y,z);
+                        if (TreeRandom(worldPos.x, worldPos.z) >  0.99f)
+                        {
+                            worldPos.y += 1;
+							m_TreePositions.push_back(worldPos);
+                        }
+                    }
                 }
                 else if (y > intHeight - 5) {
                     SetBlock(x, y, z, B_DIRT);
@@ -262,6 +286,21 @@ void Chunk::GenerateTerrain(ChunkLoader & owner)
 
         }
     }
+}
+
+void Chunk::PlaceTrees(Renderer& ren, ChunkLoader& owner)
+{
+    if (!m_TreePositions.empty())
+    {
+        for (const auto& worldPos : m_TreePositions)
+        {
+            owner.PlaceTree(worldPos);
+        }
+		PropagateLight(owner);
+        createTransparentMesh(ren, owner);
+        hasTransparentBlocks = true;
+    }
+
 }
 
 void Chunk::ApplySunlight(ChunkLoader& owner)
@@ -452,6 +491,11 @@ void Chunk::uploadChunkMesh(Renderer& renderer, ChunkLoader& owner)
 
 void Chunk::createTransparentMesh(Renderer& renderer, ChunkLoader& owner)
 {
+	if (transparentMesh && m_TreePositions.size() > 0 && hasTransparentBlocks)
+	{
+        m_TreePositions.clear();
+        return;
+	}
     if (transparentMesh) {
         renderer.destroyMesh(*transparentMesh);
     }
@@ -543,8 +587,13 @@ void Chunk::createTransparentMesh(Renderer& renderer, ChunkLoader& owner)
         }
     }
     transparentMesh = std::make_unique<Mesh>(vertices, indices);
+	hasTransparentBlocks = true;
     renderer.uploadMesh(*transparentMesh);
     vertices.clear();
+	transparentMesh.get()->vertices.clear();
+	transparentMesh.get()->vertices.shrink_to_fit();
+	transparentMesh.get()->indices.clear();
+	transparentMesh.get()->indices.shrink_to_fit();
     indices.clear();
 }
 
@@ -566,7 +615,7 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkLoader& owner)
 
                 if (g_BlockTypes[blockId].isTransparent)
                 {
-                    if (blockId == B_WATER) hasTransparentBlocks = true;
+                    hasTransparentBlocks = true;
                     continue;
                 }
 
@@ -648,6 +697,10 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkLoader& owner)
     renderer.uploadMesh(*mesh);
     vertices.clear();
     indices.clear();
+	mesh.get()->vertices.clear();
+	mesh.get()->vertices.shrink_to_fit();
+	mesh.get()->indices.clear();
+	mesh.get()->indices.shrink_to_fit();
 }
 
 void Chunk::DrawSolid(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const
