@@ -111,7 +111,6 @@ namespace {
         return float(nn) / 2147483647.0f; // [0,1]
     }
 
-
     glm::ivec3 GetWorldPos(int dx, int dy, int dz, glm::ivec3 chunkPos)
     {
         glm::ivec3 worldPos = chunkPos * glm::ivec3(CHUNK_SIZE_X, 0, CHUNK_SIZE_Z) + glm::ivec3(dx, dy, dz);
@@ -294,7 +293,8 @@ void Chunk::PlaceTrees(Renderer& ren, ChunkLoader& owner)
     {
         for (const auto& worldPos : m_TreePositions)
         {
-            owner.PlaceTree(worldPos);
+            if (CanPlaceTreeAt(worldPos))
+                owner.PlaceTree(worldPos);
         }
 		m_TreePositions.clear();
 		PropagateLight(owner);
@@ -465,6 +465,24 @@ AONeighbors Chunk::GetAONeighbors(int face, int vertex, int x, int y, int z, Chu
 
     return result;
 }
+
+bool Chunk::CanPlaceTreeAt(const glm::ivec3& worldPos) const
+{
+    glm::ivec3 location = worldPos;
+	// worldPos to chunk local pos
+	glm::ivec3 chunkSize = { CHUNK_SIZE_X, 0 ,CHUNK_SIZE_Z };
+	location -= chunkPos * chunkSize;
+
+	// check block below is dirt or grass
+    location.y -= 1;
+
+	int index = GetBlockIndex(location.x, location.y, location.z);
+	if (index == -1) return false;
+	uint8_t blockId = blocks[index].blockID;
+	if (blockId != B_GRASS && blockId != B_DIRT) return false;
+	return true;
+}
+
 
 void Chunk::destroyMesh(Renderer& ren)
 {

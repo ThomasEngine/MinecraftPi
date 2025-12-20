@@ -37,10 +37,11 @@
 #include "MobFactory.h"
 
 
-Game::Game(const Input* const input, IGraphics* graphics/*, Gui* mGui*/) :
+Game::Game(const Input* const input, IGraphics* graphics) :
 	input(input),
 	graphics(graphics),
-	m_Camera(WINDOW_WIDTH, WINDOW_HEIGHT)
+	m_Camera(WINDOW_WIDTH, WINDOW_HEIGHT),
+	m_InputManager(input)
 {
 
 }
@@ -112,31 +113,26 @@ void Game::Start()
 	world->SetCollisionSystem(m_CollisionSystem);
 
 
-	// Create input command map
-	keyCommandMap[Key::W] = std::make_unique<MoveForwardCommand>();
-	keyCommandMap[Key::S] = std::make_unique<MoveBackwardCommand>();
-	keyCommandMap[Key::A] = std::make_unique<MoveLeftCommand>();
-	keyCommandMap[Key::D] = std::make_unique<MoveRightCommand>();
-	keyCommandMap[Key::SHIFT_LEFT] = std::make_unique<CrouchCommand>();
-	keyCommandMap[Key::SPACE] = std::make_unique<JumpCommand>();
+	// BindCommand 
+	m_InputManager.BindCommand("MoveForward", std::make_unique<MoveForwardCommand>());
+	m_InputManager.BindCommand("MoveBackward", std::make_unique<MoveBackwardCommand>());
+	m_InputManager.BindCommand("MoveLeft", std::make_unique<MoveLeftCommand>());
+	m_InputManager.BindCommand("MoveRight", std::make_unique<MoveRightCommand>());
+	m_InputManager.BindCommand("Crouch", std::make_unique<CrouchCommand>());
+	m_InputManager.BindCommand("Jump", std::make_unique<JumpCommand>());
+	// TODO:: ADD sprint command
+	// Bind keys to actions
+	m_InputManager.BindAction(Key::W, "MoveForward");
+	m_InputManager.BindAction(Key::S, "MoveBackward");
+	m_InputManager.BindAction(Key::A, "MoveLeft");
+	m_InputManager.BindAction(Key::D, "MoveRight");
+	m_InputManager.BindAction(Key::SHIFT_LEFT, "Crouch");
+	m_InputManager.BindAction(Key::SPACE, "Jump");
+	// Direct key to command map for simpler access in ProcessInput
+
 
 	// initialize blocks
 	Initialize();
-
-	// Create mobfactory should be in world
-	//mobFactory = new MobFactory(renderer);
-	//std::vector<Mob*> mobs;
-	//for (int i = 0; i < 2; i++)
-	//{
-	//	for (int j = 0; j < 2; j++)
-	//	{
-	//		Mob* sheepPrototype = mobFactory->create("Sheep", { 0, 170, 0 });
-	//		sheepPrototype->setPosition(glm::vec3(-j, 95, i));
-	//		sheepPrototype->SetCollisionSystem(collisionSystem);
-	//		mobs.push_back(sheepPrototype);
-	//	}
-	//}
-
 
 	dayTime = 11.9f; // Noon
 
@@ -174,6 +170,8 @@ void Game::Start()
 	
 		// Updates
 		Update(gameDeltaTime);
+		m_InputManager.Update(gameDeltaTime);
+		m_InputManager.ProcessCommands(world->GetPlayer(), gameDeltaTime);
 		shader.Bind();
 		float timeOfDay = fmod(dayTime / 12.f, 1.f);
 		shader.SetUniform1f("u_DayTime", timeOfDay);
@@ -182,6 +180,7 @@ void Game::Start()
 		world->Update(m_Camera.GetDirection(), m_Camera.GetPosition(), projView, gameDeltaTime);
 		m_Camera.Update(gameDeltaTime);
 		
+
 		crosshair.Update(graphics->GetWindowWidth(), graphics->GetWindowHeight());
 		// Render
 		Render();
@@ -191,17 +190,7 @@ void Game::Start()
 
 		
 		world->Draw(projView, shader, *testTex);
-			
-
-		// Mobs shoulud be handled by world
-		//for (auto& mob : mobs)
-		//{
-		//	mob->update(gameDeltaTime, m_Player.GetCamera()->GetPosition());
-		//	shader.Bind();
-		//	shader.SetUniform1f("u_CellWidth", 1.f / 8.f);
-		//	shader.SetUniform1f("u_CellHeight", 1.f / 8.f);
-		//	mob->render(renderer, shader, *testTex, m_Camera.GetViewProjectionMatrix());
-		//}
+		
 
 		// Gui elements
 		m_OnBlock->Render(renderer, m_Camera.GetViewProjectionMatrix(), *testTex, otherShader);
@@ -275,11 +264,6 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 		moveSpeed = 8;
 
 	m_Player.SetMoveSpeed(moveSpeed);
-	for (const auto& pair : keyCommandMap) {
-		if (keyboard.GetKey(pair.first)) {
-			pair.second->Execute(m_Player, gameDeltaTime);
-		}
-	}
 
 	if (keyboard.GetKey(Key::ESCAPE))
 		Quit();

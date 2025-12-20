@@ -19,13 +19,16 @@ uniform float u_CellWidth;
 uniform float u_CellHeight;
 uniform float u_DayTime;
 uniform float u_UnderWater;
+uniform float u_YOffset;
 
 float near = 90.0f;                    
 float far = 110.0f;      
 
 void main()
 {
-    gl_Position = u_MVP * vec4(a_Position, 1.0);
+    vec3 Position = a_Position;
+    Position.y += u_YOffset;
+    gl_Position = u_MVP * vec4(Position, 1.0);
     v_AtlasUV = a_TexCoord * vec2(u_CellWidth, u_CellHeight) + vec2(a_CellX * u_CellWidth, a_CellY * u_CellHeight);
     v_LightLevel = a_Light * u_DayTime * a_AO;
     v_DayTime = u_DayTime;

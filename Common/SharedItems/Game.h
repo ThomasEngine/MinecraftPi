@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Camera.h"
 #include "OnBlock.h"
+#include "InputManager.h"
 
 
 #ifdef WINDOWS_BUILD
@@ -64,13 +65,12 @@ private:
 	void ClearScreen();
 
 	glm::vec2 lastMouse = { 0, 0 };
-	
+	InputManager m_InputManager;
 	Camera m_Camera;
 	OnBlock* m_OnBlock;
 	World* world;
 	MobFactory* mobFactory = nullptr;
 	float dayTime;
-	std::map<Key, std::unique_ptr<ICommand>> keyCommandMap;
 	std::shared_ptr<CollisionSystem> m_CollisionSystem;
 	bool speedBoost;
 	bool canBreakBlock = true;

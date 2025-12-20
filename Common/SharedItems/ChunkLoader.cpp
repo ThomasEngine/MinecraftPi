@@ -366,14 +366,13 @@ void ChunkLoader::Draw(const glm::mat4 viewProj, Shader& shader, Texture& tex)
     }
 
     // Draw transparent blocks
-    glDepthMask(GL_FALSE);
     m_Renderer.drawBothFaces(true);
+	shader.SetUniform1f("u_YOffset", -0.1f);
     for (auto chunk : m_InShotRenderList) {
         chunk->DrawTransparent(m_Renderer, viewProj, shader, tex);
     }
- 
+	shader.SetUniform1f("u_YOffset", 0.0f);
     m_Renderer.drawBothFaces(false);
-    glDepthMask(GL_TRUE);
 
 }
 

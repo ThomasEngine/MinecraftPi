@@ -54,6 +54,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Game.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ICommand.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)InputManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Mesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MobBase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MobFactory.cpp" />
@@ -63,6 +64,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Renderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Shader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Mobs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)InputManager.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Texture.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)World.cpp" />
   </ItemGroup>

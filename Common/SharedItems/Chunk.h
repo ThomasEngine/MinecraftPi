@@ -77,5 +77,6 @@ private:
 	bool NeighborIsEmpty(int nx, int ny, int nz, ChunkLoader& owner, int y) const;
 	float FaceBrightness(FaceDirection face) const;
 	AONeighbors GetAONeighbors(int face, int vertex, int x, int y, int z, ChunkLoader& owner, int localY) const;
+    bool CanPlaceTreeAt(const glm::ivec3& loc) const;
 
 };

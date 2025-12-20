@@ -184,6 +184,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Mesh.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)InputManager.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)InputManager.h">
+      <Filter>Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.mtl">
