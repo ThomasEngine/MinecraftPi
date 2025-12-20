@@ -11,7 +11,7 @@ const glm::ivec3 offsets[] = {
 };
 
 #ifdef WINDOWS_BUILD
-    static const int numThreads = 8;
+    static const int numThreads = 12;
 #else
 	static const int numThreads = 4;
 #endif
@@ -55,9 +55,8 @@ void ChunkLoader::SetBlockAtPosition(const glm::vec3& worldPos, const uint8_t& b
 	auto it = m_ChunkLoadTasks.find(chunkPos);
 	if (it != m_ChunkLoadTasks.end()) {
 		it->second.chunk->SetBlock(int(position.x), int(position.y), int(position.z), block);
-        it->second.chunk->NeigbourVoxelQueue(int(position.x), int(position.y), int(position.z), *this);
 		if (g_BlockTypes[block].isTransparent) it->second.chunk->hasTransparentBlocks = true;
-		it->second.chunk->createTransparentMesh(m_Renderer, *this);
+        if (g_BlockTypes[block].isTransparent) it->second.chunk->createTransparentMesh(m_Renderer, *this);
         ReloadNeighborChunks(chunkPos);
 		it->second.pendingSunlightFill = true;
 		it->second.pendingMesh = false;
@@ -103,41 +102,63 @@ void ChunkLoader::AddToSunlightQueue(const glm::ivec3& worldPos)
 
 void ChunkLoader::PlaceTree(const glm::ivec3& worldPos)
 {
-	glm::ivec3 chunkPos = WorldToChunkPos(glm::vec3(worldPos));
-	glm::vec3 position = glm::vec3(
-		int(std::floor(worldPos.x)) - chunkPos.x * CHUNK_SIZE_X,
-		int(std::floor(worldPos.y)),
-		int(std::floor(worldPos.z)) - chunkPos.z * CHUNK_SIZE_Z
-	);
-	auto it = m_ChunkLoadTasks.find(chunkPos);
-	if (it != m_ChunkLoadTasks.end()) {
-		// Simple tree: trunk of height 5 and a 3x3 leaf canopy
-		for (int dx = -1; dx <= 1; ++dx) {
-			for (int dz = -1; dz <= 1; ++dz) {
-				for (int dy = 3; dy <= 5; ++dy) {
-                    if (dx == -1 && dz == -1 ||
-						dx == 1 && dz == 1 ||
-						dx == 1 && dz == -1 ||
-						dx == -1 && dz == 1)
-					{
-						if (dy == 5)
+    glm::ivec3 chunkPos = WorldToChunkPos(glm::vec3(worldPos));
+    glm::vec3 position = glm::vec3(
+        int(std::floor(worldPos.x)) - chunkPos.x * CHUNK_SIZE_X,
+        int(std::floor(worldPos.y)),
+        int(std::floor(worldPos.z)) - chunkPos.z * CHUNK_SIZE_Z
+    );
+    auto it = m_ChunkLoadTasks.find(chunkPos);
+    if (it != m_ChunkLoadTasks.end()) {
+        int heightOffset = rand() % 2; // 0-1
+        // layer 1 height 3.
+        for (int dx = -2; dx <= 2; ++dx) {
+            for (int dz = -2; dz <= 2; ++dz) {
+                this->SetBlockAtPosition(glm::vec3(
+                    int(std::floor(worldPos.x)) + dx,
+                    int(std::floor(worldPos.y)) + 3 - heightOffset,
+                    int(std::floor(worldPos.z)) + dz), B_OAK_LEAF);
+            }
+        }
+
+        // leyer 2 height 4.
+        for (int dx = -2; dx <= 2; ++dx) {
+		    for (int dz = -2; dz <= 2; ++dz) {
+			    if (std::abs(dx) == 2 && std::abs(dz) == 2)
+				    continue;
+
+			    this->SetBlockAtPosition(glm::vec3(
+				    int(std::floor(worldPos.x)) + dx,
+				    int(std::floor(worldPos.y)) + 4 - heightOffset,
+				    int(std::floor(worldPos.z)) + dz), B_OAK_LEAF);
+		    }
+        }
+
+		// layer 3 height 5.
+        for (int dx = -1; dx <= 1; ++dx) {
+            for (int dz = -1; dz <= 1; ++dz) {
+                for (int dy = 4; dy <= 6; ++dy) {
+					if (std::abs(dx) == 1 && std::abs(dz) == 1)
+                    {
+                        if (dy == 6)
                             continue;
-					}
-					this->SetBlockAtPosition(glm::vec3(
-						int(std::floor(worldPos.x)) + dx,
-						int(std::floor(worldPos.y)) + dy,
-						int(std::floor(worldPos.z)) + dz), B_OAK_LEAF);
-				}
-			}
-		}
-		for (int y = 0; y < 4; ++y) {
-			it->second.chunk->SetBlock(int(position.x), int(position.y) + y, int(position.z), B_OAK_LOG);
-		}
-		it->second.pendingSunlightFill = true;
-		it->second.pendingMesh = false;
-		it->second.renderReady = false;
-		it->second.reloaded = false;
-	}
+                    }
+                    this->SetBlockAtPosition(glm::vec3(
+                        int(std::floor(worldPos.x)) + dx,
+                        int(std::floor(worldPos.y)) + dy - heightOffset,
+                        int(std::floor(worldPos.z)) + dz), B_OAK_LEAF);
+                }
+            }
+        }
+        for (int y = 0; y < 4; ++y) {
+            it->second.chunk->SetBlock(int(position.x), int(position.y) + y, int(position.z), B_OAK_LOG);
+        }
+        it->second.pendingSunlightFill = true;
+        it->second.pendingMesh = false;
+        it->second.renderReady = false;
+        it->second.reloaded = false;
+
+    }
 }
 
 void ChunkLoader::Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& viewProjMatrix)
@@ -292,17 +313,36 @@ void ChunkLoader::UpdateInShotRenderList(const glm::mat4& viewProj)
     m_InShotRenderList.clear();
     frustum.Extract(viewProj);
 
-    for (auto chunk : m_RenderList) {
-        glm::vec3 center = glm::vec3(
-            (chunk->chunkPos.x + 0.5f) * CHUNK_SIZE_X,
-            CHUNK_SIZE_Y / 2.0f,
-            (chunk->chunkPos.z + 0.5f) * CHUNK_SIZE_Z
-        );
+    std::vector<std::shared_ptr<Chunk>> tempInShotRenderList;
+    int n = static_cast<int>(m_RenderList.size());
+    tempInShotRenderList.reserve(n);
 
-        if (frustum.BoxInFrustum(center, HALF_X, HALF_Y, HALF_Z)) {
-            m_InShotRenderList.push_back(chunk);  
+    #pragma omp parallel
+    {
+        std::vector<std::shared_ptr<Chunk>> localList;
+        #pragma omp for nowait
+        for (int i = 0; i < n; ++i) {
+            auto& chunk = m_RenderList[i];
+            glm::vec3 center = glm::vec3(
+                (chunk->chunkPos.x + 0.5f) * CHUNK_SIZE_X,
+                CHUNK_SIZE_Y / 2.0f,
+                (chunk->chunkPos.z + 0.5f) * CHUNK_SIZE_Z
+            );
+
+            if (frustum.BoxInFrustum(center, HALF_X, HALF_Y, HALF_Z)) {
+                localList.push_back(chunk);
+            }
+        }
+        #pragma omp critical
+        {
+            tempInShotRenderList.insert(
+                tempInShotRenderList.end(),
+                localList.begin(),
+                localList.end()
+            );
         }
     }
+    m_InShotRenderList = std::move(tempInShotRenderList);
 }
 
 void ChunkLoader::ReloadNeighborChunks(const glm::ivec3& chunkPos)
@@ -320,15 +360,21 @@ void ChunkLoader::ReloadNeighborChunks(const glm::ivec3& chunkPos)
 
 void ChunkLoader::Draw(const glm::mat4 viewProj, Shader& shader, Texture& tex)
 {
+    // Draw opaque blocks
     for (auto chunk : m_InShotRenderList) {
         chunk->DrawSolid(m_Renderer, viewProj, shader, tex);
     }
 
+    // Draw transparent blocks
+    glDepthMask(GL_FALSE);
     m_Renderer.drawBothFaces(true);
     for (auto chunk : m_InShotRenderList) {
         chunk->DrawTransparent(m_Renderer, viewProj, shader, tex);
     }
+ 
     m_Renderer.drawBothFaces(false);
+    glDepthMask(GL_TRUE);
+
 }
 
 uint8_t ChunkLoader::GetBlockAtPosition(const glm::vec3& position, const glm::ivec3& chunkPos)

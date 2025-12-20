@@ -40,7 +40,7 @@ class FastNoiseLite;
 class World  
 {  
 public:  
-	World(Renderer& ren);  
+	World(Renderer& ren, int seed);  
 	~World();  
 
 	void Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& viewProjMatrix);  

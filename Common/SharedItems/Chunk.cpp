@@ -296,9 +296,8 @@ void Chunk::PlaceTrees(Renderer& ren, ChunkLoader& owner)
         {
             owner.PlaceTree(worldPos);
         }
+		m_TreePositions.clear();
 		PropagateLight(owner);
-        createTransparentMesh(ren, owner);
-        hasTransparentBlocks = true;
     }
 
 }
@@ -491,11 +490,6 @@ void Chunk::uploadChunkMesh(Renderer& renderer, ChunkLoader& owner)
 
 void Chunk::createTransparentMesh(Renderer& renderer, ChunkLoader& owner)
 {
-	if (transparentMesh && m_TreePositions.size() > 0 && hasTransparentBlocks)
-	{
-        m_TreePositions.clear();
-        return;
-	}
     if (transparentMesh) {
         renderer.destroyMesh(*transparentMesh);
     }

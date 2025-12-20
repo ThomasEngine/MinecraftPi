@@ -28,3 +28,4 @@ bool Frustum::BoxInFrustum(const glm::vec3& center, float halfX, float halfY, fl
     }
     return true;
 }
+

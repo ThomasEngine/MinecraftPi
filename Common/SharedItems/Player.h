@@ -34,7 +34,7 @@ public:
 private:
 	CollisionSystem* m_CS;
 	Camera* m_Camera;
-	bool m_Flying{ false };
+	bool m_Flying{ true };
 	bool m_OnGround{ false };
 	bool m_Sprinting{ false };
 	bool m_Crouching{ false };

@@ -4,10 +4,10 @@
 #include <ctime> 
 
 
-World::World(Renderer& ren)
+World::World(Renderer& ren, int seed)
 {
     // Continentalness Noise
-    FastNoiseLite Continentalness = FastNoiseLite(1337);
+    FastNoiseLite Continentalness = FastNoiseLite(seed);
     Continentalness.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2);
     Continentalness.SetFrequency(0.0008f);
     Continentalness.SetFractalType(FastNoiseLite::FractalType::FractalType_FBm);
@@ -15,18 +15,18 @@ World::World(Renderer& ren)
     Continentalness.SetFractalGain(0.55f);
 
     // Erosion noise
-    FastNoiseLite Erosion = FastNoiseLite(42);
+    FastNoiseLite Erosion = FastNoiseLite(seed);
     Erosion.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
     Erosion.SetFrequency(0.002f);
 
     // Peaks and Valleys noise
-    FastNoiseLite PeaksAndValleys = FastNoiseLite(56);
+    FastNoiseLite PeaksAndValleys = FastNoiseLite(seed);
     PeaksAndValleys.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
     PeaksAndValleys.SetFrequency(0.005f);
     PeaksAndValleys.SetFractalType(FastNoiseLite::FractalType_Ridged);
 
     // Caves
-    FastNoiseLite CaveNoise = FastNoiseLite(9001);
+    FastNoiseLite CaveNoise = FastNoiseLite(seed);
     CaveNoise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
     CaveNoise.SetFrequency(0.02f);
 

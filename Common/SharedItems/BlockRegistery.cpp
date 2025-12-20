@@ -151,10 +151,10 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_OAK_LEAF] = BlockType();
 	g_BlockTypes[B_OAK_LEAF].name = "Oak Leaf";
 	g_BlockTypes[B_OAK_LEAF].isSolid = true;
-	g_BlockTypes[B_OAK_LEAF].isTransparent = true;
+	g_BlockTypes[B_OAK_LEAF].isTransparent = false;
 	for (int i = 0; i < 6; i++)
 	{
 		//g_BlockTypes[B_OAK_LEAF].textureIndices[i] = 15 * 3 + 5; diamond ore
-		g_BlockTypes[B_OAK_LEAF].textureIndices[i] = 15 * 3 + 7;
+		g_BlockTypes[B_OAK_LEAF].textureIndices[i] = 15 * 3 + 8;
 	}	
 }

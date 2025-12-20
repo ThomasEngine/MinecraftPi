@@ -105,7 +105,7 @@ void Game::Start()
 	shader.SetUniform1f("u_CellHeight", 1.f / 16.f);
 	testTex->Bind(0);
 
-	world = new World(renderer);
+	world = new World(renderer, rand());
 	collisionSystem = new CollisionSystem();
 	collisionSystem->SetBlockTarget(*world);
 	m_Player.SetCollisionSystem(collisionSystem);
