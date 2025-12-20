@@ -1,12 +1,13 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <memory>
 
 class CollisionSystem;
 class Camera;
 class Player
 {
 public:
-	Player(int w, int h, Camera* cam);
+	Player(Camera* cam);
 	~Player();
 
 	void AsignCamera(Camera* cam) { m_Camera = cam; }
@@ -23,16 +24,17 @@ public:
 	void Crouch(float deltaTime);
 	void SetFlying(bool b);
 	void SetMoveSpeed(float s) { m_MovementSpeed = s; }
-	void SetCollisionSystem(CollisionSystem* CS) { m_CS = CS; }
+	void SetCollisionSystem(std::shared_ptr<CollisionSystem> cs) { m_CS = cs; }
 	Camera* GetCamera() { return m_Camera; }
 	glm::vec3 getRect() const { return m_PlayerRect; }
 	void SetSprinting(bool s) { m_Sprinting = s; }
+	bool IsRunning() const;
 	void SetChrouching(bool c) { m_Crouching = c; }
 	void SetInWater(bool w) { m_InWater = w; }
 	bool GetUnderWater() const;
 
 private:
-	CollisionSystem* m_CS;
+	std::shared_ptr<CollisionSystem> m_CS;
 	Camera* m_Camera;
 	bool m_Flying{ true };
 	bool m_OnGround{ false };

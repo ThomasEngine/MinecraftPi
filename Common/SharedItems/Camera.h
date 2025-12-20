@@ -11,6 +11,7 @@ public:
     void SetLookAt(const glm::vec3& target);
     void SetPerspective(float fov, float aspect, float near, float far);
     void SetOrthographic(float left, float right, float bottom, float top, float near, float far);
+	void SetSprintFov(bool isSprinting);
 
     // Getters
     glm::vec3 GetPosition() const;
@@ -29,12 +30,17 @@ public:
     void AddYaw(float delta);
     void AddPitch(float delta);
 
+    // Update
+	void Update(float deltaTime);
+
 private:
-    glm::vec3 m_position;
-    glm::vec3 m_rotation; 
-    glm::mat4 m_view;
-    glm::mat4 m_proj; 
-    float m_yaw = 0.0f;
-    float m_pitch = 0.0f;
-    bool m_isPerspective;
+    glm::vec3 m_Position;
+    glm::vec3 m_Rotation; 
+    glm::mat4 m_View;
+    glm::mat4 m_Proj; 
+	float m_Fov = 70;
+	float m_TargetFov = 70;
+    float m_Yaw = 0.0f;
+    float m_Pitch = 0.0f;
+    bool m_IsPerspective;
 };

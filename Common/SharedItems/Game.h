@@ -68,11 +68,10 @@ private:
 	Camera m_Camera;
 	OnBlock* m_OnBlock;
 	World* world;
-	Player m_Player;
 	MobFactory* mobFactory = nullptr;
 	float dayTime;
 	std::map<Key, std::unique_ptr<ICommand>> keyCommandMap;
-	CollisionSystem* collisionSystem = nullptr;
+	std::shared_ptr<CollisionSystem> m_CollisionSystem;
 	bool speedBoost;
 	bool canBreakBlock = true;
 	bool renderimGUI = false;

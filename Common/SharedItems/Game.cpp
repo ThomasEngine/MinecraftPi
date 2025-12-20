@@ -40,9 +40,7 @@
 Game::Game(const Input* const input, IGraphics* graphics/*, Gui* mGui*/) :
 	input(input),
 	graphics(graphics),
-	m_Camera(WINDOW_WIDTH, WINDOW_HEIGHT),
-	//gui(mGui),
-	m_Player(WINDOW_WIDTH, WINDOW_HEIGHT, &m_Camera)
+	m_Camera(WINDOW_WIDTH, WINDOW_HEIGHT)
 {
 
 }
@@ -105,12 +103,16 @@ void Game::Start()
 	shader.SetUniform1f("u_CellHeight", 1.f / 16.f);
 	testTex->Bind(0);
 
-	world = new World(renderer, rand());
-	collisionSystem = new CollisionSystem();
-	collisionSystem->SetBlockTarget(*world);
-	m_Player.SetCollisionSystem(collisionSystem);
+	// Seed random number generator
+	srand(std::time(nullptr));
+
+	// Create world
+	world = new World(renderer, rand(), &m_Camera);
+    m_CollisionSystem = std::make_shared<CollisionSystem>();
+	world->SetCollisionSystem(m_CollisionSystem);
 
 
+	// Create input command map
 	keyCommandMap[Key::W] = std::make_unique<MoveForwardCommand>();
 	keyCommandMap[Key::S] = std::make_unique<MoveBackwardCommand>();
 	keyCommandMap[Key::A] = std::make_unique<MoveLeftCommand>();
@@ -118,27 +120,30 @@ void Game::Start()
 	keyCommandMap[Key::SHIFT_LEFT] = std::make_unique<CrouchCommand>();
 	keyCommandMap[Key::SPACE] = std::make_unique<JumpCommand>();
 
+	// initialize blocks
 	Initialize();
-	mobFactory = new MobFactory(renderer);
-	std::vector<Mob*> mobs;
-	for (int i = 0; i < 2; i++)
-	{
-		for (int j = 0; j < 2; j++)
-		{
-			Mob* sheepPrototype = mobFactory->create("Sheep", { 0, 170, 0 });
-			sheepPrototype->setPosition(glm::vec3(-j, 95, i));
-			sheepPrototype->SetCollisionSystem(collisionSystem);
-			mobs.push_back(sheepPrototype);
-		}
-	}
+
+	// Create mobfactory should be in world
+	//mobFactory = new MobFactory(renderer);
+	//std::vector<Mob*> mobs;
+	//for (int i = 0; i < 2; i++)
+	//{
+	//	for (int j = 0; j < 2; j++)
+	//	{
+	//		Mob* sheepPrototype = mobFactory->create("Sheep", { 0, 170, 0 });
+	//		sheepPrototype->setPosition(glm::vec3(-j, 95, i));
+	//		sheepPrototype->SetCollisionSystem(collisionSystem);
+	//		mobs.push_back(sheepPrototype);
+	//	}
+	//}
 
 
 	dayTime = 11.9f; // Noon
 
-	gui = new Gui(&m_Player, world);
+	// setup GUI
+	gui = new Gui(world);
 	m_OnBlock = new OnBlock(renderer);
 	Crosshair crosshair(renderer);
-
 
 #ifdef WINDOWS_BUILD
 	gui->SetupPc(&graphics->GetWindow());
@@ -147,7 +152,7 @@ void Game::Start()
 #endif 
 
 
-
+	// Main game loop
 	while(!quitting)
 	{
 		auto time = std::chrono::system_clock::now();
@@ -174,13 +179,13 @@ void Game::Start()
 		shader.SetUniform1f("u_DayTime", timeOfDay);
 		shader.Unbind();
 		glm::mat4 projView = m_Camera.GetViewProjectionMatrix();
-		world->Update(m_Camera.GetDirection(), m_Camera.GetPosition(), projView);
-		m_Player.Update(gameDeltaTime);
+		world->Update(m_Camera.GetDirection(), m_Camera.GetPosition(), projView, gameDeltaTime);
+		m_Camera.Update(gameDeltaTime);
+		
 		crosshair.Update(graphics->GetWindowWidth(), graphics->GetWindowHeight());
 		// Render
 		Render();
-		float playerUnderwater = m_Player.GetUnderWater() ? 1.f : 0.f;
-		printf("UnderWater: %.2f       \r", playerUnderwater);
+		float playerUnderwater = world->GetPlayer().GetUnderWater() ? 1.f : 0.f;
 		shader.Bind();
 		shader.SetUniform1f("u_UnderWater", playerUnderwater);
 
@@ -188,20 +193,17 @@ void Game::Start()
 		world->Draw(projView, shader, *testTex);
 			
 
+		// Mobs shoulud be handled by world
+		//for (auto& mob : mobs)
+		//{
+		//	mob->update(gameDeltaTime, m_Player.GetCamera()->GetPosition());
+		//	shader.Bind();
+		//	shader.SetUniform1f("u_CellWidth", 1.f / 8.f);
+		//	shader.SetUniform1f("u_CellHeight", 1.f / 8.f);
+		//	mob->render(renderer, shader, *testTex, m_Camera.GetViewProjectionMatrix());
+		//}
 
-		for (auto& mob : mobs)
-		{
-			mob->update(gameDeltaTime, m_Player.GetCamera()->GetPosition());
-			shader.Bind();
-			shader.SetUniform1f("u_CellWidth", 1.f / 8.f);
-			shader.SetUniform1f("u_CellHeight", 1.f / 8.f);
-			mob->render(renderer, shader, *testTex, m_Camera.GetViewProjectionMatrix());
-		}
-
-		shader.Bind();
-		shader.SetUniform1f("u_CellWidth", 1.f / 16.f);
-		shader.SetUniform1f("u_CellHeight", 1.f / 16.f);
-
+		// Gui elements
 		m_OnBlock->Render(renderer, m_Camera.GetViewProjectionMatrix(), *testTex, otherShader);
 		crosshair.Render(renderer, *testTex);
 		// Post Render
@@ -212,8 +214,6 @@ void Game::Start()
 			gui->Window(averageFPS, moveSpeed, dayTime, blockToPlace);
 			gui->Render();
 		}
-
-		//printf("Avera/e FPS: %.2f\r", averageFPS);
 
 		graphics->SwapBuffer();
 		lastTime = time;
@@ -239,6 +239,7 @@ void Game::Quit()
 //example of using the key and mouse
 void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float speed)
 {
+	Player& m_Player = world->GetPlayer();
 	const Input& input = GetInput();
 	const IMouse& mouse = input.GetMouse();
 	const IKeyboard& keyboard = input.GetKeyboard();
@@ -258,8 +259,14 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 
 
 	if (keyboard.GetKey(Key::CTRL_LEFT))
+	{
 		m_Player.SetSprinting(true);
-	else m_Player.SetSprinting(false);
+		m_Player.GetCamera()->SetSprintFov(m_Player.IsRunning() ? true : false);
+	}
+	else { 
+		m_Player.SetSprinting(false);
+		m_Player.GetCamera()->SetSprintFov(false);
+	}
 
 	if (keyboard.GetKey(Key::SHIFT_LEFT))
 		m_Player.SetChrouching(true);
@@ -354,7 +361,7 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 			int blockZ = int(floor(pos.z));
 			if (g_BlockTypes[world->GetBlockAtPosition(glm::vec3(blockX, blockY, blockZ))].isSolid)
 			{
-				if (collisionSystem->CehckPlayerToBlock(m_Camera.GetPosition(), lastAirBlock, m_Player.getRect()))
+				if (m_CollisionSystem->CehckPlayerToBlock(m_Camera.GetPosition(), lastAirBlock, m_Player.getRect()))
 				{
 					break;
 				}

@@ -65,5 +65,8 @@ public:
 	void drawBothFaces(bool enable);
 
 	// Drawing
+    void startBatch(const Shader& sh, const glm::mat4& mvp, const Texture& tex);
+    void endBatch();
+    void drawBatchMesh(const Mesh&);
     void drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, const Texture& texture, GLenum primitiveType = GL_TRIANGLES);
 };

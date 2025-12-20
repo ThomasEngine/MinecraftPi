@@ -700,12 +700,14 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkLoader& owner)
 void Chunk::DrawSolid(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const
 {
     if (!mesh) return;
-    renderer.drawMesh(*mesh, shader, viewProj, texture);
+	renderer.drawBatchMesh(*mesh);
+    //renderer.drawMesh(*mesh, shader, viewProj, texture);
 }
 
 void Chunk::DrawTransparent(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const
 {
-    if (hasTransparentBlocks) renderer.drawMesh(*transparentMesh, shader, viewProj, texture);
+    //if (hasTransparentBlocks) renderer.drawMesh(*transparentMesh, shader, viewProj, texture);
+    if (hasTransparentBlocks) renderer.drawBatchMesh(*transparentMesh);
 }
 
 uint8_t Chunk::GetLightLevel(int x, int y, int z)

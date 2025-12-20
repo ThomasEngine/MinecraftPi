@@ -1,6 +1,8 @@
 #pragma once  
 #include "Renderer.h"  
 #include "noise/FastNoiseLite.h"
+#include <memory>
+#include "Player.h"
 
 struct NoiseMaps {
 	NoiseMaps(
@@ -37,13 +39,15 @@ constexpr float CROUCH_MULTIPLIER = 0.4f;
 
 class ChunkLoader;  
 class FastNoiseLite;  
+class Mob;
+class MobFactory;
 class World  
 {  
 public:  
-	World(Renderer& ren, int seed);  
+	World(Renderer& ren, int seed, Camera* cam);  
 	~World();  
 
-	void Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& viewProjMatrix);  
+	void Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& vpm, float dt);  
 	void Draw(const glm::mat4 viewProj, Shader& shader, Texture& tex);
 
 	void PlaceBlockAtPosition(const glm::vec3& worldPos, const uint8_t& block);  
@@ -55,11 +59,21 @@ public:
 	glm::ivec3 vec3ToIvec3(const glm::vec3& vec) const;
 
 	bool GetReady() const { return isReady; }
+
+	void SetCollisionSystem(std::shared_ptr<CollisionSystem> cs);
+	Player& GetPlayer() { return m_Player; }
 private:  
 	// List of noise maps
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;
-
 	// Chunk loader  
 	std::unique_ptr<ChunkLoader> m_ChunkLoader;
+
+	Renderer& m_Renderer;
+	
+	Player m_Player;
+	std::unique_ptr<MobFactory> m_MobFactory;
+	std::vector<std::unique_ptr<Mob>> m_Mobs;
+	std::shared_ptr<CollisionSystem> m_CollisionSystem;
+
 	bool isReady{ false };
 };

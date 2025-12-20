@@ -2,10 +2,16 @@
 #include "ChunkLoader.h" 
 #include "BlockRegistery.h"
 #include <ctime> 
+#include <Player.h>
+#include <MobFactory.h>
+#include <Camera.h>
+#include <Shader.h>
 
 
-World::World(Renderer& ren, int seed)
+World::World(Renderer& ren, int seed, Camera* cam)
+	: m_Player(cam), m_Renderer(ren)
 {
+	// Initialize noise maps
     // Continentalness Noise
     FastNoiseLite Continentalness = FastNoiseLite(seed);
     Continentalness.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2);
@@ -30,10 +36,15 @@ World::World(Renderer& ren, int seed)
     CaveNoise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
     CaveNoise.SetFrequency(0.02f);
 
-    srand(std::time(nullptr));
-
 	m_NoiseMaps = std::make_shared<NoiseMaps>(Continentalness, Erosion, PeaksAndValleys, CaveNoise);
+
+	// Chunk loader
 	m_ChunkLoader = std::make_unique<ChunkLoader>(ren, m_NoiseMaps, isReady);
+
+	// Mob Factory
+	m_MobFactory = std::make_unique<MobFactory>(ren);
+
+	m_Renderer = ren;
 }
 
 World::~World()
@@ -41,14 +52,31 @@ World::~World()
 
 }
 
-void World::Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& viewProjMatrix)
+void World::Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& viewProjMatrix, float deltaTime)
 {
 	m_ChunkLoader->Update(camDir, camPos, viewProjMatrix);
+	m_Player.Update(deltaTime);
+	for (auto& mob : m_Mobs)
+	{
+		mob->update(deltaTime, m_Player.GetCamera()->GetPosition());
+	}
 }
 
 void World::Draw(const glm::mat4 viewProj, Shader& shader, Texture& tex)
 {
+	m_Renderer.startBatch(shader, viewProj, tex);
 	m_ChunkLoader->Draw(viewProj, shader, tex);
+	shader.Bind();
+	shader.SetUniform1f("u_CellWidth", 1.f / 8.f);
+	shader.SetUniform1f("u_CellHeight", 1.f / 8.f);
+	for (auto& mob : m_Mobs)
+	{
+		mob->render(m_Renderer, shader, tex, m_Player.GetCamera()->GetViewProjectionMatrix());
+	}
+	shader.Bind();
+	shader.SetUniform1f("u_CellWidth", 1.f / 16.f);
+	shader.SetUniform1f("u_CellHeight", 1.f / 16.f);
+	m_Renderer.endBatch();
 }
 
 void World::PlaceBlockAtPosition(const glm::vec3& worldPos, const uint8_t& block)
@@ -84,4 +112,12 @@ glm::ivec3 World::vec3ToIvec3(const glm::vec3& vec) const
        int(floor(vec.y)),  
        int(floor(vec.z))  
    );  
+}
+
+void World::SetCollisionSystem(std::shared_ptr<CollisionSystem> cs)
+{
+	// Assign collision system to player and world
+	m_Player.SetCollisionSystem(cs);
+	m_CollisionSystem = cs;
+	m_CollisionSystem.get()->SetBlockTarget(*this);
 }

@@ -11,7 +11,7 @@ const glm::ivec3 offsets[] = {
 };
 
 #ifdef WINDOWS_BUILD
-    static const int numThreads = 12;
+    static const int numThreads = 8;
 #else
 	static const int numThreads = 4;
 #endif

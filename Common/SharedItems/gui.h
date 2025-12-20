@@ -18,7 +18,7 @@ class World;
 class Gui
 {
 public:
-    Gui(Player* p, World* world);
+    Gui(World* world);
     ~Gui();
 #ifdef WINDOWS_BUILD
     void SetupPc(GLFWwindow* window);

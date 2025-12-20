@@ -118,6 +118,40 @@ void Renderer::drawBothFaces(bool enable)
 		glEnable(GL_CULL_FACE);
 }
 
+void Renderer::startBatch(const Shader& sh, const glm::mat4& mvp, const Texture& texture)
+{
+    GLuint program = sh.GetID();
+    GLuint tex = texture.GetID();
+    if (program == 0) return;
+
+    glUseProgram(program);
+    GLint loc = glGetUniformLocation(program, "u_MVP");
+    if (loc >= 0) glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(mvp));
+
+    if (tex) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, tex);
+        GLint tloc = glGetUniformLocation(program, "u_Tex");
+        if (tloc >= 0) glUniform1i(tloc, 0);
+    }
+}
+
+
+
+void Renderer::endBatch()
+{
+	glUseProgram(0);
+}
+
+void Renderer::drawBatchMesh(const Mesh& m)
+{
+    if (m.vao == 0 || m.indexCount == 0) return;
+
+	glBindVertexArray(m.vao);
+	glDrawElements(GL_TRIANGLES, m.indexCount, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+}
+
 void Renderer::drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, const Texture& texture, GLenum primitiveType) {
     GLuint program = sh.GetID();
     GLuint tex = texture.GetID();

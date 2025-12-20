@@ -7,7 +7,7 @@
 
 
 
-Player::Player(int w, int h, Camera* m_Camera)
+Player::Player(Camera* m_Camera)
 	: m_MovementSpeed(1.0f), m_CS(nullptr), m_Camera(m_Camera)
 {
 	SetPosition(glm::vec3(0.0f, 120.0f, 0.0f));
@@ -245,6 +245,18 @@ void Player::Crouch(float deltaTime)
 void Player::SetFlying(bool b)
 {
 	m_Flying = b;
+}
+
+bool Player::IsRunning() const
+{
+	glm::vec3 velXZ = glm::vec3(m_Vel.x, 0.0f, m_Vel.z);
+	if (velXZ != glm::vec3(0))
+	{
+		float speed = glm::length(velXZ);
+		if (speed > MAX_GROUND_SPEED)
+			return true;
+	}
+	return false;
 }
 
 bool Player::GetUnderWater() const

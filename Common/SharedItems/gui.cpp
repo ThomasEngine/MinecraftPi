@@ -15,8 +15,8 @@
 static bool flying = false;
 
 
-Gui::Gui(Player* player, World* world)
-	: player(player), world(world)
+Gui::Gui(World* world)
+	: player(&world->GetPlayer()), world(world)
 {
 
 }
