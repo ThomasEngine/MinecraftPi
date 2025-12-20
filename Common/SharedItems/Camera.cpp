@@ -44,7 +44,7 @@ void Camera::SetSprintFov(bool isSprinting)
 {
 	if (isSprinting && m_IsPerspective)
 	{
-		m_TargetFov = 80;
+		m_TargetFov = 85;
 	}
 	else if (!isSprinting && m_IsPerspective)
 	{

@@ -33,7 +33,7 @@ void main()
     v_LightLevel = a_Light * u_DayTime * a_AO;
     v_DayTime = u_DayTime;
     v_UnderWater = u_UnderWater;
-    float dist = length(gl_Position.xyz);
+    float dist = length(gl_Position.xz);
     v_FogFactor = clamp((far - dist) / (far - near), 0.0, 1.0);
 }
 

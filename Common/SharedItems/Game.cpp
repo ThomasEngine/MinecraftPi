@@ -30,6 +30,7 @@
 
 
 #include "Camera.h"
+#include <thread> 
 
 #include "BlockRegistery.h"
 #include "World.h"
@@ -151,6 +152,9 @@ void Game::Start()
 	// Main game loop
 	while(!quitting)
 	{
+		// sleep to save CPU
+		std::this_thread::sleep_for(std::chrono::microseconds(1000));
+
 		auto time = std::chrono::system_clock::now();
 		std::chrono::duration<float> delta = time - lastTime;
 
