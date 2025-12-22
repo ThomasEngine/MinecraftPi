@@ -8,6 +8,7 @@
 #include <Shader.h>
 
 
+
 World::World(Renderer& ren, int seed, Camera* cam)
 	: m_Player(cam), m_Renderer(ren)
 {
@@ -43,6 +44,16 @@ World::World(Renderer& ren, int seed, Camera* cam)
 
 	// Mob Factory
 	m_MobFactory = std::make_unique<MobFactory>(ren);
+
+	//// Setup mobs
+	//for (int i = 0; i < 10; ++i)
+	//{
+	//	float x = static_cast<float>(rand() % 256 - 128);
+	//	float z = static_cast<float>(rand() % 256 - 128);
+	//	float y = 100.0f; // Start high to let them fall to the ground
+	//	Mob* m_ = m_MobFactory->create("Sheep", glm::vec3(x, y, z));
+	//	m_Mobs.push_back(m_);
+	//}
 
 	m_Renderer = ren;
 }
@@ -87,6 +98,19 @@ void World::PlaceBlockAtPosition(const glm::vec3& worldPos, const uint8_t& block
 void World::RemoveBlockAtPosition(const glm::vec3& worldPos)
 {
 	m_ChunkLoader->RemoveBlockAtPosition(worldPos);
+}
+
+Mob* World::AddMob(std::unique_ptr<Mob> mob)
+{
+	m_Mobs.push_back(std::move(mob));
+	return m_Mobs.back().get();
+}
+
+void World::RemoveMob(Mob* mob)
+{
+	auto it = std::remove_if(m_Mobs.begin(), m_Mobs.end(), 
+		[mob](const std::unique_ptr<Mob>& m) { return m.get() == mob; });
+	m_Mobs.erase(it, m_Mobs.end());
 }
 
 uint8_t World::GetBlockAtPosition(const glm::vec3& worldPos)

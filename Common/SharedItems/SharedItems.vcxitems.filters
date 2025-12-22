@@ -120,6 +120,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Pig.h">
       <Filter>Mobs\Mobs</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)MobLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Input.cpp">
@@ -190,6 +191,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)InputManager.h">
       <Filter>Input</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MobLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.mtl">

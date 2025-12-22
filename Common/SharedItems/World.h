@@ -52,6 +52,8 @@ public:
 
 	void PlaceBlockAtPosition(const glm::vec3& worldPos, const uint8_t& block);  
 	void RemoveBlockAtPosition(const glm::vec3& worldPos);  
+	Mob* AddMob(std::unique_ptr<Mob> mob);
+	void RemoveMob(Mob* mob);
 
 	uint8_t GetBlockAtPosition(const glm::vec3& position);
 

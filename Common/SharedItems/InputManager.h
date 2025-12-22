@@ -6,6 +6,7 @@
 #include "IInput.h"
 #include "Input.h"
 
+class Player;
 class InputManager {
 public:
     InputManager(const Input* input);

@@ -1,4 +1,5 @@
 #include "InputManager.h"
+#include "Player.h"
 
 InputManager::InputManager(const Input* input)
     : m_Input(input) {
