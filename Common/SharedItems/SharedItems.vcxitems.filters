@@ -189,7 +189,9 @@
       <Filter>Input</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)MobLoader.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)InputManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)InputManager.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.mtl">

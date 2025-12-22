@@ -4,10 +4,12 @@ class Player;
 class ICommand
 {
 public:
+	// Base command interface
 	virtual ~ICommand() {}
 	virtual void Execute(Player& player, float dt) = 0;
 };
 
+// Concrete command implementations
 class MoveForwardCommand : public ICommand
 {
 public:

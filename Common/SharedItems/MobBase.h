@@ -14,10 +14,10 @@ struct SharedModelData
 };
 
 enum Legs {
-	FL = 0,
-	FR,
-	BL,
-	BR 
+	FrontLeft = 0,
+	FrontRight,
+	BackLeft,
+	BackRight 
 };
 
 enum AiState {
@@ -114,7 +114,6 @@ private:
 
 	void UpdateMovement(float deltaTime);
 	void UpdateYMovement(float deltaTime);
-
 };
 
 

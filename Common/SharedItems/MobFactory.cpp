@@ -96,23 +96,23 @@ namespace {
 
 		AddCuboid(sheepModel.headMesh, headMin, headMax, cellHead);
 		AddCuboid(sheepModel.bodyMesh, bodyMin, bodyMax, cellBody);
-		AddCuboid(sheepModel.legMesh[Legs::FL], legFLMin, legFLMax, cellLeg);
-		AddCuboid(sheepModel.legMesh[Legs::FR], legFRMin, legFRMax, cellLeg);
-		AddCuboid(sheepModel.legMesh[Legs::BL], legBLMin, legBLMax, cellLeg);
-		AddCuboid(sheepModel.legMesh[Legs::BR], legBRMin, legBRMax, cellLeg);
+		AddCuboid(sheepModel.legMesh[Legs::FrontLeft], legFLMin, legFLMax, cellLeg);
+		AddCuboid(sheepModel.legMesh[Legs::FrontRight], legFRMin, legFRMax, cellLeg);
+		AddCuboid(sheepModel.legMesh[Legs::BackLeft], legBLMin, legBLMax, cellLeg);
+		AddCuboid(sheepModel.legMesh[Legs::BackRight], legBRMin, legBRMax, cellLeg);
 
 		ren.uploadMesh(sheepModel.bodyMesh);
 		ren.uploadMesh(sheepModel.headMesh);
-		ren.uploadMesh(sheepModel.legMesh[Legs::FL]);
-		ren.uploadMesh(sheepModel.legMesh[Legs::FR]);
-		ren.uploadMesh(sheepModel.legMesh[Legs::BL]);
-		ren.uploadMesh(sheepModel.legMesh[Legs::BR]);
+		ren.uploadMesh(sheepModel.legMesh[Legs::FrontLeft]);
+		ren.uploadMesh(sheepModel.legMesh[Legs::FrontRight]);
+		ren.uploadMesh(sheepModel.legMesh[Legs::BackLeft]);
+		ren.uploadMesh(sheepModel.legMesh[Legs::BackRight]);
 
 		// Leg origin
-		sheepModel.legTopPosition[Legs::FL] = glm::vec3(-0.25f, 0.4f, 0.5f);
-		sheepModel.legTopPosition[Legs::FR] = glm::vec3(0.5f, 0.4f, 0.5f);
-		sheepModel.legTopPosition[Legs::BL] = glm::vec3(-0.25f, 0.4f, -0.5f);
-		sheepModel.legTopPosition[Legs::BR] = glm::vec3(0.25f, 0.4f, -0.5f);
+		sheepModel.legTopPosition[Legs::FrontLeft] = glm::vec3(-0.25f, 0.4f, 0.5f);
+		sheepModel.legTopPosition[Legs::FrontRight] = glm::vec3(0.5f, 0.4f, 0.5f);
+		sheepModel.legTopPosition[Legs::BackLeft] = glm::vec3(-0.25f, 0.4f, -0.5f);
+		sheepModel.legTopPosition[Legs::BackRight] = glm::vec3(0.25f, 0.4f, -0.5f);
 
 		// Init lighting
 

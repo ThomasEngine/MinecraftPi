@@ -154,7 +154,7 @@ void Game::Start()
 	while(!quitting)
 	{
 		// sleep to save CPU
-		std::this_thread::sleep_for(std::chrono::microseconds(1000));
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
 		auto time = std::chrono::system_clock::now();
 		std::chrono::duration<float> delta = time - lastTime;
@@ -337,10 +337,10 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 	if (mouse.GetButtonDown(MouseButtons::RIGHT) && canBreakBlock)
 	{
 		glm::vec3 camPos = cam.GetPosition();
-		camPos.y += .9f; // m_Camera height offset
+		camPos.y += .8f; // m_Camera height offset
 		glm::vec3 camDir = cam.GetDirection();
 		float maxDistance = 5.0f;
-		float step = 0.1f;
+		float step = 0.05f;
 		glm::vec3 lastAirBlock = camPos;
 		for (float i = 0; i < maxDistance; i += step)
 		{

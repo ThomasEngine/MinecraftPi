@@ -1,6 +1,6 @@
 #shader vertex
 #version 300 es
-precision mediump float;
+precision highp float;
 
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec2 a_TexCoord;
@@ -25,7 +25,8 @@ void main()
 
 #shader fragment
 #version 300 es
-precision mediump float;
+precision highp float;
+  
 
 layout(location = 0) out vec4 color;
 in float v_LightLevel;

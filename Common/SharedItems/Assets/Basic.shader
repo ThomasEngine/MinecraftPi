@@ -1,5 +1,6 @@
 #shader vertex
-#version 330 core
+#version 300 es
+precision highp float;
 
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec2 a_TexCoord;
@@ -39,7 +40,8 @@ void main()
 
 
 #shader fragment
-#version 330 core
+#version 300 es
+precision highp float;
 
 layout(location = 0) out vec4 color;
 in float v_LightLevel;
@@ -49,19 +51,18 @@ in float v_FogFactor;
 in float v_UnderWater;   
 uniform sampler2D u_TextureAtlas;
 
-
-vec3 fogColor = vec3(0.53 * v_DayTime, 0.81 * v_DayTime, 0.92 * v_DayTime);
-vec3 underWaterColor = vec3(0.0, 0.4, 0.7);
-
 void main()
 {
+    vec3 fogColor = vec3(0.53 * v_DayTime, 0.81 * v_DayTime, 0.92 * v_DayTime);
+    vec3 underWaterColor = vec3(0.0, 0.4, 0.7);
     color = texture(u_TextureAtlas, v_AtlasUV);
     float alpha = color.a;
     color.rgb *= v_LightLevel;
-    color.rgb = mix(underWaterColor, color.rgb,  1 - v_UnderWater * 0.25);
+    color.rgb = mix(underWaterColor, color.rgb,  1.0 - v_UnderWater * 0.25);
     color.rgb = mix(fogColor, color.rgb, v_FogFactor);
     color.a = alpha;
 }
+
 
 
 

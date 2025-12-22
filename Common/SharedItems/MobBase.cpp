@@ -5,12 +5,14 @@
 #include <algorithm> 
 
 
+// Movement seperator
 void Mob::Move(float deltaTime)
 {
 	UpdateMovement(deltaTime);
 	UpdateYMovement(deltaTime);
 }
 
+// Move to target position
 void Mob::moveTo(const glm::vec3& target)
 {
 	instanceData.moveTarget = target;
@@ -18,6 +20,7 @@ void Mob::moveTo(const glm::vec3& target)
 	FindPath(target);
 }
 
+// Jump action
 void Mob::Jump(float deltaTime)
 {
 	if (instanceData.onGround)
@@ -26,6 +29,7 @@ void Mob::Jump(float deltaTime)
 	}
 }
 
+// For now only similair to moveTo, but want to expand to A* pathfinding later
 void Mob::FindPath(const glm::vec3& target)
 {
 	instanceData.path.clear();
@@ -33,6 +37,7 @@ void Mob::FindPath(const glm::vec3& target)
 	instanceData.pathIndex = 0;
 }
 
+// Get random target nearby for wandering
 void Mob::GetRandomWanderTarget()
 {
     float offsetX = float(rand() % 15 - 7);
@@ -41,6 +46,7 @@ void Mob::GetRandomWanderTarget()
     moveTo(randomTarget);
 }
 
+// Update horizontal movement towards path target
 void Mob::UpdateMovement(float deltaTime)
 {
 	if (instanceData.hasMovetarget && !instanceData.path.empty() && instanceData.pathIndex < instanceData.path.size())
@@ -97,6 +103,7 @@ void Mob::UpdateMovement(float deltaTime)
 	}
 }
 
+// Update vertical movement with gravity and collision
 void Mob::UpdateYMovement(float deltaTime)
 {
 	instanceData.velocity.y -= GRAVITY * deltaTime;
@@ -118,7 +125,7 @@ void Mob::UpdateYMovement(float deltaTime)
 	}
 }
 
-
+// Behavior and animation updaters (state machine)
 void Mob::UpdateBehavior(float deltaTime, const glm::vec3& playerPos)
 {
 	pose->updateHeadMovement(deltaTime, playerPos);
@@ -137,6 +144,7 @@ void Mob::UpdateBehavior(float deltaTime, const glm::vec3& playerPos)
 	}
 }
 
+// Animation updaters (state machine)
 void Mob::UpdateAnimation(float deltaTime)
 {
 	switch (instanceData.aiState) {
@@ -154,6 +162,7 @@ void Mob::UpdateAnimation(float deltaTime)
 	}
 }
 
+// Wandering animation (state machine)
 void Mob::UpdateWanderingAnimation(float deltaTime)
 {
 	switch (instanceData.walkState) {
@@ -170,6 +179,7 @@ void Mob::UpdateWanderingAnimation(float deltaTime)
 	}
 }
 
+
 void Mob::UpdateChasingAnimation(float deltaTime)
 {
 }
@@ -177,42 +187,50 @@ void Mob::UpdateChasingAnimation(float deltaTime)
 void Mob::UpdateMatingAnimation(float deltaTime)
 {
 }
-
-// All fourse animation
+// /////////////////////////
+// /////////////////////////
+// /////////////////////////
+// Animation implementations
+// /////////////////////////
+// /////////////////////////
+// //All fourse animation //
 
 void AllFourAnimations::walkingAnimation(float deltaTime)
 {
+	// Update walk time
 	walkTime += deltaTime;
+	
+	// Parameters for leg movement
+	const float amplitude = 30.0f;
+	const float speed = 5.0f;
+	const float headSpeed = 0.1f;
 
-	float amplitude = 30.0f;
-	float speed = 5.0f;
-	float headSpeed = 0.1f;
 	// Animate legs with phase offsets for natural movement
-	legRotation[Legs::FL] = amplitude * std::sin(speed * walkTime);
-	legRotation[Legs::BR] = amplitude * std::sin(speed * walkTime);
-	legRotation[Legs::FR] = -amplitude * std::sin(speed * walkTime);
-	legRotation[Legs::BL] = -amplitude * std::sin(speed * walkTime);
+	legRotation[Legs::FrontLeft] = amplitude * std::sin(speed * walkTime);
+	legRotation[Legs::BackRight] = amplitude * std::sin(speed * walkTime);
+	legRotation[Legs::FrontRight] = -amplitude * std::sin(speed * walkTime);
+	legRotation[Legs::BackLeft] = -amplitude * std::sin(speed * walkTime);
 }
 
 void AllFourAnimations::idleAnimation(float deltaTime)
 {
+	// Update walk time
 	walkTime += deltaTime;
 
-	float amplitude = 30.0f;
-	float speed = 5.0f;
+	// Parameters for leg relaxation
+	const float amplitude = 30.0f;
+	const float speed = 5.0f;
 
-
-	walkTime += deltaTime;
-
+	// Relax legs back to neutral position by reducing rotation each frame
 	float relaxSpeed = 120.0f * deltaTime; 
 	for (int i = 0; i < 4; ++i) {
-		if (std::fabs(legRotation[i]) > 1.0f) {
+		if (std::fabs(legRotation[i]) > 1.0f) { // leg rotation away from neutral
 			if (legRotation[i] > 0.0f) 
 				legRotation[i] = std::max(0.0f, legRotation[i] - relaxSpeed);
 			else
 				legRotation[i] = std::min(0.0f, legRotation[i] + relaxSpeed);
 		}
-		else {
+		else { // close enough to neutral
 			legRotation[i] = 0.0f;
 		}
 	}
@@ -222,14 +240,15 @@ void AllFourAnimations::idleAnimation(float deltaTime)
 
 void PoseBase::updateHeadMovement(float targetAngle, const glm::vec3& playerPos)
 {
+	// Simple head looking around animation
 	float headSpeed = 1.0f;
 	headRotation = 15.0f * std::sin(headSpeed * walkTime);
-
+	// Want to ad more later:
 	// Sometimes look at player
-
-
+	// Look at other mob or other things idk
 }
 
+// Smoothly rotate body towards target angle same for all mobs
 void PoseBase::updateBodyRotation(float targetAngle)
 {
 	float angleDiff = targetAngle - bodyRotation;
