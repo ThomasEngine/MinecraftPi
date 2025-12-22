@@ -9,42 +9,47 @@ Camera::Camera(int w, int h)
     m_Proj(1.0f),
     m_IsPerspective(true)
 {
-    float fov = 70.f;
-    float aspect = w > 0 ? (float)w / (float)h : 1.0f;
+	// Default perspective projection will ad settings later
+	float fov = 70.f; // initial FOV
+	float aspect = w > 0 ? (float)w / (float)h : 1.0f; // aspect ratio w and h are from window size
+	// Near and far planes
     float nearPlane = 0.1f;
     float farPlane = 4000.f;
 
+	// Initialize projection matrix
     SetPerspective(glm::radians(fov), aspect, nearPlane, farPlane);
+	// Initialize view matrix
     m_View = glm::lookAt(glm::vec3(2.5f, 1.5f, 7.5f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 }
 
-void Camera::SetPosition(const glm::vec3& pos) 
+void Camera::SetPosition(const glm::vec3& pos) // Set camera position
 {
     m_Position = pos;
 }
 
-void Camera::SetRotation(const glm::vec3& eulerAngles) 
+void Camera::SetRotation(const glm::vec3& eulerAngles) // Set camera rotation in Euler angles (radians) 
 {
     m_Rotation = eulerAngles;
 }
 
-void Camera::SetPerspective(float fov, float aspect, float near, float far) 
+void Camera::SetPerspective(float fov, float aspect, float near, float far) // Set perspective projection 
 {
     m_Proj = glm::perspective(fov, aspect, near, far);
     m_IsPerspective = true;
 }
 
-void Camera::SetOrthographic(float left, float right, float bottom, float top, float near, float far) 
+void Camera::SetOrthographic(float left, float right, float bottom, float top, float near, float far) // Set orthographic projection 
 {
     m_Proj = glm::ortho(left, right, bottom, top, near, far);
     m_IsPerspective = false;
 }
 
-void Camera::SetSprintFov(bool isSprinting)
+void Camera::SetSprintFov(bool isSprinting) 
 {
+	// Target fov. Not directly set to allow smooth transition
 	if (isSprinting && m_IsPerspective)
 	{
-		m_TargetFov = 85;
+		m_TargetFov = 85; 
 	}
 	else if (!isSprinting && m_IsPerspective)
 	{
@@ -59,6 +64,7 @@ glm::vec3 Camera::GetPosition() const
 
 glm::vec3 Camera::GetDirection() const
 {
+	// Calculate forward direction vector from yaw and pitch
     glm::vec3 direction;
     direction.x = cos(m_Pitch) * sin(m_Yaw);
     direction.y = sin(m_Pitch);
@@ -69,12 +75,13 @@ glm::vec3 Camera::GetDirection() const
 
 glm::mat4 Camera::GetViewMatrix() const
 {
+	// Calculate forward direction vector from yaw and pitch
     glm::vec3 direction;
     direction.x = cos(m_Pitch) * sin(m_Yaw);
     direction.y = sin(m_Pitch);
     direction.z = cos(m_Pitch) * cos(m_Yaw);
 	glm::vec3 position = m_Position;
-	position.y += .8f; 
+	position.y += .8f; // eye height offset 
     return glm::lookAt(position, position + direction, glm::vec3(0, 1, 0));
 }
 
@@ -93,20 +100,6 @@ glm::vec3 Camera::GetRight() const
 	return glm::normalize(glm::vec3(cos(m_Yaw), 0, -sin(m_Yaw)));
 }
 
-void Camera::MoveForward(float amount) 
-{
-    glm::vec3 forward = glm::normalize(glm::vec3(sin(m_Yaw), 0, cos(m_Yaw)));
-    m_Position += forward * amount;
-}
-void Camera::MoveRight(float amount) 
-{
-    glm::vec3 right = glm::normalize(glm::vec3(cos(m_Yaw), 0, -sin(m_Yaw)));
-    m_Position += right * amount;
-}
-void Camera::Move(glm::vec3 delta)
-{
-    m_Position += delta;
-}
 void Camera::AddYaw(float delta) 
 { 
     m_Yaw += delta; 

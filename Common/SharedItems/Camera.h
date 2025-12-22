@@ -21,12 +21,7 @@ public:
     glm::mat4 GetViewProjectionMatrix() const;
 	glm::vec3 GetRight() const;
 
-    // Controls
-    void MoveForward(float amount);
-    void MoveRight(float amount);
-    void Move(glm::vec3 delta);
-
-
+	// Rotation adjustments
     void AddYaw(float delta);
     void AddPitch(float delta);
 
