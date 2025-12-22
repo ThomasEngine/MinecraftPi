@@ -13,8 +13,9 @@ Camera::Camera(int w, int h)
 	float fov = 70.f; // initial FOV
 	float aspect = w > 0 ? (float)w / (float)h : 1.0f; // aspect ratio w and h are from window size
 	// Near and far planes
-    float nearPlane = 0.1f;
-    float farPlane = 4000.f;
+    float nearPlane = 0.2f;
+    float farPlane = 256.f;
+
 
 	// Initialize projection matrix
     SetPerspective(glm::radians(fov), aspect, nearPlane, farPlane);
@@ -130,7 +131,7 @@ void Camera::Update(float deltaTime)
             if (m_Fov < m_TargetFov)
                 m_Fov = m_TargetFov;
         }
-        m_Proj = glm::perspective(glm::radians(m_Fov), m_Proj[1][1] / m_Proj[0][0], 0.1f, 4000.f);
+        m_Proj = glm::perspective(glm::radians(m_Fov), m_Proj[1][1] / m_Proj[0][0], 0.2f, 256.f);
 	}
 }
 

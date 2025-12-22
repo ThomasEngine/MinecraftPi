@@ -1,5 +1,6 @@
 #shader vertex
-#version 330 core
+#version 300 es
+precision mediump float;
 layout(location = 0) in vec3 aPos;
 
 uniform mat4 u_MVP;
@@ -9,7 +10,8 @@ void main() {
 }
 
 #shader fragment
-#version 330 core
+#version 300 es
+precision mediump float;
 
 layout(location = 0) out vec4 FragColor;
 

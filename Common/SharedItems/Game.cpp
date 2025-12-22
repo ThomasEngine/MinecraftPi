@@ -2,7 +2,6 @@
 #include "Input.h"
 #include <chrono>
 #include <ctime>
-#include <iomanip>
 #include <sstream>
 #include <iostream>
 #include "IGraphics.h"
@@ -78,13 +77,14 @@ void Game::Start()
 #ifdef WINDOWS_BUILD
 	Shader shader("Common/SharedItems/Assets/Basic.shader");
 	Texture* testTex = new Texture("Common/SharedItems/Assets/minecraftAtlas.png");
+	Shader otherShader("Common/SharedItems/Assets/OnBlock.shader");
 #endif
 #ifdef Raspberry_BUILD
-	Shader shader("../Common/SharedItems/Assets/basicpi.shader");
+	Shader shader("../Common/SharedItems/Assets/Basic.shader");
+	Shader otherShader("../Common/SharedItems/Assets/OnBlock.shader");
 	Texture* testTex = new Texture("../Common/SharedItems/Assets/minecraftAtlas.png");
 #endif
 
-	Shader otherShader("Common/SharedItems/Assets/OnBlock.shader");
 
 	//Shader shader("Common/SharedItems/Assets/Basic.shader");
 	GLuint program = shader.GetID();
@@ -105,7 +105,7 @@ void Game::Start()
 	shader.SetUniform1f("u_CellHeight", 1.f / 16.f);
 	testTex->Bind(0);
 
-	// Seed random number generator
+	// Seed random number generator 
 	srand(std::time(nullptr));
 
 	// Create world
@@ -122,7 +122,9 @@ void Game::Start()
 	m_InputManager.BindCommand("MoveRight", std::make_unique<MoveRightCommand>());
 	m_InputManager.BindCommand("Crouch", std::make_unique<CrouchCommand>());
 	m_InputManager.BindCommand("Jump", std::make_unique<JumpCommand>());
+
 	// TODO:: ADD sprint command
+	
 	// Bind keys to actions
 	m_InputManager.BindAction(Key::W, "MoveForward");
 	m_InputManager.BindAction(Key::S, "MoveBackward");
