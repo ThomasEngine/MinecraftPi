@@ -123,7 +123,7 @@ void Renderer::startBatch(const Shader& sh, const glm::mat4& mvp, const Texture&
     GLuint program = sh.GetID();
     GLuint tex = texture.GetID();
     if (program == 0) return;
-
+        
     glUseProgram(program);
     GLint loc = glGetUniformLocation(program, "u_MVP");
     if (loc >= 0) glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(mvp));
@@ -131,7 +131,7 @@ void Renderer::startBatch(const Shader& sh, const glm::mat4& mvp, const Texture&
     if (tex) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, tex);
-        GLint tloc = glGetUniformLocation(program, "u_Tex");
+        GLint tloc = glGetUniformLocation(program, "u_TextureAtlas");
         if (tloc >= 0) glUniform1i(tloc, 0);
     }
 }
@@ -164,7 +164,7 @@ void Renderer::drawMesh(const Mesh& m, const Shader& sh, const glm::mat4& mvp, c
     if (tex) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, tex);
-        GLint tloc = glGetUniformLocation(program, "u_Tex");
+        GLint tloc = glGetUniformLocation(program, "u_TextureAtlas");
         if (tloc >= 0) glUniform1i(tloc, 0);
     }
 

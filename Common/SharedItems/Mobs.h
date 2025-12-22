@@ -6,7 +6,7 @@
 class FourlegMob : public Mob {
 public:
 	FourlegMob(SharedModelData* sharedData);
-	void render(Renderer&, Shader&, Texture&, glm::mat4 viewProj) override;
+	void render(Renderer&, Shader&, glm::mat4 viewProj) override;
 	void update(float deltaTime, const glm::vec3& playerPos) override;
 	Mob* clone() override;
 		

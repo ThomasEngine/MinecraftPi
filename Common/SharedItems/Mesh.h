@@ -17,7 +17,7 @@ struct FaceVertex {
     glm::vec2 tex;
     float cellX;
     float cellY;
-    float light;
+    float light = 1;
     float ao = 1;
 };
 

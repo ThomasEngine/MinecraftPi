@@ -109,8 +109,9 @@ void Game::Start()
 	srand(std::time(nullptr));
 
 	// Create world
-	world = new World(renderer, rand(), &m_Camera);
     m_CollisionSystem = std::make_shared<CollisionSystem>();
+	world = new World(renderer, rand(), &m_Camera);
+	m_CollisionSystem->SetBlockTarget(*world);
 	world->SetCollisionSystem(m_CollisionSystem);
 
 

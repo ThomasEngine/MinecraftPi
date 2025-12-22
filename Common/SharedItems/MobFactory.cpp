@@ -30,7 +30,7 @@ namespace {
 	void LoadPigModel(Renderer& ren, SharedModelData& sheepModel) {
 		
 		// Load textures
-		Texture* texture = new Texture("Common/SharedItems/Assets/Mobs/pig.png");
+		Texture* texture = new Texture("Common/SharedItems/Assets/Mobs/temperate_pig.png");
 		sheepModel.texture = texture;
 
 		// Mins and maxes
@@ -114,6 +114,8 @@ namespace {
 		sheepModel.legTopPosition[Legs::BL] = glm::vec3(-0.25f, 0.4f, -0.5f);
 		sheepModel.legTopPosition[Legs::BR] = glm::vec3(0.25f, 0.4f, -0.5f);
 
+		// Init lighting
+
 		sheepModel.hitbox = glm::vec3(0.9f, 0.f, 1.3f);
 	}
 
@@ -144,4 +146,9 @@ void InitializeMobPrototypes(MobPrototypeRegistry& registry, Renderer& ren)
 	//SharedModelData* villagerModel = new SharedModelData();
 	//villagerModel->mesh = LoadVillagerModel(ren);
 	//registry.registerPrototype("Villager", new Villager(villagerModel));
+}
+
+MobFactory::~MobFactory()
+{
+	// TODO:: CLEANUP POINTERS	
 }

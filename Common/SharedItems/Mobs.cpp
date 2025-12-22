@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include <ext/matrix_transform.hpp>
 #include <cmath>
+#include "Shader.h"
 
 FourlegMob::FourlegMob(SharedModelData* sharedData)
 {
@@ -17,7 +18,7 @@ FourlegMob::FourlegMob(SharedModelData* sharedData)
 	this->pose->bodyRotation = 0.f;
 }
 
-void FourlegMob::render(Renderer& ren, Shader& sh, Texture& tex, glm::mat4 viewProj)
+void FourlegMob::render(Renderer& ren, Shader& sh, glm::mat4 viewProj)
 {
 	glm::mat4 sheepModel = glm::translate(glm::mat4(1.0f), instanceData.position);
 	

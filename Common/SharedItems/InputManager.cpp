@@ -1,11 +1,15 @@
 #include "InputManager.h"
 #include "Player.h"
+#include "ICommand.h"
+#include "IInput.h"
+#include "Input.h"
+// hello
 
 InputManager::InputManager(const Input* input)
     : m_Input(input) {
 }
 
-void InputManager::Update(float /*deltaTime*/) {
+void InputManager::Update(float deltaTime) {
     const IKeyboard& keyboard = m_Input->GetKeyboard();
     for (const auto& pair : m_KeyToAction) {
         m_ActionStates[pair.second] = keyboard.GetKey(pair.first);

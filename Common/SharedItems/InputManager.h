@@ -2,10 +2,10 @@
 #include <map>
 #include <memory>
 #include <string>
-#include "ICommand.h"
-#include "IInput.h"
-#include "Input.h"
 
+enum class Key;
+class Input;
+class ICommand;
 class Player;
 class InputManager {
 public:

@@ -27,6 +27,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_AIR].name = "Air";
 	g_BlockTypes[B_AIR].isSolid = false;
 	g_BlockTypes[B_AIR].isTransparent = true;
+	g_BlockTypes[B_AIR].mobSpawningAllowed = false;
     for (int i = 0; i < 6; i++)
     {
         g_BlockTypes[B_AIR].textureIndices[i] = 0;
@@ -99,6 +100,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_OAK_LOG].name = "Oak Log";
 	g_BlockTypes[B_OAK_LOG].isSolid = true;
 	g_BlockTypes[B_OAK_LOG].isTransparent = false;
+	g_BlockTypes[B_AIR].mobSpawningAllowed = false;
 	g_BlockTypes[B_OAK_LOG].textureIndices[0] = 20; // Top
 	g_BlockTypes[B_OAK_LOG].textureIndices[1] = 20; // Bottom
 	g_BlockTypes[B_OAK_LOG].textureIndices[2] = 21; // Front
@@ -121,6 +123,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_BEDROCK].name = "Bedrock";
 	g_BlockTypes[B_BEDROCK].isSolid = true;
 	g_BlockTypes[B_BEDROCK].isTransparent = false;
+	g_BlockTypes[B_BEDROCK].mobSpawningAllowed = false;
 	for (int i = 0; i < 6; i++)
 	{
 		g_BlockTypes[B_BEDROCK].textureIndices[i] = 16;
@@ -131,6 +134,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_WATER].name = "Water";
 	g_BlockTypes[B_WATER].isSolid = false;
 	g_BlockTypes[B_WATER].isTransparent = true;
+	g_BlockTypes[B_BEDROCK].mobSpawningAllowed = false;
 	for (int i = 0; i < 6; i++)
 	{
 		g_BlockTypes[B_WATER].textureIndices[i] = 205;
@@ -152,6 +156,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_OAK_LEAF].name = "Oak Leaf";
 	g_BlockTypes[B_OAK_LEAF].isSolid = true;
 	g_BlockTypes[B_OAK_LEAF].isTransparent = false;
+	g_BlockTypes[B_BEDROCK].mobSpawningAllowed = false;
 	for (int i = 0; i < 6; i++)
 	{
 		//g_BlockTypes[B_OAK_LEAF].textureIndices[i] = 15 * 3 + 5; diamond ore

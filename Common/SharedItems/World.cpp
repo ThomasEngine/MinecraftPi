@@ -3,9 +3,10 @@
 #include "BlockRegistery.h"
 #include <ctime> 
 #include <Player.h>
-#include <MobFactory.h>
-#include <Camera.h>
-#include <Shader.h>
+#include "MobFactory.h"
+#include "Camera.h"
+#include "Shader.h"
+#include "MobLoader.h"
 
 
 
@@ -41,21 +42,10 @@ World::World(Renderer& ren, int seed, Camera* cam)
 
 	// Chunk loader
 	m_ChunkLoader = std::make_unique<ChunkLoader>(ren, m_NoiseMaps, isReady);
-
-	// Mob Factory
-	m_MobFactory = std::make_unique<MobFactory>(ren);
-
-	//// Setup mobs
-	//for (int i = 0; i < 10; ++i)
-	//{
-	//	float x = static_cast<float>(rand() % 256 - 128);
-	//	float z = static_cast<float>(rand() % 256 - 128);
-	//	float y = 100.0f; // Start high to let them fall to the ground
-	//	Mob* m_ = m_MobFactory->create("Sheep", glm::vec3(x, y, z));
-	//	m_Mobs.push_back(m_);
-	//}
+	m_MobLoader = std::make_unique<MobLoader>(this, ren);
 
 	m_Renderer = ren;
+
 }
 
 World::~World()
@@ -66,28 +56,18 @@ World::~World()
 void World::Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& viewProjMatrix, float deltaTime)
 {
 	m_ChunkLoader->Update(camDir, camPos, viewProjMatrix);
-	m_Player.Update(deltaTime);
-	for (auto& mob : m_Mobs)
-	{
-		mob->update(deltaTime, m_Player.GetCamera()->GetPosition());
-	}
+	if (!isReady) return;
+	m_MobLoader->Update(m_Player.GetCamera()->GetPosition(), deltaTime);
+	UpdateEntities(deltaTime);
 }
 
 void World::Draw(const glm::mat4 viewProj, Shader& shader, Texture& tex)
 {
 	m_Renderer.startBatch(shader, viewProj, tex);
 	m_ChunkLoader->Draw(viewProj, shader, tex);
-	shader.Bind();
-	shader.SetUniform1f("u_CellWidth", 1.f / 8.f);
-	shader.SetUniform1f("u_CellHeight", 1.f / 8.f);
-	for (auto& mob : m_Mobs)
-	{
-		mob->render(m_Renderer, shader, tex, m_Player.GetCamera()->GetViewProjectionMatrix());
-	}
-	shader.Bind();
-	shader.SetUniform1f("u_CellWidth", 1.f / 16.f);
-	shader.SetUniform1f("u_CellHeight", 1.f / 16.f);
 	m_Renderer.endBatch();
+	RenderEntities(viewProj, shader);
+
 }
 
 void World::PlaceBlockAtPosition(const glm::vec3& worldPos, const uint8_t& block)
@@ -102,6 +82,7 @@ void World::RemoveBlockAtPosition(const glm::vec3& worldPos)
 
 Mob* World::AddMob(std::unique_ptr<Mob> mob)
 {
+	mob->SetCollisionSystem(m_CollisionSystem.get());
 	m_Mobs.push_back(std::move(mob));
 	return m_Mobs.back().get();
 }
@@ -124,6 +105,28 @@ uint8_t World::GetBlockAtPosition(const glm::vec3& worldPos)
 	return m_ChunkLoader->GetBlockAtPosition(position, chunkPos);
 }
 
+glm::vec3 World::GetYofXZ(const glm::vec3& pos)
+{
+	// returns the highest solid block at the given (x, z) coordinates
+	glm::ivec3 chunkPos = WorldToChunkPos(pos);
+	glm::vec3 localPos = glm::vec3(
+		int(std::floor(pos.x)) - chunkPos.x * 16,
+		0,
+		int(std::floor(pos.z)) - chunkPos.z * 16
+	);
+
+	for (int y = 180; y >= 0; --y)
+	{
+		localPos.y = float(y);
+		uint8_t blockID = m_ChunkLoader->GetBlockAtPosition(localPos, chunkPos);
+		if (g_BlockTypes[blockID].mobSpawningAllowed)
+		{
+			return glm::vec3(pos.x, float(y + 1), pos.z);
+		}
+	}
+	return glm::vec3(-1.f); // Indicate not found
+}
+
 glm::vec3 World::WorldToChunkPos(const glm::vec3& pos) const
 {
 	return m_ChunkLoader->WorldToChunkPos(pos);
@@ -144,4 +147,29 @@ void World::SetCollisionSystem(std::shared_ptr<CollisionSystem> cs)
 	m_Player.SetCollisionSystem(cs);
 	m_CollisionSystem = cs;
 	m_CollisionSystem.get()->SetBlockTarget(*this);
+}
+
+void World::UpdateEntities(float deltaTime)
+{
+	m_Player.Update(deltaTime);
+	for (auto& mob : m_Mobs)
+	{
+		mob->update(deltaTime, m_Player.GetCamera()->GetPosition());
+	}
+}
+
+void World::RenderEntities(const glm::mat4& viewProj, Shader& shader)
+{
+	// Change shader uniforms for entity rendering
+	shader.Bind();
+	shader.SetUniform1f("u_CellWidth", 1.f / 8.f);
+	shader.SetUniform1f("u_CellHeight", 1.f / 8.f);
+	for (auto& mob : m_Mobs)
+	{
+		mob->render(m_Renderer, shader, viewProj);
+	}
+	// Reset uniforms back to block rendering
+	shader.Bind();
+	shader.SetUniform1f("u_CellWidth", 1.f / 16.f);
+	shader.SetUniform1f("u_CellHeight", 1.f / 16.f);
 }

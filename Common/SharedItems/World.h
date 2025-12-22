@@ -41,41 +41,58 @@ class ChunkLoader;
 class FastNoiseLite;  
 class Mob;
 class MobFactory;
+class MobLoader;
 class World  
 {  
 public:  
+	// Constructor and Destructor
 	World(Renderer& ren, int seed, Camera* cam);  
 	~World();  
 
+	// Main update and draw functions
 	void Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& vpm, float dt);  
 	void Draw(const glm::mat4 viewProj, Shader& shader, Texture& tex);
 
+	// Placing and removing of blocks and entities
 	void PlaceBlockAtPosition(const glm::vec3& worldPos, const uint8_t& block);  
 	void RemoveBlockAtPosition(const glm::vec3& worldPos);  
 	Mob* AddMob(std::unique_ptr<Mob> mob);
 	void RemoveMob(Mob* mob);
 
+	// Getters
 	uint8_t GetBlockAtPosition(const glm::vec3& position);
+	glm::vec3 GetYofXZ(const glm::vec3& pos);
+	bool GetReady() const { return isReady; }
+	Player& GetPlayer() { return m_Player; }
 
+	// Helper functions
 	glm::vec3 WorldToChunkPos(const glm::vec3& pos) const;
 	glm::ivec3 vec3ToIvec3(const glm::vec3& vec) const;
 
-	bool GetReady() const { return isReady; }
-
+	// Collision system
 	void SetCollisionSystem(std::shared_ptr<CollisionSystem> cs);
-	Player& GetPlayer() { return m_Player; }
 private:  
 	// List of noise maps
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;
-	// Chunk loader  
-	std::unique_ptr<ChunkLoader> m_ChunkLoader;
 
+	// World loaders 
+	std::unique_ptr<ChunkLoader> m_ChunkLoader;
+	std::unique_ptr<MobLoader> m_MobLoader;
+	// Renderer
 	Renderer& m_Renderer;
 	
+	// Entities
 	Player m_Player;
-	std::unique_ptr<MobFactory> m_MobFactory;
 	std::vector<std::unique_ptr<Mob>> m_Mobs;
+
+	// Collision system
 	std::shared_ptr<CollisionSystem> m_CollisionSystem;
 
-	bool isReady{ false };
+	bool isReady{ false }; // Indicates if world generation is ready
+
+
+	// Private functions
+	void UpdateEntities(float deltaTime);
+	void RenderEntities(const glm::mat4& viewProj, Shader& shader);
+
 };

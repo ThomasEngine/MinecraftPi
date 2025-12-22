@@ -37,8 +37,6 @@ void GLClearError();
 void GLCheckError();
 bool GLLogCall(const char* function, const char* file, int line);
 
-
-
 struct BlockInstanceData;
 class Chunk;
 class Shader;

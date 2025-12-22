@@ -78,7 +78,7 @@ public:
     SharedModelData* sharedData; 
     InstanceData instanceData;
 
-    virtual void render(Renderer&, Shader&, Texture&, glm::mat4 viewProj) = 0;
+    virtual void render(Renderer&, Shader&, glm::mat4 viewProj) = 0;
 	virtual void update(float deltaTime, const glm::vec3& playerPos) = 0;
 
     virtual Mob* clone() = 0;

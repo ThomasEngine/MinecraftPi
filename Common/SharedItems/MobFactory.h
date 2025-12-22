@@ -27,6 +27,8 @@ public:
 		InitializeMobPrototypes(registry, ren);
 	}
 
+	~MobFactory(); // delete prototypes and shared data
+
     Mob* create(std::string type, glm::vec3 pos) {
         Mob* proto = registry.getPrototype(type);
         Mob* obj = proto->clone(); // Prototype

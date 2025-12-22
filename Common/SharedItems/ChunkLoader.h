@@ -74,7 +74,6 @@ private:
 
 	Frustum frustum;
 	bool* m_WorldReady;
-
 	glm::vec3 m_CameraPos, m_CameraDir;
 
 	std::unordered_map<glm::ivec3, ChunkLoadTask, IVec3Hash> m_ChunkLoadTasks;

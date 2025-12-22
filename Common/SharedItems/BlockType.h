@@ -25,6 +25,7 @@ struct BlockType {
 	uint8_t textureIndices[6];
 	bool isSolid;
 	bool isTransparent;
+	bool mobSpawningAllowed = true;
 	uint8_t lightStrength = 0;
 
 	BlockType() = default;
