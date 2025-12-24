@@ -15,10 +15,11 @@
 
 class Player;
 class World;
+class Game;
 class Gui
 {
 public:
-    Gui(World* world);
+    Gui(World* world, Game* game);
     ~Gui();
 #ifdef WINDOWS_BUILD
     void SetupPc(GLFWwindow* window);
@@ -26,11 +27,12 @@ public:
     void SetupPi();
     void NewFrame();
     void Window(float& FPS, float& movespeed, float& daytime, uint8_t& block);
-	void AddTextWithData(const char* text, float&); 
+    void AddTextWithData(const char* text, float&);
     void Render();
     void ShutDown();
 
 private:
-	Player* player;
+    Player* player;
     World* world;
+    Game* owner;
 };

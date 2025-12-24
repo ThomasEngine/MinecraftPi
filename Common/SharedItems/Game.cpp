@@ -27,6 +27,8 @@
 #include "WindowsGraphics.h"
 #endif // 
 
+#include "UIManager.h"
+#include "Renderer2D.h"
 
 #include "Camera.h"
 #include <thread> 
@@ -78,11 +80,15 @@ void Game::Start()
 	Shader shader("Common/SharedItems/Assets/Basic.shader");
 	Texture* testTex = new Texture("Common/SharedItems/Assets/minecraftAtlas.png");
 	Shader otherShader("Common/SharedItems/Assets/OnBlock.shader");
+	Shader uiShader("Common/SharedItems/ui.shader");
+	Texture* uiTex = new Texture("Common/SharedItems/Assets/basicWidget.png");
 #endif
 #ifdef Raspberry_BUILD
 	Shader shader("../Common/SharedItems/Assets/Basic.shader");
 	Shader otherShader("../Common/SharedItems/Assets/OnBlock.shader");
 	Texture* testTex = new Texture("../Common/SharedItems/Assets/minecraftAtlas.png");
+	Shader uiShader("../Common/SharedItems/Assets/ui.shader");
+	Texture* uiTex = new Texture("../Common/SharedItems/Assets/basicWidget.png");
 #endif
 
 
@@ -141,7 +147,7 @@ void Game::Start()
 	dayTime = 11.9f; // Noon
 
 	// setup GUI
-	gui = new Gui(world);
+	gui = new Gui(world, this);
 	m_OnBlock = new OnBlock(renderer);
 	Crosshair crosshair(renderer);
 
@@ -150,11 +156,24 @@ void Game::Start()
 #else
 	gui->SetupPi();
 #endif 
+	
+	// Setup 2D renderer
+	Renderer2D uiRenderer;
+	uiRenderer.init(uiTex, &uiShader);
+	//uiRenderer.init(testTex, &uiShader);
+	// Create ui manager
 
-
-	// Main game loop
+	windowW = graphics->GetWindowWidth();
+	windowH = graphics->GetWindowHeight();
+	m_UIManager = new UIManager();
+    m_UIManager->Initialize(*world->GetPlayer().GetInventory(), *this, uiRenderer);
+	m_UIManager->SetWindowSize(windowW, windowH);
+	m_UIManager->CloseInventory();
 	while(!quitting)
 	{
+		CheckGameResize();
+		windowW = graphics->GetWindowWidth();
+		windowH = graphics->GetWindowHeight();
 		// sleep to save CPU
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
@@ -186,14 +205,14 @@ void Game::Start()
 		glm::mat4 projView = m_Camera.GetViewProjectionMatrix();
 		world->Update(m_Camera.GetDirection(), m_Camera.GetPosition(), projView, gameDeltaTime);
 		m_Camera.Update(gameDeltaTime);
-		
-
-		crosshair.Update(graphics->GetWindowWidth(), graphics->GetWindowHeight());
+		m_UIManager->Update(gameDeltaTime, *input);
+		crosshair.Update(windowW, windowH);
 		// Render
 		Render();
 		float playerUnderwater = world->GetPlayer().GetUnderWater() ? 1.f : 0.f;
 		shader.Bind();
 		shader.SetUniform1f("u_UnderWater", playerUnderwater);
+		
 
 		
 		world->Draw(projView, shader, *testTex);
@@ -202,6 +221,10 @@ void Game::Start()
 		// Gui elements
 		m_OnBlock->Render(renderer, m_Camera.GetViewProjectionMatrix(), *testTex, otherShader);
 		crosshair.Render(renderer, *testTex);
+
+		uiRenderer.beginFrame(windowW, windowH);
+		m_UIManager->Render();
+		uiRenderer.endFrame();
 		// Post Render
 		PostRender();
 		if (renderimGUI)
@@ -231,6 +254,36 @@ void Game::Quit()
 	quitting = true;
 }
 
+
+void Game::GetScreenHeightAndWidth(int& width, int& height) const
+{
+	// Callback to get screen width and height
+	width = graphics->GetWindowWidth();
+	height = graphics->GetWindowHeight();
+}
+
+void Game::CheckGameResize()
+{
+	// Check for window resize
+	int width = graphics->GetWindowWidth();
+	int height = graphics->GetWindowHeight();
+	if (width != windowW || height != windowH)
+	{
+		windowW = width;
+		windowH = height;
+		OnGameResize(width, height);
+	}
+}
+
+void Game::OnGameResize(int width, int height)
+{
+	// Gets called by CheckGameResize
+	// All resize related stuff
+	m_UIManager->SetWindowSize(width, height);
+	m_Camera.SetPerspective(glm::radians(70.f), (float)width / (float)height, 0.2f, 256.f);
+
+	// Add new resize stuff here when needed
+}
 
 //example of using the key and mouse
 void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float speed)

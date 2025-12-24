@@ -31,6 +31,7 @@ class ICommand;
 class CollisionSystem;
 class World;
 class MobFactory;
+class UIManager;
 enum class Key;
 
 constexpr unsigned int WINDOW_WIDTH = 854;
@@ -45,6 +46,12 @@ public:
 	void Start(); 
 	const Input& GetInput() const;
 	void Quit();
+
+	// Helper for now
+	void GetScreenHeightAndWidth(int& width, int& height) const;
+
+	void CheckGameResize();
+	void OnGameResize(int width, int height);
 protected:
 	void ProcessInput(Camera& cam, Renderer& renderer/*, Chunk& currentChunk*/, float deltaTime, float moveSpeed);
 	virtual void Initialize() {}
@@ -64,6 +71,7 @@ private:
 	void InitializeOpenGLES();
 	void ClearScreen();
 
+	UIManager* m_UIManager = nullptr;
 	glm::vec2 lastMouse = { 0, 0 };
 	InputManager m_InputManager;
 	Camera m_Camera;
@@ -72,6 +80,7 @@ private:
 	MobFactory* mobFactory = nullptr;
 	float dayTime;
 	std::shared_ptr<CollisionSystem> m_CollisionSystem;
+	int windowW, windowH;
 	bool speedBoost;
 	bool canBreakBlock = true;
 	bool renderimGUI = false;

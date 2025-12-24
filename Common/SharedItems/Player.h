@@ -4,6 +4,7 @@
 
 class CollisionSystem;
 class Camera;
+class Container;
 class Player
 {
 public:
@@ -26,6 +27,7 @@ public:
 	void SetMoveSpeed(float s) { m_MovementSpeed = s; }
 	void SetCollisionSystem(std::shared_ptr<CollisionSystem> cs) { m_CS = cs; }
 	Camera* GetCamera() { return m_Camera; }
+	Container* GetInventory() { return m_Inventory; }
 	glm::vec3 getRect() const { return m_PlayerRect; }
 	void SetSprinting(bool s) { m_Sprinting = s; }
 	bool IsRunning() const;
@@ -53,5 +55,7 @@ private:
 
 	void SetPosition(const glm::vec3& pos);
 	bool CanJump() const;
+
+	Container* m_Inventory;
 };
 

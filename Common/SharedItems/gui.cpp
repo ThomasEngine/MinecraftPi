@@ -11,12 +11,13 @@
 #include <imgui/imgui_impl_glfw.h>
 #endif
 #include <string>
+#include "Game.h"
 
 static bool flying = false;
 
 
-Gui::Gui(World* world)
-	: player(&world->GetPlayer()), world(world)
+Gui::Gui(World* world, Game* game)
+	: player(&world->GetPlayer()), world(world), owner(game)
 {
 
 }
@@ -124,6 +125,14 @@ void Gui::Window(float& FPS, float& moveSpeed, float& dayTime, uint8_t& block)
 	{
 		block = currentBlock + 1;
 	}
+
+	// Ask a change of ratio when changing the screen height and width
+	// When press button change aspect ratio to current screen size
+    if (ImGui::Button("ratio")) {
+		int width, height;
+		owner->GetScreenHeightAndWidth(width, height);
+		player->GetCamera()->SetPerspective(glm::radians(70.f), (float)width / (float)height, 0.2f, 256.f);
+    }
 
 	ImGui::End();
 }

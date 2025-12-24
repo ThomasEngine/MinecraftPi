@@ -18,7 +18,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\IInput.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Input.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\tiny_obj_loader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)BaseUI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Crosshair.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)InventoryScreen.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Mesh.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MobBase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BlockRegistery.h" />
@@ -36,15 +38,20 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)OnBlock.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pig.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Player.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PlayerGameInv.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Renderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Renderer2D.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Shader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Mobs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stb_image.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Texture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UIManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UITypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)World.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Input.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)BaseUI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)BlockRegistery.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Camera.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Chunk.cpp" />
@@ -56,6 +63,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ICommand.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)InputManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)InventoryScreen.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Mesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MobBase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MobFactory.cpp" />
@@ -63,11 +71,15 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)OnBlock.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Pig.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Player.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PlayerGameInv.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Renderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Renderer2D.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Shader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Mobs.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)InputManager.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Texture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)UIManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)UITypes.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +90,7 @@
     <None Include="$(MSBuildThisFileDirectory)Assets\basicpi.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\crosshair.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\OnBlock.shader" />
+    <None Include="$(MSBuildThisFileDirectory)ui.shader" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.obj">
@@ -115,6 +128,7 @@
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03.png" />
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03_em.png" />
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Textures\Harvey2.jpg" />
+    <Image Include="$(MSBuildThisFileDirectory)Assets\GUI-Atlas.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\MinecraftTex.png" />
     <Image Include="$(MSBuildThisFileDirectory)minecraftAtlas.png" />

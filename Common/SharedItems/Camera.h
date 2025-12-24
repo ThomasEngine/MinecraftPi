@@ -12,6 +12,7 @@ public:
     void SetPerspective(float fov, float aspect, float near, float far);
     void SetOrthographic(float left, float right, float bottom, float top, float near, float far);
 	void SetSprintFov(bool isSprinting);
+	void SetAspectRatio(float aspect);
 
     // Getters
     glm::vec3 GetPosition() const;

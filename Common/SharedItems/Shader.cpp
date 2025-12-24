@@ -41,7 +41,7 @@ namespace {
     {
         std::ifstream stream(filepath);
         if (!stream)
-            std::cout << "file not loaded\n";
+            std::cout << "Shader file not loaded filepath: " << filepath.c_str() << "\n";
 
         enum class ShaderType
         {

@@ -43,6 +43,18 @@
     <Filter Include="Mobs\Mobs">
       <UniqueIdentifier>{95c4b73c-ba71-41dc-a8d5-b6b937d123cd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ui\ImGUI">
+      <UniqueIdentifier>{56ffd82f-b77e-48cd-b717-a47ce6ecdf1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\GameGUI">
+      <UniqueIdentifier>{91826383-88f3-43b1-9850-a71e6b444d34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\GameGUI\Base">
+      <UniqueIdentifier>{4d565356-51fc-48f8-bbc6-59495c7c38ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\GameGUI\Screens">
+      <UniqueIdentifier>{71c884c1-e34a-4580-862a-365ca51f8ba7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\IInput.h">
@@ -93,9 +105,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CollisionSystem.h">
       <Filter>World</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)gui.h">
-      <Filter>ui</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)ICommand.h">
       <Filter>Commands</Filter>
     </ClInclude>
@@ -121,6 +130,25 @@
       <Filter>Mobs\Mobs</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)MobLoader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gui.h">
+      <Filter>ui\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)BaseUI.h">
+      <Filter>ui\GameGUI\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Renderer2D.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UITypes.h">
+      <Filter>ui\GameGUI\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)InventoryScreen.h">
+      <Filter>ui\GameGUI\Screens</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PlayerGameInv.h">
+      <Filter>ui\GameGUI\Screens</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)UIManager.h">
+      <Filter>ui\GameGUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Input.cpp">
@@ -158,9 +186,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)CollisionSystem.cpp">
       <Filter>World</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)ICommand.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
@@ -192,6 +217,27 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)InputManager.cpp">
       <Filter>Input</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp">
+      <Filter>ui\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)BaseUI.cpp">
+      <Filter>ui\GameGUI\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)UITypes.cpp">
+      <Filter>ui\GameGUI\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Renderer2D.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)InventoryScreen.cpp">
+      <Filter>ui\GameGUI\Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)PlayerGameInv.cpp">
+      <Filter>ui\GameGUI\Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)UIManager.cpp">
+      <Filter>ui\GameGUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.mtl">
@@ -207,6 +253,7 @@
     <None Include="$(MSBuildThisFileDirectory)Assets\basicpi.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\OnBlock.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\crosshair.shader" />
+    <None Include="$(MSBuildThisFileDirectory)ui.shader" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_02.obj">
@@ -244,5 +291,6 @@
     <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\MinecraftTex.png" />
     <Image Include="$(MSBuildThisFileDirectory)minecraftAtlas.png" />
+    <Image Include="$(MSBuildThisFileDirectory)Assets\GUI-Atlas.png" />
   </ItemGroup>
 </Project>

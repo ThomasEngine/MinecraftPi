@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "CollisionSystem.h"
 #include "World.h"
+#include "UITypes.h"
 
 
 
@@ -11,6 +12,7 @@ Player::Player(Camera* m_Camera)
 	: m_MovementSpeed(1.0f), m_CS(nullptr), m_Camera(m_Camera)
 {
 	SetPosition(glm::vec3(0.0f, 120.0f, 0.0f));
+	m_Inventory = new Container();
 }
 
 Player::~Player()
