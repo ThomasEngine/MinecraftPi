@@ -120,25 +120,8 @@ void Game::Start()
 	m_CollisionSystem->SetBlockTarget(*world);
 	world->SetCollisionSystem(m_CollisionSystem);
 
-
-	// BindCommand 
-	m_InputManager.BindCommand("MoveForward", std::make_unique<MoveForwardCommand>());
-	m_InputManager.BindCommand("MoveBackward", std::make_unique<MoveBackwardCommand>());
-	m_InputManager.BindCommand("MoveLeft", std::make_unique<MoveLeftCommand>());
-	m_InputManager.BindCommand("MoveRight", std::make_unique<MoveRightCommand>());
-	m_InputManager.BindCommand("Crouch", std::make_unique<CrouchCommand>());
-	m_InputManager.BindCommand("Jump", std::make_unique<JumpCommand>());
-
-	// TODO:: ADD sprint command
+	SetupCommands();
 	
-	// Bind keys to actions
-	m_InputManager.BindAction(Key::W, "MoveForward");
-	m_InputManager.BindAction(Key::S, "MoveBackward");
-	m_InputManager.BindAction(Key::A, "MoveLeft");
-	m_InputManager.BindAction(Key::D, "MoveRight");
-	m_InputManager.BindAction(Key::SHIFT_LEFT, "Crouch");
-	m_InputManager.BindAction(Key::SPACE, "Jump");
-	// Direct key to command map for simpler access in ProcessInput
 
 
 	// initialize blocks
@@ -296,6 +279,8 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 	float lookSpeed = 0.008;
 	static bool toggledCurser = false;
 
+	ProcessInventoryCommands();
+
 	glm::vec2 currentMouse = mouse.GetPosition();
 	glm::vec2 delta = currentMouse - lastMouse;
 	lastMouse = currentMouse;
@@ -305,6 +290,8 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 		cam.AddYaw(-delta.x * lookSpeed);
 		cam.AddPitch(-delta.y * lookSpeed);
 	}
+	
+	// Inventory stuff
 
 
 	if (keyboard.GetKey(Key::CTRL_LEFT))
@@ -442,4 +429,99 @@ void Game::ClearScreen()
 	float timeOfDay = fmod(dayTime / 12.f, 1.f);
 	glClearColor(0.53f * timeOfDay, 0.81f * timeOfDay, 0.92f * timeOfDay, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Game::SetupCommands()
+{
+	// Setup input commands
+	// BindCommand 
+	m_InputManager.BindCommand("MoveForward", std::make_unique<MoveForwardCommand>());
+	m_InputManager.BindCommand("MoveBackward", std::make_unique<MoveBackwardCommand>());
+	m_InputManager.BindCommand("MoveLeft", std::make_unique<MoveLeftCommand>());
+	m_InputManager.BindCommand("MoveRight", std::make_unique<MoveRightCommand>());
+	m_InputManager.BindCommand("Crouch", std::make_unique<CrouchCommand>());
+	m_InputManager.BindCommand("Jump", std::make_unique<JumpCommand>());
+
+	// TODO:: ADD sprint command
+
+	// Bind keys to actions
+	m_InputManager.BindAction(Key::W, "MoveForward");
+	m_InputManager.BindAction(Key::S, "MoveBackward");
+	m_InputManager.BindAction(Key::A, "MoveLeft");
+	m_InputManager.BindAction(Key::D, "MoveRight");
+	m_InputManager.BindAction(Key::SHIFT_LEFT, "Crouch");
+	m_InputManager.BindAction(Key::SPACE, "Jump");
+	// Direct key to command map for simpler access in ProcessInput
+
+	// Inventory toggle
+	m_InputManager.BindAction(Key::E, "ToggleInventory");
+	m_InputManager.BindAction(MouseButtons::SCROLL_DOWN, "Inventory-");
+	m_InputManager.BindAction(MouseButtons::SCROLL_UP, "Inventory+");
+	// Inventory 1 - 9
+	m_InputManager.BindAction(Key::NUM_1, "InventoryIndexOne");
+	m_InputManager.BindAction(Key::NUM_2, "InventoryIndexTwo");
+	m_InputManager.BindAction(Key::NUM_3, "InventoryIndexThree");
+	m_InputManager.BindAction(Key::NUM_4, "InventoryIndexFour");
+	m_InputManager.BindAction(Key::NUM_5, "InventoryIndexFive");
+	m_InputManager.BindAction(Key::NUM_6, "InventoryIndexSix");
+	m_InputManager.BindAction(Key::NUM_7, "InventoryIndexSeven");
+	m_InputManager.BindAction(Key::NUM_8, "InventoryIndexEight");
+	m_InputManager.BindAction(Key::NUM_9, "InventoryIndexNine");
+}
+
+void Game::ProcessInventoryCommands()
+{
+	// Open and close inventory
+	if (m_InputManager.IsKeyboardActionActive("ToggleInventory"))
+	{
+		m_UIManager->ToggleInventory();
+	}
+
+	// Scrolling
+	if (m_InputManager.IsMouseActionActive("Inventory+"))
+	{
+		m_UIManager->HotBarIndexUp();
+	}
+	if (m_InputManager.IsMouseActionActive("Inventory-"))
+	{
+		m_UIManager->HotBarDown();
+	}
+
+	// Hotbar selection 1-9
+	if (m_InputManager.IsKeyboardActionActive("InventoryIndexOne"))
+	{
+		m_UIManager->SetHotBarIndex(0);
+	}
+	if (m_InputManager.IsKeyboardActionActive("InventoryIndexTwo"))
+	{
+		m_UIManager->SetHotBarIndex(1);
+	}
+	if (m_InputManager.IsKeyboardActionActive("InventoryIndexThree"))
+	{
+		m_UIManager->SetHotBarIndex(2);
+	}
+	if (m_InputManager.IsKeyboardActionActive("InventoryIndexFour"))
+	{
+		m_UIManager->SetHotBarIndex(3);
+	}
+	if (m_InputManager.IsKeyboardActionActive("InventoryIndexFive"))
+	{
+		m_UIManager->SetHotBarIndex(4);
+	}
+	if (m_InputManager.IsKeyboardActionActive("InventoryIndexSix"))
+	{
+		m_UIManager->SetHotBarIndex(5);
+	}
+	if (m_InputManager.IsKeyboardActionActive("InventoryIndexSeven"))
+	{
+		m_UIManager->SetHotBarIndex(6);
+	}
+	if (m_InputManager.IsKeyboardActionActive("InventoryIndexEight"))
+	{
+		m_UIManager->SetHotBarIndex(7);
+	}
+	if (m_InputManager.IsKeyboardActionActive("InventoryIndexNine"))
+	{
+		m_UIManager->SetHotBarIndex(8);
+	}
 }

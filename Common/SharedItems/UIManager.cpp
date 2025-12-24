@@ -59,3 +59,12 @@ void UIManager::CloseInventory()
 	m_InventoryScreen->onClose();
 	m_PlayerGameInv->onOpen();
 }
+
+void UIManager::ToggleInventory()
+{
+	if (m_InventoryScreen->isOpen())
+	{
+		CloseInventory();
+	}
+	else OpenInventory();
+}

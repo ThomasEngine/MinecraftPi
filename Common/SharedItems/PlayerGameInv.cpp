@@ -30,8 +30,11 @@ void PlayerGameInv::onOpen()
 		m_Widgets.push_back(std::move(slot));
 	}
 	// Add another UISLot on top of current selected index to highlight it
+	// Using SlotTypes::HotBarSelect for different texture
+	// Calculate highlight position
+	// Should be a bit bigger than normal slot
 	int index = m_CurrentIndex;
-	Rect highlightRect{ startX + index * slotSize, startY, slotSize, slotSize };
+	Rect highlightRect{ startX - 2 + index * slotSize, startY - 2, slotSize + 4, slotSize + 4 };
 	auto highlightSlot = std::make_unique<UISlot>(index, highlightRect, playerHotbarInv, SlotTypes::HotBarSelect);
 	m_Widgets.push_back(std::move(highlightSlot));
 

@@ -10,7 +10,9 @@ enum class MouseButtons
 {
 	LEFT,	
 	RIGHT,
-	MIDDLE
+	MIDDLE,
+	SCROLL_UP,
+	SCROLL_DOWN
 };
 
 class IMouse {

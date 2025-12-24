@@ -22,6 +22,11 @@ public:
 	void SetWindowSize(int width, int height);
 	void OpenInventory();
 	void CloseInventory();
+	void ToggleInventory();
+
+	void SetHotBarIndex(int i) { m_PlayerGameInv->setCurrentIndex(i); }
+	void HotBarIndexUp() { m_PlayerGameInv->upIndex(); }
+	void HotBarDown() { m_PlayerGameInv->downIndex(); }
 private:  
 	Renderer2D* m_Renderer2D;  
 

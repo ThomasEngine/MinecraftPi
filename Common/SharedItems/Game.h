@@ -70,6 +70,8 @@ protected:
 private:
 	void InitializeOpenGLES();
 	void ClearScreen();
+	void SetupCommands();
+	void ProcessInventoryCommands();
 
 	UIManager* m_UIManager = nullptr;
 	glm::vec2 lastMouse = { 0, 0 };

@@ -23,6 +23,7 @@ enum BlockTypeId : uint8_t {
 struct BlockType {
 	const char* name;
 	uint8_t textureIndices[6];
+	uint8_t itemID = 0; // Corresponding item ID for inventory
 	bool isSolid;
 	bool isTransparent;
 	bool mobSpawningAllowed = true;
