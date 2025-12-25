@@ -3,7 +3,7 @@
 #include "ICommand.h"
 #include "IInput.h"
 #include "Input.h"
-// hel
+// helfff
 InputManager::InputManager(const Input* input)
     : m_Input(input) {
 }
@@ -47,6 +47,7 @@ bool InputManager::IsKeyboardActionActive(const std::string& actionName) const {
 bool InputManager::IsMouseActionActive(const std::string& actionName) const
 {
 	auto it = m_MouseActionStates.find(actionName);
+	if (it == m_MouseActionStates.end()) printf("Action not found: %s\n", actionName.c_str());
     return  (it != m_MouseActionStates.end() && it->second);
 }
 

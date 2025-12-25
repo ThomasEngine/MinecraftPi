@@ -271,6 +271,7 @@ void Game::OnGameResize(int width, int height)
 //example of using the key and mouse
 void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float speed)
 {
+	ProcessInventoryCommands();
 	Player& m_Player = world->GetPlayer();
 	const Input& input = GetInput();
 	const IMouse& mouse = input.GetMouse();
@@ -279,7 +280,6 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 	float lookSpeed = 0.008;
 	static bool toggledCurser = false;
 
-	ProcessInventoryCommands();
 
 	glm::vec2 currentMouse = mouse.GetPosition();
 	glm::vec2 delta = currentMouse - lastMouse;
@@ -478,13 +478,13 @@ void Game::ProcessInventoryCommands()
 	}
 
 	// Scrolling
-	if (m_InputManager.IsMouseActionActive("Inventory+"))
-	{
-		m_UIManager->HotBarIndexUp();
-	}
 	if (m_InputManager.IsMouseActionActive("Inventory-"))
 	{
 		m_UIManager->HotBarDown();
+	}
+	if (m_InputManager.IsMouseActionActive("Inventory+"))
+	{
+		m_UIManager->HotBarIndexUp();
 	}
 
 	// Hotbar selection 1-9

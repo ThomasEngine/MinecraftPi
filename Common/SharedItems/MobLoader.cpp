@@ -103,7 +103,6 @@ void MobLoader::TryNaturalSpawn(const glm::vec3& playerPos)
 			if (!canMobLoad(spawnPos))
 				continue;
 			// Create mob and add to world
-			printf("Spawning mob at position: %f, %f, %f\n", spawnPos.x, spawnPos.y, spawnPos.z);
 			Mob* newMob = m_MobFactory->create("Sheep", spawnPos);
 			m_Owner->AddMob(std::unique_ptr<Mob>(newMob));
 			m_Mobs[(int)mobToSpawn].push_back(newMob);

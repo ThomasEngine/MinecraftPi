@@ -61,13 +61,13 @@ void PlayerGameInv::setCurrentIndex(int index)
 void PlayerGameInv::upIndex()
 {
 	if (!m_Open) return;
-	m_CurrentIndex > 8 ? m_CurrentIndex = 0 : m_CurrentIndex++;
+	m_CurrentIndex > 7 ? m_CurrentIndex = 0 : m_CurrentIndex++;
 	onOpen();
 }
 
 void PlayerGameInv::downIndex()
 {
 	if (!m_Open) return;
-	m_CurrentIndex < 0 ? m_CurrentIndex = 8 : m_CurrentIndex--;
+	m_CurrentIndex < 1 ? m_CurrentIndex = 8 : m_CurrentIndex--;
 	onOpen();
 }

@@ -14,14 +14,13 @@ WindowsMouse::WindowsMouse(GLFWwindow& window) : window(window)
 bool WindowsMouse::GetButtonDown(MouseButtons button) const
 {
 	bool b;
-	bool c;
 	switch (button)
 	{
-	case MouseButtons::LEFT: return glfwGetMouseButton(&window, GLFW_MOUSE_BUTTON_LEFT);
-	case MouseButtons::RIGHT: return glfwGetMouseButton(&window, GLFW_MOUSE_BUTTON_RIGHT);
+	case MouseButtons::SCROLL_DOWN: b = scrollDelta < 0.0f; if(b)scrollDelta = 0.0f; return b;
+	case MouseButtons::SCROLL_UP: b = scrollDelta > 0.0f; if(b)scrollDelta = 0.0f; return b; 
+	case MouseButtons::LEFT: return glfwGetMouseButton(&window, GLFW_MOUSE_BUTTON_LEFT); 
+	case MouseButtons::RIGHT: return glfwGetMouseButton(&window, GLFW_MOUSE_BUTTON_RIGHT); 
 	case MouseButtons::MIDDLE: return glfwGetMouseButton(&window, GLFW_MOUSE_BUTTON_MIDDLE);
-	case MouseButtons::SCROLL_UP: b = scrollDelta > 0.0f; scrollDelta = 0.0f; return b;
-	case MouseButtons::SCROLL_DOWN: c = scrollDelta < 0.0f; scrollDelta = 0.0f; return c;
 	default:std::cout << "ERROR::INPUT::WINDOWS Mouse button not supported: " << static_cast<int>(button) << std::endl; return false;
 	}
 }
@@ -40,7 +39,7 @@ float WindowsMouse::GetScrollDelta() const
 
 float WindowsMouse::scrollDelta{ 0.0f };
 
-void WindowsMouse::ScrollCallback(GLFWwindow* /*window*/, double /*xOffset*/, double yOffset)
+void WindowsMouse::ScrollCallback(GLFWwindow* /*window*/, double xOffset, double yOffset)
 {
 	scrollDelta = static_cast<float>(yOffset);
 }
