@@ -42,8 +42,12 @@ enum class SlotTypes {
 	Inventory,
 	HotBar,
 	HotBarSelect,
+	BackgroundTop,
+	BackgroundMiddle,
+	BackgroundBottom,
 	Count
 };
+
 
 enum class MouseButtons;
 class UISlot : public UIWidget {

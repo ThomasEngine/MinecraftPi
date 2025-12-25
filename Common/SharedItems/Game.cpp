@@ -50,7 +50,6 @@ Game::Game(const Input* const input, IGraphics* graphics) :
 
 Game::~Game()
 {
-
 }
 
 
@@ -472,9 +471,12 @@ void Game::SetupCommands()
 void Game::ProcessInventoryCommands()
 {
 	// Open and close inventory
+	if (!canBreakBlock) return; 
 	if (m_InputManager.IsKeyboardActionActive("ToggleInventory"))
 	{
 		m_UIManager->ToggleInventory();
+		canBreakBlock = false;
+		blockTimer = 0.0f;
 	}
 
 	// Scrolling

@@ -17,10 +17,23 @@ namespace {
 		case SlotTypes::HotBarSelect:
 			return 48;
 			break;
+		case SlotTypes::BackgroundTop:
+			return 240;
+			break;
+		case SlotTypes::BackgroundMiddle:
+			return 408;
+			break;
+		case SlotTypes::BackgroundBottom:
+			return 72;
+			break;
 		default:
 			return 0;
 			break;
 		}
+	}
+	bool isSlotBackground(SlotTypes type)
+	{
+		return type == SlotTypes::BackgroundTop || type == SlotTypes::BackgroundMiddle || type == SlotTypes::BackgroundBottom;
 	}
 }
 
@@ -70,7 +83,8 @@ void UISlot::Update(const Input* input, float deltaTime)
 void UISlot::Render(Renderer2D& ren) const
 {
 	// Draw base
-	ren.drawSprite(Sprite{ GetSloteTypeAtlas(slotType), 0, 24, 24}, float(bounds.x), float(bounds.y), float(bounds.w), float(bounds.h), 0xFFFFFFFF);
+	int windth = isSlotBackground(slotType) ? 24 * 7 : 24;
+	ren.drawSprite(Sprite{ GetSloteTypeAtlas(slotType), 0, windth, 24}, float(bounds.x), float(bounds.y), float(bounds.w), float(bounds.h), 0xFFFFFFFF);
 	if (!container) return;
 
 	const ItemStack& stack = container->getSlot(slotIndex);
