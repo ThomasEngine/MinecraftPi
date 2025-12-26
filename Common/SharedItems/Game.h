@@ -73,6 +73,10 @@ private:
 	void SetupCommands();
 	void ProcessInventoryCommands();
 
+	void ToggleMouse();
+	bool toggledCurser = false;
+
+
 	UIManager* m_UIManager = nullptr;
 	glm::vec2 lastMouse = { 0, 0 };
 	InputManager m_InputManager;

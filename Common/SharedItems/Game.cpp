@@ -277,7 +277,6 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 	const IKeyboard& keyboard = input.GetKeyboard();
 	float moveSpeed = speed;
 	float lookSpeed = 0.008;
-	static bool toggledCurser = false;
 
 
 	glm::vec2 currentMouse = mouse.GetPosition();
@@ -477,6 +476,7 @@ void Game::ProcessInventoryCommands()
 		m_UIManager->ToggleInventory();
 		canBreakBlock = false;
 		blockTimer = 0.0f;
+		ToggleMouse();
 	}
 
 	// Scrolling
@@ -526,4 +526,13 @@ void Game::ProcessInventoryCommands()
 	{
 		m_UIManager->SetHotBarIndex(8);
 	}
+}
+
+void Game::ToggleMouse()
+{
+	toggledCurser = !toggledCurser;
+	dynamic_cast<WindowsGraphics*>(graphics)->ToggleCurser();
+	canBreakBlock = false;
+	blockTimer = 0;
+	renderimGUI = !renderimGUI;
 }

@@ -49,17 +49,54 @@ void InventoryScreen::onOpen()
 	m_Widgets.push_back(std::move(backgroundBottom));
 
 	// Create slots
+	// Normal inventory slots
+	int slotX, slotY;
 	for (int row = 0; row < rows; ++row) {
 		for (int col = 0; col < cols; ++col) {
 			int index = row * cols + col;
-			int slotX = startX + col * (slotSize + inBetweenSlotSpace);
-			int slotY = startY + row * (slotSize + inBetweenSlotSpace);
+			slotX = startX + col * (slotSize + inBetweenSlotSpace);
+			slotY = startY + row * (slotSize + inBetweenSlotSpace);
 			slotY = (row == (rows - 1)) ? slotY + slotSize * 0.20 : slotY;
 			Rect slotRect{ slotX, slotY, slotSize, slotSize };
 			auto slot = std::make_unique<UISlot>(index, slotRect, playerInventory);
 			m_Widgets.push_back(std::move(slot));
 		}
 	}
+
+	// Crafting slot 2x2 input with arrow to 1 output input and output are normal slots
+	// Place crafting grid in the top right, with some margin
+	// Place crafting grid at a fixed offset from the top-right of the background
+	const int craftingMarginX = 144;
+	const int craftingMarginY = 34;
+	int craftingStartX = startXBackground + backgroundWidth - (2 * slotSize + inBetweenSlotSpace) - craftingMarginX;
+	int craftingStartY = startYBackground + craftingMarginY;
+
+	// Input slots
+	for (int row = 0; row < 2; ++row) {
+		for (int col = 0; col < 2; ++col) {
+			int index = rows * cols + row * 2 + col; // after inventory slots
+			slotX = craftingStartX + col * (slotSize + inBetweenSlotSpace);
+			slotY = craftingStartY + row * (slotSize + inBetweenSlotSpace);
+			Rect slotRect{ slotX, slotY, slotSize, slotSize };
+			auto slot = std::make_unique<UISlot>(index, slotRect, nullptr);
+			m_Widgets.push_back(std::move(slot));
+		}
+	}
+
+	// Output slot
+	int outputIndex = rows * cols + 4;
+	int outputSlotX = craftingStartX + 2 * (slotSize + inBetweenSlotSpace) + slotSize + slotSize * 0.3f;
+	int outputSlotY = craftingStartY + slotSize / 2; // vertically centered
+	Rect outputSlotRect{ outputSlotX, outputSlotY, slotSize, slotSize };
+	auto outputSlot = std::make_unique<UISlot>(outputIndex, outputSlotRect, nullptr);
+	m_Widgets.push_back(std::move(outputSlot));
+
+	// Arrow in between
+	int arrowX = craftingStartX + 2 * (slotSize + inBetweenSlotSpace) + slotSize * 0.15;
+	int arrowY = craftingStartY + slotSize - slotSize / 2; // center arrow vertically
+	Rect arrowRect{ arrowX, arrowY, slotSize, slotSize };
+	auto arrowSlot = std::make_unique<UISlot>(-1, arrowRect, nullptr, SlotTypes::CraftingArrow);
+	m_Widgets.push_back(std::move(arrowSlot));
 
 	// Set flag
 	m_Open = true;

@@ -26,6 +26,21 @@ namespace {
 		case SlotTypes::BackgroundBottom:
 			return 72;
 			break;
+		case SlotTypes::HelmetHolder:
+			return 464;
+			break;
+		case SlotTypes::ChestplateHolder:
+			return 488;
+			break;
+		case SlotTypes::LeggingsHolder:
+			return 512;
+			break;
+		case SlotTypes::BootsHolder:
+			return 536;
+			break;
+		case SlotTypes::CraftingArrow:
+			return 24 * 28;
+			break;
 		default:
 			return 0;
 			break;
@@ -83,13 +98,18 @@ void UISlot::Update(const Input* input, float deltaTime)
 void UISlot::Render(Renderer2D& ren) const
 {
 	// Draw base
-	int windth = isSlotBackground(slotType) ? 24 * 7 : 24;
-	ren.drawSprite(Sprite{ GetSloteTypeAtlas(slotType), 0, windth, 24}, float(bounds.x), float(bounds.y), float(bounds.w), float(bounds.h), 0xFFFFFFFF);
+	bool isBackground = isSlotBackground(slotType);
+	int windth = isBackground ? 24 * 7 : 24;
+	//uint32_t slotColor = isBackground ? 0xFFFFFFFF : (hovered ? 0xE6EBEBEB : 0xFFFFFFFF);
+	//uint32_t slotColor = isBackground ? 0xFFFFFFFF : (hovered ? 0x1AEBEBEB : 0xFFFFFFFF);
+
+	uint32_t slotColor = isBackground ? 0xFFFFFFFF : (hovered ? 0x33EBEBEB : 0xFFFFFFFF);
+
+	ren.drawSprite(Sprite{ GetSloteTypeAtlas(slotType), 0, windth, 24}, float(bounds.x), float(bounds.y), float(bounds.w), float(bounds.h), slotColor);
 	if (!container) return;
 
 	const ItemStack& stack = container->getSlot(slotIndex);
 	if (!stack.isEmpty()) {
-		printf("Drawing container\n");
 		// Render item sprite (placeholder)
 		ren.drawSprite(Sprite{ 16, 0, 16, 16 }, float(bounds.x), float(bounds.y), float(bounds.w), float(bounds.h), 0xFFFFFFFF);
 		// Render quantity (placeholder)

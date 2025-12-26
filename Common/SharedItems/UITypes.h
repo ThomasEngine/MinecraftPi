@@ -45,6 +45,11 @@ enum class SlotTypes {
 	BackgroundTop,
 	BackgroundMiddle,
 	BackgroundBottom,
+	CraftingArrow,
+	HelmetHolder,
+	ChestplateHolder,
+	LeggingsHolder,
+	BootsHolder,
 	Count
 };
 
@@ -67,7 +72,3 @@ public:
 private:
 	void clicked(MouseButtons button, const Input& input);
 };
-
-
-
-
