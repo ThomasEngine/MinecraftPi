@@ -292,5 +292,6 @@
     <Image Include="$(MSBuildThisFileDirectory)Assets\MinecraftTex.png" />
     <Image Include="$(MSBuildThisFileDirectory)minecraftAtlas.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\GUI-Atlas.png" />
+    <Image Include="$(MSBuildThisFileDirectory)Assets\basicWidget.png" />
   </ItemGroup>
 </Project>

@@ -128,6 +128,7 @@
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03.png" />
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03_em.png" />
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Textures\Harvey2.jpg" />
+    <Image Include="$(MSBuildThisFileDirectory)Assets\basicWidget.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\GUI-Atlas.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\MinecraftTex.png" />

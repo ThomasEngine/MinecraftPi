@@ -14,7 +14,7 @@ void PlayerGameInv::onOpen()
 
 	// Define grid parameters
 	const int cols = 9;
-
+	
 	const int baseSlotSize = 48;
 	const int slotSize = int(baseSlotSize * uiScale);
 	const int gridWidth = cols * slotSize;

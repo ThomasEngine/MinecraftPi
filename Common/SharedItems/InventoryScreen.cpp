@@ -16,21 +16,23 @@ void InventoryScreen::onOpen()
 	// Define grid parameters
 	const int cols = 9;
 	const int rows = 4;
-
+	const int inBetweenSlotSpace = 3;
 	const int baseSlotSize = 48;
 	const int slotSize = int(baseSlotSize * uiScale);
-	const int gridWidth = cols * slotSize;
-	const int gridHeight = rows * slotSize;
+
+	// Calculate grid size including spacing
+	const int gridWidth = cols * slotSize + (cols - 1) * inBetweenSlotSpace;
+	const int gridHeight = rows * slotSize + (rows - 1) * inBetweenSlotSpace;
 	const int backgroundHeight = gridHeight + 24 * 7; // extra for top and bottom and padding
 	const int backgroundWidth = gridWidth + 40;
 	const int startXBackground = (m_ScreenW - backgroundWidth) / 2;
 	const int startYBackground = (m_ScreenH - backgroundHeight) / 2;
 	const int startX = (m_ScreenW - gridWidth) / 2;
-	const int startY = startYBackground + 24 * 5.75; // start a bit lower for padding
+	const int startY = startYBackground + slotSize * 3.5; // start a bit lower for padding
 
 	// First add background
 	// Background is twice the height and a bit wider than the grid
-	Rect backgroundRect{ startXBackground, startYBackground, backgroundWidth, 24};
+	Rect backgroundRect{ startXBackground, startYBackground, backgroundWidth, baseSlotSize };
 	auto background = std::make_unique<UISlot>(-1, backgroundRect, nullptr, SlotTypes::BackgroundTop);
 	m_Widgets.push_back(std::move(background));
 
@@ -42,7 +44,7 @@ void InventoryScreen::onOpen()
 
 	// Bottom part
 	int startYBackgroundBottom = startYBackground + backgroundHeight - 24;
-	Rect backgroundBottomRect{ startXBackground, startYBackgroundBottom, backgroundWidth, 24 };
+	Rect backgroundBottomRect{ startXBackground, startYBackgroundBottom, backgroundWidth, baseSlotSize };
 	auto backgroundBottom = std::make_unique<UISlot>(-1, backgroundBottomRect, nullptr, SlotTypes::BackgroundBottom);
 	m_Widgets.push_back(std::move(backgroundBottom));
 
@@ -50,8 +52,10 @@ void InventoryScreen::onOpen()
 	for (int row = 0; row < rows; ++row) {
 		for (int col = 0; col < cols; ++col) {
 			int index = row * cols + col;
-			int modY = row == (rows - 1) ? startY + row * slotSize + slotSize * 0.25 : startY + row * slotSize;
-			Rect slotRect{ startX + col * slotSize, modY, slotSize, slotSize };
+			int slotX = startX + col * (slotSize + inBetweenSlotSpace);
+			int slotY = startY + row * (slotSize + inBetweenSlotSpace);
+			slotY = (row == (rows - 1)) ? slotY + slotSize * 0.20 : slotY;
+			Rect slotRect{ slotX, slotY, slotSize, slotSize };
 			auto slot = std::make_unique<UISlot>(index, slotRect, playerInventory);
 			m_Widgets.push_back(std::move(slot));
 		}
