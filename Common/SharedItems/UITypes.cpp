@@ -100,8 +100,6 @@ void UISlot::Render(Renderer2D& ren) const
 	// Draw base
 	bool isBackground = isSlotBackground(slotType);
 	int windth = isBackground ? 24 * 7 : 24;
-	//uint32_t slotColor = isBackground ? 0xFFFFFFFF : (hovered ? 0xE6EBEBEB : 0xFFFFFFFF);
-	//uint32_t slotColor = isBackground ? 0xFFFFFFFF : (hovered ? 0x1AEBEBEB : 0xFFFFFFFF);
 
 	uint32_t slotColor = isBackground ? 0xFFFFFFFF : (hovered ? 0x33EBEBEB : 0xFFFFFFFF);
 

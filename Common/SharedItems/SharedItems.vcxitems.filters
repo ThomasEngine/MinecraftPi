@@ -55,6 +55,15 @@
     <Filter Include="ui\GameGUI\Screens">
       <UniqueIdentifier>{71c884c1-e34a-4580-862a-365ca51f8ba7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="World\Chunks">
+      <UniqueIdentifier>{b07604db-5807-4afe-a695-ae05afe2e5c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Blocks">
+      <UniqueIdentifier>{6c8924ed-9a96-433f-a9aa-529bf0efa3d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Items">
+      <UniqueIdentifier>{3754a0cd-9ceb-42b2-96ef-8d5e19cbf20d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\IInput.h">
@@ -88,18 +97,6 @@
       <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)World.h">
-      <Filter>World</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)BlockRegistery.h">
-      <Filter>World</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)BlockType.h">
-      <Filter>World</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Chunk.h">
-      <Filter>World</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)ChunkLoader.h">
       <Filter>World</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)CollisionSystem.h">
@@ -149,6 +146,24 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)UIManager.h">
       <Filter>ui\GameGUI</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Chunk.h">
+      <Filter>World\Chunks</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ChunkLoader.h">
+      <Filter>World\Chunks</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)BlockType.h">
+      <Filter>World\Blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)BlockRegistery.h">
+      <Filter>World\Blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ItemType.h">
+      <Filter>World\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ItemRegistry.h">
+      <Filter>World\Items</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Input.cpp">
@@ -172,15 +187,6 @@
       <Filter>Rendering</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)World.cpp">
-      <Filter>World</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)BlockRegistery.cpp">
-      <Filter>World</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Chunk.cpp">
-      <Filter>World</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)ChunkLoader.cpp">
       <Filter>World</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)CollisionSystem.cpp">
@@ -237,6 +243,18 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)UIManager.cpp">
       <Filter>ui\GameGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Chunk.cpp">
+      <Filter>World\Chunks</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ChunkLoader.cpp">
+      <Filter>World\Chunks</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)BlockRegistery.cpp">
+      <Filter>World\Blocks</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ItemRegistry.cpp">
+      <Filter>World\Items</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
