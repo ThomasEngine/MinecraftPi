@@ -684,7 +684,7 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkLoader& owner)
 
                         const BlockType& blockType = g_BlockTypes[blockId];
                         AtlasPos atlasIndex = blockType.textureIndices[face];
-						printf("%.2f, %.2f\n", (float)atlasIndex.x, (float)atlasIndex.y);
+						//printf("%.2f, %.2f\n", (float)atlasIndex.x, 15 - (float)atlasIndex.y);
 
 
                         
