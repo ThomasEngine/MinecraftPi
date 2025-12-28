@@ -20,9 +20,20 @@ enum BlockTypeId : uint8_t {
 	B_AMOUNT
 };
 
+struct AtlasPos {
+	uint8_t x;
+	uint8_t y;
+
+	void operator =(const AtlasPos& other) {
+		x = other.x;
+		y = other.y;
+	}
+};
+
+
 struct BlockType {
 	const char* name;
-	uint8_t textureIndices[6];
+	AtlasPos textureIndices[6];
 	uint8_t itemID = 0; 
 	bool isSolid;
 	bool isTransparent;
@@ -31,7 +42,7 @@ struct BlockType {
 
 	BlockType() = default;
 
-	BlockType(const char* name, const uint8_t list[6], bool solid, bool transparent, uint8_t light = 0)
+	BlockType(const char* name, const AtlasPos list[6], bool solid, bool transparent, uint8_t light = 0)
 		: name(name), isSolid(solid), isTransparent(transparent), lightStrength(light)
 	{
 		for (int i = 0; i < 6; i++)

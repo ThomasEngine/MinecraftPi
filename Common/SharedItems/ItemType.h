@@ -33,10 +33,6 @@ enum ItemTypeId : uint8_t {
     I_AMOUNT
 };
 
-struct AtlasPos {
-	uint8_t x;
-	uint8_t y;
-};
 
 struct ItemType {
 	std::string name;

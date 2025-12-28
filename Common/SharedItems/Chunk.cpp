@@ -536,12 +536,11 @@ void Chunk::createTransparentMesh(Renderer& renderer, ChunkLoader& owner)
                         glm::vec2 tex = fv.tex;
 
                         const BlockType& blockType = g_BlockTypes[blockId];
-                        uint8_t atlasIndex = blockType.textureIndices[face];
+                        AtlasPos atlasIndex = blockType.textureIndices[face];
 
-                        const int cols = 16;
 
-                        float cellX = float(atlasIndex % cols);
-                        float cellY = 15 - (atlasIndex / cols);
+                        float cellX = float(atlasIndex.x * 16);
+                        float cellY = (atlasIndex.y * 16);
 
                         vertices.push_back(FaceVertex{ pos, tex, cellX, cellY, 1 });
                     }
@@ -577,11 +576,11 @@ void Chunk::createTransparentMesh(Renderer& renderer, ChunkLoader& owner)
                             float ao = CalculateAO(aoN.side1, aoN.side2, aoN.corner);
 
                             const BlockType& blockType = g_BlockTypes[blockId];
-                            uint8_t atlasIndex = blockType.textureIndices[face];
-                            const int cols = 16;
+                            AtlasPos atlasIndex = blockType.textureIndices[face];
 
-                            float cellX = float(atlasIndex % cols);
-                            float cellY = 15 - (atlasIndex / cols);
+
+                            float cellX = float(atlasIndex.x * 16);
+                            float cellY = (atlasIndex.y * 16);
 
                             vertices.push_back(FaceVertex{ pos, tex, cellX, cellY, 1, ao });
                         }
@@ -684,13 +683,12 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkLoader& owner)
                         float ao = CalculateAO(aoN.side1, aoN.side2, aoN.corner);
 
                         const BlockType& blockType = g_BlockTypes[blockId];
-                        uint8_t atlasIndex = blockType.textureIndices[face];
-                        const int cols = 16;
+                        AtlasPos atlasIndex = blockType.textureIndices[face];
+						printf("%.2f, %.2f\n", (float)atlasIndex.x, (float)atlasIndex.y);
 
-                        float cellX = float(atlasIndex % cols);
-                        float cellY = 15 - (atlasIndex / cols);
 
-                        vertices.push_back(FaceVertex{ pos, tex, cellX, cellY, finalLight, ao });
+                        
+                        vertices.push_back(FaceVertex{ pos, tex, (float)atlasIndex.x, 15 - (float)atlasIndex.y, finalLight, ao });
                     }
                     // 6 indices for each face square
                     indices.push_back(indexOffset + 0);

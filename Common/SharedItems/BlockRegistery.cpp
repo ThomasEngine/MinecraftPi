@@ -30,7 +30,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_AIR].mobSpawningAllowed = false;
     for (int i = 0; i < 6; i++)
     {
-        g_BlockTypes[B_AIR].textureIndices[i] = 0;
+		g_BlockTypes[B_AIR].textureIndices[i] = {0,0};
     }
 
     // Dirt
@@ -40,7 +40,7 @@ void InitializeBlockTypes()
     g_BlockTypes[B_DIRT].isTransparent = false;
     for (int i = 0; i < 6; i++)
     {
-        g_BlockTypes[B_DIRT].textureIndices[i] = 2;
+		g_BlockTypes[B_DIRT].textureIndices[i] = {2, 0};
     }
 
 	// Grass
@@ -48,12 +48,12 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_GRASS].name = "Grass";
 	g_BlockTypes[B_GRASS].isSolid = true;
 	g_BlockTypes[B_GRASS].isTransparent = false;
-	g_BlockTypes[B_GRASS].textureIndices[0] = 3; // Top
-	g_BlockTypes[B_GRASS].textureIndices[1] = 3; // Bottom
-	g_BlockTypes[B_GRASS].textureIndices[2] = 2; // Front
-	g_BlockTypes[B_GRASS].textureIndices[3] = 0; // Back
-	g_BlockTypes[B_GRASS].textureIndices[4] = 3; // Left
-	g_BlockTypes[B_GRASS].textureIndices[5] = 3; // Right
+	g_BlockTypes[B_GRASS].textureIndices[0] = {0,0}; // Top
+	g_BlockTypes[B_GRASS].textureIndices[1] = {2,0}; // Bottom
+	g_BlockTypes[B_GRASS].textureIndices[2] = {3,0}; // Front
+	g_BlockTypes[B_GRASS].textureIndices[3] = {3,0}; // Back
+	g_BlockTypes[B_GRASS].textureIndices[4] = {3,0}; // Left
+	g_BlockTypes[B_GRASS].textureIndices[5] = {3,0}; // Right
 
 	// Stone
 	g_BlockTypes[B_STONE] = BlockType();
@@ -62,7 +62,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_STONE].isTransparent = false;
 	for (int i = 0; i < 6; i++)
 	{
-		g_BlockTypes[B_STONE].textureIndices[i] = 1;
+		g_BlockTypes[B_STONE].textureIndices[i] = {1,0};
 	}
 
 	// Sand
@@ -72,7 +72,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_SAND].isTransparent = false;
 	for (int i = 0; i < 6; i++)
 	{
-		g_BlockTypes[B_SAND].textureIndices[i] = 18;
+		g_BlockTypes[B_SAND].textureIndices[i] = {2,1};
 	}
 
 	// Gravel
@@ -82,7 +82,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_GRAVEL].isTransparent = false;
 	for (int i = 0; i < 6; i++)
 	{
-		g_BlockTypes[B_GRAVEL].textureIndices[i] = 19;
+		g_BlockTypes[B_GRAVEL].textureIndices[i] = {3,1};
 	}
 
 	// Cobblestone
@@ -92,7 +92,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_COBBLESTONE].isTransparent = false;
 	for (int i = 0; i < 6; i++)
 	{
-		g_BlockTypes[B_COBBLESTONE].textureIndices[i] = 17;
+		g_BlockTypes[B_COBBLESTONE].textureIndices[i] = {0,1};
 	}
 
 	// Oak Log
@@ -101,12 +101,12 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_OAK_LOG].isSolid = true;
 	g_BlockTypes[B_OAK_LOG].isTransparent = false;
 	g_BlockTypes[B_AIR].mobSpawningAllowed = false;
-	g_BlockTypes[B_OAK_LOG].textureIndices[0] = 20; // Top
-	g_BlockTypes[B_OAK_LOG].textureIndices[1] = 20; // Bottom
-	g_BlockTypes[B_OAK_LOG].textureIndices[2] = 21; // Front
-	g_BlockTypes[B_OAK_LOG].textureIndices[3] = 21; // Back
-	g_BlockTypes[B_OAK_LOG].textureIndices[4] = 20; // Left
-	g_BlockTypes[B_OAK_LOG].textureIndices[5] = 20; // Right
+	g_BlockTypes[B_OAK_LOG].textureIndices[0] = { 4,1 }; // Left
+	g_BlockTypes[B_OAK_LOG].textureIndices[1] = { 4,1 }; // Right
+	g_BlockTypes[B_OAK_LOG].textureIndices[2] = {5,1}; // Top
+	g_BlockTypes[B_OAK_LOG].textureIndices[3] = {5,1}; // Bottom
+	g_BlockTypes[B_OAK_LOG].textureIndices[4] = { 4,1 }; // Front
+	g_BlockTypes[B_OAK_LOG].textureIndices[5] = { 4,1 }; // Back
 
 	// Oak Plank
 	g_BlockTypes[B_OAK_PLANK] = BlockType();
@@ -115,7 +115,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_OAK_PLANK].isTransparent = false;
 	for (int i = 0; i < 6; i++)
 	{
-		g_BlockTypes[B_OAK_PLANK].textureIndices[i] = 4;
+		g_BlockTypes[B_OAK_PLANK].textureIndices[i] = {4, 0};
 	}
 
 	// Bedrock
@@ -126,7 +126,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_BEDROCK].mobSpawningAllowed = false;
 	for (int i = 0; i < 6; i++)
 	{
-		g_BlockTypes[B_BEDROCK].textureIndices[i] = 16;
+		g_BlockTypes[B_BEDROCK].textureIndices[i] = {1,1};
 	}
 
 	// Water
@@ -137,7 +137,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_BEDROCK].mobSpawningAllowed = false;
 	for (int i = 0; i < 6; i++)
 	{
-		g_BlockTypes[B_WATER].textureIndices[i] = 205;
+		g_BlockTypes[B_WATER].textureIndices[i] = {15, 12};
 	}
 
 	// Glowstone
@@ -147,7 +147,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_GLOWSTONE].isTransparent = false;
 	for (int i = 0; i < 6; i++)
 	{
-		g_BlockTypes[B_GLOWSTONE].textureIndices[i] = 105;
+		g_BlockTypes[B_GLOWSTONE].textureIndices[i] = {9,6};
 	}
 	g_BlockTypes[B_GLOWSTONE].lightStrength = 15;
 
@@ -160,6 +160,6 @@ void InitializeBlockTypes()
 	for (int i = 0; i < 6; i++)
 	{
 		//g_BlockTypes[B_OAK_LEAF].textureIndices[i] = 15 * 3 + 5; diamond ore
-		g_BlockTypes[B_OAK_LEAF].textureIndices[i] = 15 * 3 + 8;
+		g_BlockTypes[B_OAK_LEAF].textureIndices[i] = { 5, 3 };
 	}	
 }
