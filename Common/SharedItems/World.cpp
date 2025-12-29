@@ -170,6 +170,6 @@ void World::RenderEntities(const glm::mat4& viewProj, Shader& shader)
 	}
 	// Reset uniforms back to block rendering
 	shader.Bind();
-	shader.SetUniform1f("u_CellWidth", 1.f / 16.f);
-	shader.SetUniform1f("u_CellHeight", 1.f / 16.f);
+	shader.SetUniform1f("u_CellWidth", 1.f / 32.f);
+	shader.SetUniform1f("u_CellHeight", 1.f / 32.f);
 }

@@ -81,6 +81,7 @@ void Game::Start()
 	Shader otherShader("Common/SharedItems/Assets/OnBlock.shader");
 	Shader uiShader("Common/SharedItems/ui.shader");
 	Texture* uiTex = new Texture("Common/SharedItems/Assets/basicWidget.png");
+	Shader guiShader("Common/SharedItems/Assets/gui.shader");
 #endif
 #ifdef Raspberry_BUILD
 	Shader shader("../Common/SharedItems/Assets/Basic.shader");
@@ -88,6 +89,7 @@ void Game::Start()
 	Texture* testTex = new Texture("../Common/SharedItems/Assets/minecraftAtlas.png");
 	Shader uiShader("../Common/SharedItems/Assets/ui.shader");
 	Texture* uiTex = new Texture("../Common/SharedItems/Assets/basicWidget.png");
+	Shader guiShader("../Common/SharedItems/Assets/gui.shader");
 #endif
 
 
@@ -102,12 +104,13 @@ void Game::Start()
 	//Texture* testTex = new Texture("Common/SharedItems/Assets/MinecraftTex.png");
 	//Texture testTex("Common/SharedItems/Assets/dirtblock.png");
 	InitializeBlockTypes();
+	InitializeItemTypes();
 
 	// Before drawing
 	shader.Bind();
 	shader.SetUniform1i("u_TextureAtlas", 0);
-	shader.SetUniform1f("u_CellWidth", 1.f / 16.f);
-	shader.SetUniform1f("u_CellHeight", 1.f / 16.f);
+	shader.SetUniform1f("u_CellWidth", 1.f / 32.f);
+	shader.SetUniform1f("u_CellHeight", 1.f / 32.f);
 	testTex->Bind(0);
 
 	// Seed random number generator 
@@ -141,7 +144,7 @@ void Game::Start()
 	
 	// Setup 2D renderer
 	Renderer2D uiRenderer;
-	uiRenderer.init(uiTex, &uiShader);
+	uiRenderer.init(testTex, &uiShader);
 	//uiRenderer.init(testTex, &uiShader);
 	// Create ui manager
 
@@ -371,7 +374,6 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 			}
 		}
 	}
-	printf("Block Position Outline: [%d, %d, %d]       \r", blockPosRayOutline.x, blockPosRayOutline.y, blockPosRayOutline.z);
 
 	// Place blocks
 	if (mouse.GetButtonDown(MouseButtons::RIGHT) && canBreakBlock)

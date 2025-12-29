@@ -1,5 +1,4 @@
 #pragma once
-#include <cstdint>
 #include "BlockType.h"
 
 enum class ItemCategory : uint8_t {

@@ -149,9 +149,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Chunk.h">
       <Filter>World\Chunks</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)ChunkLoader.h">
-      <Filter>World\Chunks</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)BlockType.h">
       <Filter>World\Blocks</Filter>
     </ClInclude>
@@ -164,6 +161,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ItemRegistry.h">
       <Filter>World\Items</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ChunkLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Input.cpp">
@@ -272,6 +270,7 @@
     <None Include="$(MSBuildThisFileDirectory)Assets\OnBlock.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\crosshair.shader" />
     <None Include="$(MSBuildThisFileDirectory)ui.shader" />
+    <None Include="$(MSBuildThisFileDirectory)Assets\gui.shader" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_02.obj">
@@ -306,10 +305,10 @@
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Textures\Harvey2.jpg">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\MinecraftTex.png" />
-    <Image Include="$(MSBuildThisFileDirectory)minecraftAtlas.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\GUI-Atlas.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\basicWidget.png" />
+    <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas1.png" />
+    <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas.png" />
   </ItemGroup>
 </Project>

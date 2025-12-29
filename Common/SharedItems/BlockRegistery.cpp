@@ -48,12 +48,12 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_GRASS].name = "Grass";
 	g_BlockTypes[B_GRASS].isSolid = true;
 	g_BlockTypes[B_GRASS].isTransparent = false;
-	g_BlockTypes[B_GRASS].textureIndices[0] = {0,0}; // Top
-	g_BlockTypes[B_GRASS].textureIndices[1] = {2,0}; // Bottom
-	g_BlockTypes[B_GRASS].textureIndices[2] = {3,0}; // Front
-	g_BlockTypes[B_GRASS].textureIndices[3] = {3,0}; // Back
-	g_BlockTypes[B_GRASS].textureIndices[4] = {3,0}; // Left
-	g_BlockTypes[B_GRASS].textureIndices[5] = {3,0}; // Right
+	g_BlockTypes[B_GRASS].textureIndices[0] = {3,0}; // Left
+	g_BlockTypes[B_GRASS].textureIndices[1] = {3,0}; // Right
+	g_BlockTypes[B_GRASS].textureIndices[2] = {2,0}; // Top
+	g_BlockTypes[B_GRASS].textureIndices[3] = {0,0}; // Bottm
+	g_BlockTypes[B_GRASS].textureIndices[4] = {3,0}; // Front
+	g_BlockTypes[B_GRASS].textureIndices[5] = {3,0}; // Back
 
 	// Stone
 	g_BlockTypes[B_STONE] = BlockType();
@@ -137,7 +137,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_BEDROCK].mobSpawningAllowed = false;
 	for (int i = 0; i < 6; i++)
 	{
-		g_BlockTypes[B_WATER].textureIndices[i] = {15, 12};
+		g_BlockTypes[B_WATER].textureIndices[i] = {10, 16};
 	}
 
 	// Glowstone

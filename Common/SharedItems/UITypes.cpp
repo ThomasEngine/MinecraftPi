@@ -4,45 +4,45 @@
 #include "Renderer2D.h"
 
 namespace {
-	int GetSloteTypeAtlas(SlotTypes type)
+	glm::ivec2 GetSloteTypeAtlas(SlotTypes type)
 	{
 		switch (type)
 		{
 		case SlotTypes::Inventory:
-			return 0;
+			return { 0,0 };
 			break;
 		case SlotTypes::HotBar:
-			return 24;
+			return {1,0};
 			break;
 		case SlotTypes::HotBarSelect:
-			return 48;
+			return {2,0};
 			break;
 		case SlotTypes::BackgroundTop:
-			return 240;
+			return { 10,0 };
 			break;
 		case SlotTypes::BackgroundMiddle:
-			return 408;
+			return { 0,1 };
 			break;
 		case SlotTypes::BackgroundBottom:
-			return 72;
+			return { 3,0 };
 			break;
 		case SlotTypes::HelmetHolder:
-			return 464;
+			return {7,1};
 			break;
 		case SlotTypes::ChestplateHolder:
-			return 488;
+			return {8,1};
 			break;
 		case SlotTypes::LeggingsHolder:
-			return 512;
+			return { 9,1 };
 			break;
 		case SlotTypes::BootsHolder:
-			return 536;
+			return {10,1};
 			break;
 		case SlotTypes::CraftingArrow:
-			return 24 * 28;
+			return { 11,1 };
 			break;
 		default:
-			return 0;
+			return {0,0};
 			break;
 		}
 	}
@@ -103,18 +103,50 @@ void UISlot::Render(Renderer2D& ren) const
 
 	uint32_t slotColor = isBackground ? 0xFFFFFFFF : (hovered ? 0x33EBEBEB : 0xFFFFFFFF);
 
-	ren.drawSprite(Sprite{ GetSloteTypeAtlas(slotType), 0, windth, 24}, float(bounds.x), float(bounds.y), float(bounds.w), float(bounds.h), slotColor);
+	glm::ivec2 atlasPos = GetSloteTypeAtlas(slotType);
+	ren.drawSprite(Sprite{ atlasPos.x * 24, 232 - atlasPos.y * 24, windth, 24}, float(bounds.x), float(bounds.y), float(bounds.w), float(bounds.h), slotColor);
 	if (!container) return;
 
 	const ItemStack& stack = container->getSlot(slotIndex);
 	if (!stack.isEmpty()) {
-		// Render item sprite (placeholder)
-		ren.drawSprite(Sprite{ 16, 0, 16, 16 }, float(bounds.x), float(bounds.y), float(bounds.w), float(bounds.h), 0xFFFFFFFF);
-		// Render quantity (placeholder)
+		AtlasPos texPos = g_ItemTypes[stack.itemID].inventoryTextureIndex;
+		// Make bounds slightly smaller to fit inside slot
+		Rect itemBounds = { bounds.x + 4, bounds.y + 4, bounds.w - 8, bounds.h - 8 };
+		int atlasHeight = 512;
+		int cellSize = 16;
+		int y = texPos.y;
+		int flippedY = (atlasHeight / cellSize - 1) - y;
+
+		ren.drawSprite(Sprite{ texPos.x * 16, flippedY * 16, 16, 16 }, float(itemBounds.x), float(itemBounds.y), float(itemBounds.w), float(itemBounds.h), 0xFFFFFFFF, true);
 	}
 }
 
 void UISlot::clicked(MouseButtons button, const Input& input)
 {
 	// Placeholder for slot click action
+}
+
+void Container::AddItem(ItemTypeId itemID, int quantity, int slotIndex)
+{
+	for (auto& slot : slots) {
+		if (slot.itemID == itemID && slot.quantity + quantity <= maxStackSize) {
+			slot.quantity += quantity;
+			return;
+		}
+	}
+
+	if (slotIndex >= 0 && slotIndex < static_cast<int>(slots.size())) {
+		slots[slotIndex].itemID = itemID;
+		slots[slotIndex].quantity += quantity;
+	}
+	else {
+		// Find first empty slot
+		for (auto& slot : slots) {
+			if (slot.isEmpty()) {
+				slot.itemID = itemID;
+				slot.quantity = quantity;
+				break;
+			}
+		}
+	}
 }

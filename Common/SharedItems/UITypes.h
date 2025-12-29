@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseUI.h"
 #include <string>
+#include "ItemRegistry.h"
 
 class UIButton : public UIWidget {
 public:
@@ -19,7 +20,7 @@ public:
 
 // Slots
 struct ItemStack {
-	int itemID; // will refer to BlockType or ItemType
+	ItemTypeId itemID;
 	int quantity;
 	bool isEmpty() const { return quantity <= 0; }
 };
@@ -29,11 +30,12 @@ public:
 	Container() {
 		slots.resize(maxSlots);
 	}
-	std::vector<ItemStack> slots;
-
+	void AddItem(ItemTypeId itemID, int quantity, int slotIndex = -1);
+	
 	size_t getSlotCount() const { return slots.size(); }
 	ItemStack& getSlot(size_t index) { return slots[index]; }
 private:
+	std::vector<ItemStack> slots;
 	int maxStackSize = 64;
 	int maxSlots = 36;
 };

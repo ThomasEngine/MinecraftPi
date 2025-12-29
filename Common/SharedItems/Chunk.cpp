@@ -578,11 +578,7 @@ void Chunk::createTransparentMesh(Renderer& renderer, ChunkLoader& owner)
                             const BlockType& blockType = g_BlockTypes[blockId];
                             AtlasPos atlasIndex = blockType.textureIndices[face];
 
-
-                            float cellX = float(atlasIndex.x * 16);
-                            float cellY = (atlasIndex.y * 16);
-
-                            vertices.push_back(FaceVertex{ pos, tex, cellX, cellY, 1, ao });
+                            vertices.push_back(FaceVertex{ pos, tex, (float)atlasIndex.x, 31 - (float)atlasIndex.y, 1, ao});
                         }
                         // 6 indices for each face square
                         indices.push_back(indexOffset + 0);
@@ -684,11 +680,8 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkLoader& owner)
 
                         const BlockType& blockType = g_BlockTypes[blockId];
                         AtlasPos atlasIndex = blockType.textureIndices[face];
-						//printf("%.2f, %.2f\n", (float)atlasIndex.x, 15 - (float)atlasIndex.y);
-
-
                         
-                        vertices.push_back(FaceVertex{ pos, tex, (float)atlasIndex.x, 15 - (float)atlasIndex.y, finalLight, ao });
+                        vertices.push_back(FaceVertex{ pos, tex, (float)atlasIndex.x, 31 - (float)atlasIndex.y, finalLight, ao });
                     }
                     // 6 indices for each face square
                     indices.push_back(indexOffset + 0);

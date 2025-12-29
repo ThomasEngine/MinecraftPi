@@ -12,9 +12,9 @@ Renderer2D::~Renderer2D()
 {
 }
 
-bool Renderer2D::init(Texture* tex, Shader* sh)
+bool Renderer2D::init(Texture* guiTex, Shader* sh)
 {
-	textureAtlas = tex;
+	textureAtlas = guiTex;
 	shader = sh;
 	// Create VAO and VBO
 	GLCall(glGenVertexArrays(1, &vao));
@@ -49,6 +49,7 @@ void Renderer2D::beginFrame(int screenW, int screenH)
 	// Set up orthographic projection
 	proj = glm::ortho(0.0f, static_cast<float>(screenW), static_cast<float>(screenH), 0.0f, -1.0f, 1.0f);
 
+
 	GLCall(glDisable(GL_DEPTH_TEST)); // Disable depth testing for 2D rendering
 	GLCall(glDisable(GL_CULL_FACE)); // disable face culling
 
@@ -69,7 +70,7 @@ void Renderer2D::endFrame()
 	glUseProgram(0);
 }
 
-void Renderer2D::drawSprite(const Sprite& sprite, float x, float y, float width, float height, uint32_t color)
+void Renderer2D::drawSprite(const Sprite& sprite, float x, float y, float width, float height, uint32_t color, bool FlipY)
 {
 	// Similair to drawQuad but using sprite UVs
 	if (vertices.size() + 6 > maxVertices) {
@@ -83,6 +84,10 @@ void Renderer2D::drawSprite(const Sprite& sprite, float x, float y, float width,
 	float v0 = float(sprite.v) / atlasHeight;
 	float u1 = float(sprite.u + sprite.width) / atlasWidth;
 	float v1 = float(sprite.v + sprite.height) / atlasHeight;
+
+	if (FlipY) {
+		std::swap(v0, v1);
+	}
 
 	// Define the 6 vertices for the quad (2 triangles)
 	vertices.push_back({ x, y, u0, v0, color });

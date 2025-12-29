@@ -93,6 +93,7 @@
     <None Include="$(MSBuildThisFileDirectory)Assets\basicpi.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\crosshair.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\OnBlock.shader" />
+    <None Include="$(MSBuildThisFileDirectory)Assets\gui.shader" />
     <None Include="$(MSBuildThisFileDirectory)ui.shader" />
   </ItemGroup>
   <ItemGroup>
@@ -134,7 +135,7 @@
     <Image Include="$(MSBuildThisFileDirectory)Assets\basicWidget.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\GUI-Atlas.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas.png" />
+    <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas1.png" />
     <Image Include="$(MSBuildThisFileDirectory)Assets\MinecraftTex.png" />
-    <Image Include="$(MSBuildThisFileDirectory)minecraftAtlas.png" />
   </ItemGroup>
 </Project>

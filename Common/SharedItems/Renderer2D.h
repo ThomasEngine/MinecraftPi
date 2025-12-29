@@ -26,11 +26,11 @@ class Renderer2D
 public:
 	Renderer2D();
 	~Renderer2D();
-	bool init(Texture* tex, Shader* sh);
+	bool init(Texture* guiTex, Shader* sh);
 	void shutdown();
 	void beginFrame(int screenW, int screenH);
 	void endFrame();
-	void drawSprite(const Sprite& sprite, float x, float y, float width, float height, uint32_t color);
+	void drawSprite(const Sprite& sprite, float x, float y, float width, float height, uint32_t color, bool flipY = false);
 	void drawQuad(float x, float y, float width, float height, float u, float v, float uWidth, float vHeight, uint32_t color);
 	void drawText(const std::string& text, float x, float y, float scale);
 
@@ -44,7 +44,6 @@ private:
 
 	Texture* textureAtlas = nullptr;
 	Shader* shader = nullptr;
-
 	glm::mat4 proj;
 
 	std::vector<UIVertex> vertices;
