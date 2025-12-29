@@ -38,5 +38,8 @@ private:
 
 	Game* m_Owner;  
 
+	void RenderDraggedItem();
+	
 	// Internal data for UI management  
+
 };

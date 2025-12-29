@@ -36,6 +36,8 @@ public:
 	virtual ~UIWidget() = default;
 	virtual void Update(const Input* input, float deltaTime) {}
 	virtual void Render(Renderer2D& ren) const = 0;
+
+	bool hovered = false;
 };
 
 class UIScreen { // Base class for UI screens that contains widgets

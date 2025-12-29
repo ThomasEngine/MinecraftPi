@@ -28,12 +28,34 @@ void UIManager::Update(float deltaTime, const Input& input)
 	m_InventoryScreen->Update(&input, deltaTime);
 	m_PlayerGameInv->Update(&input, deltaTime);
 
+	Container* playerInv = m_InventoryScreen->playerInventory;
+	if (playerInv->draggedItem.isDragging)
+	{
+		if (input.GetMouse().GetButtonDown(MouseButtons::LEFT))
+		{
+			glm::vec2 mousePos = input.GetMouse().GetPosition();
+			playerInv->draggedItem.mousePos = mousePos;
+			playerInv->draggedItem.itemBounds.x = static_cast<int>(mousePos.x + playerInv->draggedItem.offset.x);
+			playerInv->draggedItem.itemBounds.y = static_cast<int>(mousePos.y + playerInv->draggedItem.offset.y);
+
+		}
+		else
+		{
+			// Drop the item
+			m_InventoryScreen->handleItemDrop();
+			playerInv->draggedItem.isDragging = false;
+			playerInv->draggedItem.stack.clear();
+		}
+}
+
 }
 
 void UIManager::Render()
 {
 	m_InventoryScreen->Render(*m_Renderer2D);
 	m_PlayerGameInv->Render(*m_Renderer2D);
+
+	RenderDraggedItem();
 }
 
 void UIManager::SetWindowSize(int width, int height)
@@ -77,4 +99,28 @@ uint8_t UIManager::GetItemIDInHotBarIndex() const
 	int index = m_PlayerGameInv->getCurrentIndex();
 	const ItemStack& stack = m_PlayerGameInv->playerHotbarInv->getSlot(index);
 	return static_cast<uint8_t>(stack.itemID);
+}
+
+void UIManager::RenderDraggedItem()
+{
+	// Render dragged item on top if any
+	Container* playerInv = m_InventoryScreen->playerInventory;
+	if (playerInv->draggedItem.isDragging)
+	{
+		const DraggedItem& draggedItem = playerInv->draggedItem;
+		if (!draggedItem.stack.isEmpty())
+		{
+			AtlasPos texPos = g_ItemTypes[draggedItem.stack.itemID].inventoryTextureIndex;
+			static int atlasHeight = 512;
+			static int cellSize = 16;
+			int y = texPos.y;
+			int flippedY = (atlasHeight / cellSize - 1) - y;
+			m_Renderer2D->drawSprite(Sprite{ texPos.x * 16, flippedY * 16, 16, 16 },
+				static_cast<float>(draggedItem.itemBounds.x),
+				static_cast<float>(draggedItem.itemBounds.y),
+				static_cast<float>(draggedItem.itemBounds.w),
+				static_cast<float>(draggedItem.itemBounds.h),
+				0xFFFFFFFF, true);
+		}
+	}
 }

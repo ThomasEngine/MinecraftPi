@@ -23,6 +23,16 @@ struct ItemStack {
 	ItemTypeId itemID;
 	int quantity;
 	bool isEmpty() const { return quantity <= 0; }
+	void clear() { itemID = ItemTypeId::I_NONE; quantity = 0; }     
+};
+
+struct DraggedItem {
+	ItemStack stack;
+	Rect itemBounds;
+	int quantity = 0;
+	bool isDragging = false;
+	glm::vec2 mousePos;
+	glm::vec2 offset;
 };
 
 class Container {
@@ -31,9 +41,17 @@ public:
 		slots.resize(maxSlots);
 	}
 	void AddItem(ItemTypeId itemID, int quantity, int slotIndex = -1);
+
+	DraggedItem draggedItem;
 	
 	size_t getSlotCount() const { return slots.size(); }
 	ItemStack& getSlot(size_t index) { return slots[index]; }
+	void setSize(int slotCount) { slots.resize(slotCount); maxSlots = slotCount; }
+	void clear() {
+		for (auto& slot : slots) {
+			slot.clear();
+		}
+	}
 private:
 	std::vector<ItemStack> slots;
 	int maxStackSize = 64;
@@ -67,7 +85,6 @@ public:
 	Container* container = nullptr;
 	SlotTypes slotType;
 
-	bool hovered = false;
 	void Update(const Input* input, float deltaTime) override;
 	void Render(Renderer2D& ren) const override;
 

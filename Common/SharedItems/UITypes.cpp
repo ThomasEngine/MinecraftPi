@@ -123,7 +123,18 @@ void UISlot::Render(Renderer2D& ren) const
 
 void UISlot::clicked(MouseButtons button, const Input& input)
 {
-	// Placeholder for slot click action
+	// Drag and hold
+	if (!container) return;
+	if (container->getSlot(slotIndex).isEmpty()) return; // No item to drag
+
+	// Start dragging
+	DraggedItem& draggedItem = container->draggedItem;
+	draggedItem.isDragging = true;
+	ItemStack& slotStack = container->getSlot(slotIndex);
+	draggedItem.stack = slotStack;
+	draggedItem.itemBounds = Rect{ bounds.x + 4, bounds.y + 4, bounds.w - 8, bounds.h - 8 };
+	slotStack.clear();
+
 }
 
 void Container::AddItem(ItemTypeId itemID, int quantity, int slotIndex)

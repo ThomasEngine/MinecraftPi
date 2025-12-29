@@ -1,8 +1,71 @@
 #include "InventoryScreen.h"
 #include "UITypes.h"
 
+InventoryScreen::InventoryScreen(Container* inv)
+	: playerInventory(inv)
+{
+	craftingContainer = new Container();
+	craftingContainer->setSize(5); // 2x2 crafting grid + 1 output
+	craftingContainer->clear();
+}
+
 InventoryScreen::~InventoryScreen()
 {
+}
+
+void InventoryScreen::handleItemDrop(int amount)
+{
+	for  (auto& widget : m_Widgets)
+	{
+		if (widget->hovered) 
+		{
+			UISlot* slot = dynamic_cast<UISlot*>(widget.get());
+			if (slot && slot->container)
+			{
+				Container* container = slot->container;
+				DraggedItem& draggedItem = container->draggedItem;
+				if (draggedItem.isDragging)
+				{
+					// Place item in this slot
+					ItemStack& targetStack = container->getSlot(slot->slotIndex);
+					if (targetStack.isEmpty())
+					{
+						// if amount is -1 take all
+						if (amount > 0 && amount < draggedItem.stack.quantity)
+						{
+							targetStack.itemID = draggedItem.stack.itemID;
+							targetStack.quantity = amount;
+							draggedItem.stack.quantity -= amount;
+							return;
+						}
+						else if (amount == -1 || amount >= draggedItem.stack.quantity)
+						{
+							std::swap(targetStack, draggedItem.stack);
+							return;
+						}
+					}
+					else
+					{
+						// try to add to existing stack if same item
+						if (targetStack.itemID == draggedItem.stack.itemID)
+						{
+							int spaceLeft = 64 - targetStack.quantity; // assuming max stack size is 64
+							if (spaceLeft > 0)
+							{
+								if (amount > 0 && amount < draggedItem.stack.quantity)
+								{
+									int toTransfer = std::min(spaceLeft, amount);
+									targetStack.quantity += toTransfer;
+									draggedItem.stack.quantity -= toTransfer;
+									return;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 void InventoryScreen::onOpen()
@@ -78,7 +141,7 @@ void InventoryScreen::onOpen()
 			slotX = craftingStartX + col * (slotSize + inBetweenSlotSpace);
 			slotY = craftingStartY + row * (slotSize + inBetweenSlotSpace);
 			Rect slotRect{ slotX, slotY, slotSize, slotSize };
-			auto slot = std::make_unique<UISlot>(index, slotRect, nullptr);
+			auto slot = std::make_unique<UISlot>(index, slotRect, craftingContainer);
 			m_Widgets.push_back(std::move(slot));
 		}
 	}
@@ -88,7 +151,7 @@ void InventoryScreen::onOpen()
 	int outputSlotX = craftingStartX + 2 * (slotSize + inBetweenSlotSpace) + slotSize + slotSize * 0.3f;
 	int outputSlotY = craftingStartY + slotSize / 2; // vertically centered
 	Rect outputSlotRect{ outputSlotX, outputSlotY, slotSize, slotSize };
-	auto outputSlot = std::make_unique<UISlot>(outputIndex, outputSlotRect, nullptr);
+	auto outputSlot = std::make_unique<UISlot>(outputIndex, outputSlotRect, craftingContainer);
 	m_Widgets.push_back(std::move(outputSlot));
 
 	// Arrow in between
