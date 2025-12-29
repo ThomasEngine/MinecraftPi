@@ -112,8 +112,8 @@ void UISlot::Render(Renderer2D& ren) const
 		AtlasPos texPos = g_ItemTypes[stack.itemID].inventoryTextureIndex;
 		// Make bounds slightly smaller to fit inside slot
 		Rect itemBounds = { bounds.x + 4, bounds.y + 4, bounds.w - 8, bounds.h - 8 };
-		int atlasHeight = 512;
-		int cellSize = 16;
+		static int atlasHeight = 512;
+		static int cellSize = 16;
 		int y = texPos.y;
 		int flippedY = (atlasHeight / cellSize - 1) - y;
 

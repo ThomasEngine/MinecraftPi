@@ -27,6 +27,8 @@ public:
 	void SetHotBarIndex(int i) { m_PlayerGameInv->setCurrentIndex(i); }
 	void HotBarIndexUp() { m_PlayerGameInv->upIndex(); }
 	void HotBarDown() { m_PlayerGameInv->downIndex(); }
+
+	uint8_t GetItemIDInHotBarIndex() const;
 private:  
 	Renderer2D* m_Renderer2D;  
 

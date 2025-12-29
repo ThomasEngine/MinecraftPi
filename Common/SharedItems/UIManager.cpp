@@ -71,3 +71,10 @@ void UIManager::ToggleInventory()
 	}
 	else OpenInventory();
 }
+
+uint8_t UIManager::GetItemIDInHotBarIndex() const
+{
+	int index = m_PlayerGameInv->getCurrentIndex();
+	const ItemStack& stack = m_PlayerGameInv->playerHotbarInv->getSlot(index);
+	return static_cast<uint8_t>(stack.itemID);
+}

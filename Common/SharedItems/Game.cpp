@@ -218,6 +218,8 @@ void Game::Start()
 			gui->Window(averageFPS, moveSpeed, dayTime, blockToPlace);
 			gui->Render();
 		}
+	
+		blockToPlace = g_ItemTypes[m_UIManager->GetItemIDInHotBarIndex()].blockType;
 
 		graphics->SwapBuffer();
 		lastTime = time;
