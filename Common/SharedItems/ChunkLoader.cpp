@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "BlockRegistery.h"
 #include <algorithm>
+#include "FileData.h"
 
 const glm::ivec3 offsets[] = {
     { 1, 0, 0 }, { -1, 0, 0 },
@@ -16,10 +17,12 @@ const glm::ivec3 offsets[] = {
 	static const int numThreads = 4;
 #endif
 
-ChunkLoader::ChunkLoader(Renderer& rend, std::shared_ptr<NoiseMaps> noiseMaps, bool& isReady)
+ChunkLoader::ChunkLoader(Renderer& rend, std::shared_ptr<NoiseMaps> noiseMaps, bool& isReady, FileData& dataHelper)
 	: m_CameraPos(-1.0f), m_CameraDir(0.0f), m_Renderer(rend), m_NoiseMaps(noiseMaps), frustum()
 {
 	   m_WorldReady = &isReady;
+
+       m_FileData = &dataHelper;
 
        HALF_X = CHUNK_SIZE_X / 2;
        HALF_Y = CHUNK_SIZE_Y / 2;
@@ -272,7 +275,12 @@ void ChunkLoader::ProcessChunkLoading(Renderer& renderer)
 
     #pragma omp parallel for
     for (int i = 0; i < int(chunkPositions.size()); ++i) {
-        createdChunks[i] = std::make_shared<Chunk>(chunkPositions[i], *this);
+		std::vector<BlockData> loadedData = m_FileData->LoadChunkData(
+			chunkPositions[i].x,
+			chunkPositions[i].y,
+			chunkPositions[i].z
+		);
+        createdChunks[i] = std::make_shared<Chunk>(chunkPositions[i], *this, loadedData);
     }
 
     for (int i = 0; i < static_cast<int>(chunkPositions.size()); ++i) {
@@ -297,6 +305,7 @@ void ChunkLoader::ProcessChunkUnloading(Renderer& renderer)
    if (it != m_ChunkLoadTasks.end()) {
        auto chunk = it->second.chunk;
        chunk->destroyMesh(renderer);
+	   chunk->ExportChangedBlocks(*m_FileData);
        m_ChunkLoadTasks.erase(pos);
 
        auto renderListIt = std::remove_if(

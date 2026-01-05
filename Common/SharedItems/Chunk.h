@@ -7,6 +7,7 @@
 #include <memory>
 #include <queue>
 
+
 extern const FaceVertex faceVertices[6][4];
 extern const int faceDirs[6][3];
 
@@ -26,17 +27,17 @@ constexpr int CHUNKSIZE = CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z;
 struct Voxel;
 class ChunkLoader;
 class FastNoiseLite;
+class FileData;
+struct BlockData;
 class Chunk {
 public:
     glm::ivec3 chunkPos; // chunk grid position
     std::vector<Voxel> blocks;
-    //Voxel blocks[CHUNKSIZE];
-    //std::vector<unsigned int> sunlightBfsQueue;
     std::queue<unsigned int> sunlightBfsQueue;
     std::unique_ptr<Mesh> mesh;
 	std::unique_ptr<Mesh> transparentMesh;
     bool hasTransparentBlocks = false;
-    Chunk(glm::ivec3 pos, ChunkLoader& owner);
+    Chunk(glm::ivec3 pos, ChunkLoader& owner, const std::vector<BlockData>& importData); 
     ~Chunk();
 
     void SetBlock(int x, int y, int z, uint8_t type);
@@ -66,11 +67,16 @@ public:
 	void ReapplyBorderLight(ChunkLoader& owner);
 
 	void PlaceTrees(Renderer& ren, ChunkLoader& owner);
+
+    void ExportChangedBlocks(FileData& fileHelper);
 private:
 	std::vector<glm::ivec3> m_TreePositions;
 
-	void GenerateTerrain(ChunkLoader& owner);
+	void GenerateTerrain(ChunkLoader& owner, const std::vector<BlockData>& loadedData);
 	inline int GetBlockIndex(int x, int y, int z) const;
+
+	std::vector<BlockData> changedBlocks;
+	bool m_FinishedGeneration = false;
 
 
     bool IsEmpty(int x, int y, int z) const;

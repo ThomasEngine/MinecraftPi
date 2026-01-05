@@ -164,7 +164,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ItemRegistry.h">
       <Filter>World\Items</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)ChunkLoader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CraftingRegistry.h">
       <Filter>Crafting</Filter>
     </ClInclude>
@@ -173,6 +172,10 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Crafting.h">
       <Filter>Crafting</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)FileData.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ChunkLoader.h">
+      <Filter>World\Chunks</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -270,6 +273,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Crafting.cpp">
       <Filter>Crafting</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)FileData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.mtl">

@@ -23,6 +23,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CraftingRegistry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CraftingType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Crosshair.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FileData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)InventoryScreen.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ItemRegistry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ItemType.h" />
@@ -65,6 +66,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Crafting.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CraftingRegistry.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Crosshair.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FileData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Frustum.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp" />

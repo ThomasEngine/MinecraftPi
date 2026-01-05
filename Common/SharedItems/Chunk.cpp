@@ -2,7 +2,7 @@
 #include <BlockRegistery.h>
 #include <noise/FastNoiseLite.h>
 #include "ChunkLoader.h"
-
+#include "FileData.h"
 
 const FaceVertex faceVertices[6][4] = {
     // -Z (Back)
@@ -121,11 +121,12 @@ namespace {
 
 
 // https://www.redblobgames.com/maps/terrain-from-noise/
-Chunk::Chunk(glm::ivec3 pos, ChunkLoader& owner)
+Chunk::Chunk(glm::ivec3 pos, ChunkLoader& owner, const std::vector<BlockData>& importData)
 	: chunkPos(pos), mesh(nullptr), transparentMesh(nullptr)
 {
-	GenerateTerrain(owner);
+	GenerateTerrain(owner, importData);
 	PropagateLight(owner);
+	m_FinishedGeneration = true;
 }
 
 Chunk::~Chunk()
@@ -137,7 +138,12 @@ void Chunk::SetBlock(int x, int y, int z, uint8_t type) {
         y < 0 || y >= CHUNK_SIZE_Y ||
         z < 0 || z >= CHUNK_SIZE_Z)
         return;
-    blocks[x + CHUNK_SIZE_X * (y + CHUNK_SIZE_Y * z)].blockID = type;
+	unsigned int index = x + CHUNK_SIZE_X * (y + CHUNK_SIZE_Y * z);
+    blocks[index].blockID = type;
+    BlockData data;
+    data.id = type;
+    data.index = index;
+    if (m_FinishedGeneration) changedBlocks.push_back(data);
 }
 
 uint8_t Chunk::GetBlock(int x, int y, int z) const
@@ -192,11 +198,10 @@ void Chunk::NeigbourVoxelQueue(int x, int y, int z, ChunkLoader& owner)
     }
 }
 
-void Chunk::GenerateTerrain(ChunkLoader & owner)
+void Chunk::GenerateTerrain(ChunkLoader & owner, const std::vector<BlockData>& loadedData)
 {
-	//blocks.reserve(CHUNKSIZE * sizeof(Voxel));
     blocks.resize(CHUNKSIZE, { 0,0 });
-	//blocks.reserve(CHUNKSIZE, { 0,0 });
+
     for (int x = 0; x < CHUNK_SIZE_X; ++x) {
         for (int z = 0; z < CHUNK_SIZE_Z; ++z) {
             // World coordinates
@@ -285,6 +290,16 @@ void Chunk::GenerateTerrain(ChunkLoader & owner)
 
         }
     }
+	// Load imported data (is only the changed data)
+    if (!loadedData.empty())
+    {
+        for (const auto& blockData : loadedData)
+        {
+            blocks[blockData.index].blockID = blockData.id;
+			blocks[blockData.index].lightLevel = blockData.lightLevel;
+			changedBlocks.push_back(blockData);
+        }
+    }
 }
 
 void Chunk::PlaceTrees(Renderer& ren, ChunkLoader& owner)
@@ -300,6 +315,12 @@ void Chunk::PlaceTrees(Renderer& ren, ChunkLoader& owner)
 		PropagateLight(owner);
     }
 
+}
+
+void Chunk::ExportChangedBlocks(FileData& fileHelper)
+{
+	// Export only changed blocks
+	fileHelper.SaveChunkData(chunkPos.x, chunkPos.y, chunkPos.z, changedBlocks);
 }
 
 void Chunk::ApplySunlight(ChunkLoader& owner)

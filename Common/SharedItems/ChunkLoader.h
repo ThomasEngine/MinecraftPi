@@ -41,10 +41,11 @@ class Shader;
 class Texture;
 class Chunk;
 class FastNoiseLite;
+struct FileData;
 class ChunkLoader
 {
 public:
-	ChunkLoader(Renderer& rend, std::shared_ptr<NoiseMaps> noiseMaps, bool& isReady);
+	ChunkLoader(Renderer& rend, std::shared_ptr<NoiseMaps> noiseMaps, bool& isReady, FileData& dataHelper);
 	~ChunkLoader();
 
 	void Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& viewProj);
@@ -65,7 +66,7 @@ public:
 	
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;
 private:
-	uint8_t VIEW_DISTANCE = 8;
+	uint8_t VIEW_DISTANCE = 2;
 	uint8_t HALF_X = 0;
 	uint8_t HALF_Z = 0;
 	uint8_t HALF_Y = 0;
@@ -75,6 +76,8 @@ private:
 	Frustum frustum;
 	bool* m_WorldReady;
 	glm::vec3 m_CameraPos, m_CameraDir;
+
+	FileData* m_FileData;
 
 	std::unordered_map<glm::ivec3, ChunkLoadTask, IVec3Hash> m_ChunkLoadTasks;
 	std::vector<std::shared_ptr<Chunk>> m_RenderList;

@@ -42,6 +42,7 @@ class FastNoiseLite;
 class Mob;
 class MobFactory;
 class MobLoader;
+struct FileData;
 class World  
 {  
 public:  
@@ -71,6 +72,10 @@ public:
 
 	// Collision system
 	void SetCollisionSystem(std::shared_ptr<CollisionSystem> cs);
+
+	// File data access
+	FileData* GetFileData() { return m_FileData.get(); }
+	bool IsLoadFromFile() const { return m_LoadFromFile; }
 private:  
 	// List of noise maps
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;
@@ -90,9 +95,16 @@ private:
 
 	bool isReady{ false }; // Indicates if world generation is ready
 
+	// World seed
+	int m_Seed;
+	bool m_LoadFromFile{ false };
+
+	// Data
+	std::unique_ptr<FileData> m_FileData;
 
 	// Private functions
 	void UpdateEntities(float deltaTime);
 	void RenderEntities(const glm::mat4& viewProj, Shader& shader);
+
 
 };

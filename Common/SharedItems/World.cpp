@@ -7,15 +7,31 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "MobLoader.h"
-
-
+#include "FileData.h"
 
 World::World(Renderer& ren, int seed, Camera* cam)
 	: m_Player(cam), m_Renderer(ren)
 {
+	int GameSeed;
+	m_FileData = std::make_unique<FileData>(std::string("world_0").c_str());
+
+	int fileSeed = m_FileData->LoadWorldData().seed;
+	if (fileSeed != 0)
+	{
+		GameSeed = fileSeed;
+	}
+	else
+	{
+		GameSeed = seed;
+		// Save the seed to file
+		WorldData data;
+		data.seed = GameSeed;
+		m_FileData->SaveWorldData(data);
+	}
+	printf("World Seed: %d\n", GameSeed);
 	// Initialize noise maps
     // Continentalness Noise
-    FastNoiseLite Continentalness = FastNoiseLite(seed);
+    FastNoiseLite Continentalness = FastNoiseLite(GameSeed);
     Continentalness.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2);
     Continentalness.SetFrequency(0.0008f);
     Continentalness.SetFractalType(FastNoiseLite::FractalType::FractalType_FBm);
@@ -23,25 +39,25 @@ World::World(Renderer& ren, int seed, Camera* cam)
     Continentalness.SetFractalGain(0.55f);
 
     // Erosion noise
-    FastNoiseLite Erosion = FastNoiseLite(seed);
+    FastNoiseLite Erosion = FastNoiseLite(GameSeed);
     Erosion.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
     Erosion.SetFrequency(0.002f);
 
     // Peaks and Valleys noise
-    FastNoiseLite PeaksAndValleys = FastNoiseLite(seed);
+    FastNoiseLite PeaksAndValleys = FastNoiseLite(GameSeed);
     PeaksAndValleys.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
     PeaksAndValleys.SetFrequency(0.005f);
     PeaksAndValleys.SetFractalType(FastNoiseLite::FractalType_Ridged);
 
     // Caves
-    FastNoiseLite CaveNoise = FastNoiseLite(seed);
+    FastNoiseLite CaveNoise = FastNoiseLite(GameSeed);
     CaveNoise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
     CaveNoise.SetFrequency(0.02f);
 
 	m_NoiseMaps = std::make_shared<NoiseMaps>(Continentalness, Erosion, PeaksAndValleys, CaveNoise);
 
 	// Chunk loader
-	m_ChunkLoader = std::make_unique<ChunkLoader>(ren, m_NoiseMaps, isReady);
+	m_ChunkLoader = std::make_unique<ChunkLoader>(ren, m_NoiseMaps, isReady, *m_FileData.get());
 	m_MobLoader = std::make_unique<MobLoader>(this, ren);
 
 	m_Renderer = ren;
