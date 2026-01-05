@@ -19,6 +19,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Input.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\tiny_obj_loader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BaseUI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Crafting.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CraftingRegistry.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CraftingType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Crosshair.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)InventoryScreen.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ItemRegistry.h" />
@@ -59,6 +62,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Chunk.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ChunkLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CollisionSystem.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Crafting.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CraftingRegistry.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Crosshair.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Frustum.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game.cpp" />

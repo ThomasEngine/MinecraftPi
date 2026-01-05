@@ -1,5 +1,5 @@
 #include "InventoryScreen.h"
-#include "UITypes.h"
+#include "Crafting.h"
 
 InventoryScreen::InventoryScreen(Container* inv)
 	: playerInventory(inv)
@@ -23,13 +23,15 @@ void InventoryScreen::handleItemDrop(int amount)
 			if (slot && slot->container)
 			{
 				Container* container = slot->container;
-				DraggedItem& draggedItem = container->draggedItem;
+				DraggedItem& draggedItem = slot->draggedItem;
 				if (draggedItem.isDragging)
 				{
 					// Place item in this slot
+					printf("Placing item in slot %d\n", slot->slotIndex);
 					ItemStack& targetStack = container->getSlot(slot->slotIndex);
 					if (targetStack.isEmpty())
 					{
+						printf("Target stack is empty\n");
 						// if amount is -1 take all
 						if (amount > 0 && amount < draggedItem.stack.quantity)
 						{
@@ -68,6 +70,26 @@ void InventoryScreen::handleItemDrop(int amount)
 	}
 }
 
+void InventoryScreen::checkCraftingOutput()
+{
+	// Check crafting container for valid recipe
+	ReturnCrafting result = Crafting::canCraft(craftingContainer, craftingMinSize::CRAFTING_SIZE_4);
+	printf("Crafting check result: Item %s, Quantity %d\n", g_ItemTypes[result.itemID].name.c_str(), result.quantity);
+	// Update output slot (index 4)
+	if (result.itemID != ItemTypeId::I_NONE)
+	{
+		ItemStack& outputSlot = craftingContainer->getSlot(4);
+		outputSlot.itemID = result.itemID;
+		outputSlot.quantity = result.quantity;
+	}
+	else
+	{
+		// Clear output slot
+		ItemStack& outputSlot = craftingContainer->getSlot(4);
+		outputSlot.clear();
+	}
+}
+
 void InventoryScreen::onOpen()
 {
 	// Clear existing widgets
@@ -96,19 +118,19 @@ void InventoryScreen::onOpen()
 	// First add background
 	// Background is twice the height and a bit wider than the grid
 	Rect backgroundRect{ startXBackground, startYBackground, backgroundWidth, baseSlotSize };
-	auto background = std::make_unique<UISlot>(-1, backgroundRect, nullptr, SlotTypes::BackgroundTop);
+	auto background = std::make_unique<UISlot>(-1, backgroundRect, nullptr, SlotTypes::BackgroundTop, draggedItem);
 	m_Widgets.push_back(std::move(background));
 
 	// Middle part
 	int startYBackgroundMiddle = startYBackground + 24;
 	Rect backgroundMiddleRect{ startXBackground, startYBackgroundMiddle, backgroundWidth, backgroundHeight - 24 * 2 };
-	auto backgroundMiddle = std::make_unique<UISlot>(-1, backgroundMiddleRect, nullptr, SlotTypes::BackgroundMiddle);
+	auto backgroundMiddle = std::make_unique<UISlot>(-1, backgroundMiddleRect, nullptr, SlotTypes::BackgroundMiddle, draggedItem);
 	m_Widgets.push_back(std::move(backgroundMiddle));
 
 	// Bottom part
 	int startYBackgroundBottom = startYBackground + backgroundHeight - 24;
 	Rect backgroundBottomRect{ startXBackground, startYBackgroundBottom, backgroundWidth, baseSlotSize };
-	auto backgroundBottom = std::make_unique<UISlot>(-1, backgroundBottomRect, nullptr, SlotTypes::BackgroundBottom);
+	auto backgroundBottom = std::make_unique<UISlot>(-1, backgroundBottomRect, nullptr, SlotTypes::BackgroundBottom, draggedItem);
 	m_Widgets.push_back(std::move(backgroundBottom));
 
 	// Create slots
@@ -121,7 +143,7 @@ void InventoryScreen::onOpen()
 			slotY = startY + row * (slotSize + inBetweenSlotSpace);
 			slotY = (row == (rows - 1)) ? slotY + slotSize * 0.20 : slotY;
 			Rect slotRect{ slotX, slotY, slotSize, slotSize };
-			auto slot = std::make_unique<UISlot>(index, slotRect, playerInventory);
+			auto slot = std::make_unique<UISlot>(index, slotRect, playerInventory, SlotTypes::Inventory, draggedItem);
 			m_Widgets.push_back(std::move(slot));
 		}
 	}
@@ -137,28 +159,28 @@ void InventoryScreen::onOpen()
 	// Input slots
 	for (int row = 0; row < 2; ++row) {
 		for (int col = 0; col < 2; ++col) {
-			int index = rows * cols + row * 2 + col; // after inventory slots
+			int index = row * cols + col; // after inventory slots
 			slotX = craftingStartX + col * (slotSize + inBetweenSlotSpace);
 			slotY = craftingStartY + row * (slotSize + inBetweenSlotSpace);
 			Rect slotRect{ slotX, slotY, slotSize, slotSize };
-			auto slot = std::make_unique<UISlot>(index, slotRect, craftingContainer);
+			auto slot = std::make_unique<UISlot>(index, slotRect, craftingContainer, SlotTypes::Inventory, draggedItem);
 			m_Widgets.push_back(std::move(slot));
 		}
 	}
 
 	// Output slot
-	int outputIndex = rows * cols + 4;
+	int outputIndex = 4; // output slot index in crafting container
 	int outputSlotX = craftingStartX + 2 * (slotSize + inBetweenSlotSpace) + slotSize + slotSize * 0.3f;
 	int outputSlotY = craftingStartY + slotSize / 2; // vertically centered
 	Rect outputSlotRect{ outputSlotX, outputSlotY, slotSize, slotSize };
-	auto outputSlot = std::make_unique<UISlot>(outputIndex, outputSlotRect, craftingContainer);
+	auto outputSlot = std::make_unique<UISlot>(outputIndex, outputSlotRect, craftingContainer, SlotTypes::Inventory, draggedItem);
 	m_Widgets.push_back(std::move(outputSlot));
 
 	// Arrow in between
 	int arrowX = craftingStartX + 2 * (slotSize + inBetweenSlotSpace) + slotSize * 0.15;
 	int arrowY = craftingStartY + slotSize - slotSize / 2; // center arrow vertically
 	Rect arrowRect{ arrowX, arrowY, slotSize, slotSize };
-	auto arrowSlot = std::make_unique<UISlot>(-1, arrowRect, nullptr, SlotTypes::CraftingArrow);
+	auto arrowSlot = std::make_unique<UISlot>(-1, arrowRect, nullptr, SlotTypes::CraftingArrow, draggedItem);
 	m_Widgets.push_back(std::move(arrowSlot));
 
 	// Set flag

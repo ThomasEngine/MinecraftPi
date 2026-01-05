@@ -28,23 +28,24 @@ void UIManager::Update(float deltaTime, const Input& input)
 	m_InventoryScreen->Update(&input, deltaTime);
 	m_PlayerGameInv->Update(&input, deltaTime);
 
-	Container* playerInv = m_InventoryScreen->playerInventory;
-	if (playerInv->draggedItem.isDragging)
+	DraggedItem& draggedItem = m_InventoryScreen->draggedItem;
+	if (draggedItem.isDragging)
 	{
 		if (input.GetMouse().GetButtonDown(MouseButtons::LEFT))
 		{
 			glm::vec2 mousePos = input.GetMouse().GetPosition();
-			playerInv->draggedItem.mousePos = mousePos;
-			playerInv->draggedItem.itemBounds.x = static_cast<int>(mousePos.x + playerInv->draggedItem.offset.x);
-			playerInv->draggedItem.itemBounds.y = static_cast<int>(mousePos.y + playerInv->draggedItem.offset.y);
+			draggedItem.mousePos = mousePos;
+			draggedItem.itemBounds.x = static_cast<int>(mousePos.x + draggedItem.offset.x);
+			draggedItem.itemBounds.y = static_cast<int>(mousePos.y + draggedItem.offset.y);
 
 		}
 		else
 		{
 			// Drop the item
 			m_InventoryScreen->handleItemDrop();
-			playerInv->draggedItem.isDragging = false;
-			playerInv->draggedItem.stack.clear();
+			m_InventoryScreen->checkCraftingOutput();
+			draggedItem.isDragging = false;
+			draggedItem.stack.clear();
 		}
 }
 
@@ -104,10 +105,9 @@ uint8_t UIManager::GetItemIDInHotBarIndex() const
 void UIManager::RenderDraggedItem()
 {
 	// Render dragged item on top if any
-	Container* playerInv = m_InventoryScreen->playerInventory;
-	if (playerInv->draggedItem.isDragging)
+	DraggedItem& draggedItem = m_InventoryScreen->draggedItem;
+	if (draggedItem.isDragging)
 	{
-		const DraggedItem& draggedItem = playerInv->draggedItem;
 		if (!draggedItem.stack.isEmpty())
 		{
 			AtlasPos texPos = g_ItemTypes[draggedItem.stack.itemID].inventoryTextureIndex;

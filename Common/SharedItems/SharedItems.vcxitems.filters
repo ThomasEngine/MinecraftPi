@@ -64,6 +64,9 @@
     <Filter Include="World\Items">
       <UniqueIdentifier>{3754a0cd-9ceb-42b2-96ef-8d5e19cbf20d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Crafting">
+      <UniqueIdentifier>{1a04057b-fe2c-4bb2-965f-1b99d689207b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\IInput.h">
@@ -162,6 +165,15 @@
       <Filter>World\Items</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)ChunkLoader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CraftingRegistry.h">
+      <Filter>Crafting</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)CraftingType.h">
+      <Filter>Crafting</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Crafting.h">
+      <Filter>Crafting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Input.cpp">
@@ -253,6 +265,10 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)ItemRegistry.cpp">
       <Filter>World\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)CraftingRegistry.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Crafting.cpp">
+      <Filter>Crafting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

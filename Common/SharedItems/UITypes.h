@@ -42,8 +42,6 @@ public:
 	}
 	void AddItem(ItemTypeId itemID, int quantity, int slotIndex = -1);
 
-	DraggedItem draggedItem;
-	
 	size_t getSlotCount() const { return slots.size(); }
 	ItemStack& getSlot(size_t index) { return slots[index]; }
 	void setSize(int slotCount) { slots.resize(slotCount); maxSlots = slotCount; }
@@ -77,13 +75,14 @@ enum class SlotTypes {
 enum class MouseButtons;
 class UISlot : public UIWidget {
 public:
-	UISlot(int index, const Rect& rect, Container* cont, SlotTypes type = SlotTypes::Inventory)
-		: slotIndex(index), bounds(rect), container(cont), slotType(type) {
-	}
+    UISlot(int index, const Rect& rect, Container* cont, SlotTypes type = SlotTypes::Inventory, DraggedItem& di = *(new DraggedItem()))
+       : slotIndex(index), bounds(rect), container(cont), slotType(type), draggedItem(di) {
+    }
 	Rect bounds;
 	int slotIndex;
 	Container* container = nullptr;
 	SlotTypes slotType;
+	DraggedItem& draggedItem;
 
 	void Update(const Input* input, float deltaTime) override;
 	void Render(Renderer2D& ren) const override;

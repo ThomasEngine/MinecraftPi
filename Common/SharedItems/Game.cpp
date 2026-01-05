@@ -34,6 +34,7 @@
 #include <thread> 
 
 #include "BlockRegistery.h"
+#include "CraftingRegistry.h"
 #include "World.h"
 #include "CollisionSystem.h"
 #include "MobFactory.h"
@@ -105,6 +106,7 @@ void Game::Start()
 	//Texture testTex("Common/SharedItems/Assets/dirtblock.png");
 	InitializeBlockTypes();
 	InitializeItemTypes();
+	InitializeCraftingRecipes();
 
 	// Before drawing
 	shader.Bind();
@@ -192,21 +194,19 @@ void Game::Start()
 		m_Camera.Update(gameDeltaTime);
 		m_UIManager->Update(gameDeltaTime, *input);
 		crosshair.Update(windowW, windowH);
+
 		// Render
 		Render();
 		float playerUnderwater = world->GetPlayer().GetUnderWater() ? 1.f : 0.f;
 		shader.Bind();
 		shader.SetUniform1f("u_UnderWater", playerUnderwater);
-		
-
-		
 		world->Draw(projView, shader, *testTex);
-		
 
 		// Gui elements
 		m_OnBlock->Render(renderer, m_Camera.GetViewProjectionMatrix(), *testTex, otherShader);
 		crosshair.Render(renderer, *testTex);
 
+		// UI Batch Render
 		uiRenderer.beginFrame(windowW, windowH);
 		m_UIManager->Render();
 		uiRenderer.endFrame();

@@ -1,17 +1,19 @@
 #pragma once
-#include "BaseUI.h"
+#include "UITypes.h"
 
-class Container;
 class InventoryScreen : public UIScreen
 {
 public:
 	Container* playerInventory = nullptr;
 	Container* craftingContainer = nullptr;
+
+	DraggedItem draggedItem;
 	
 	InventoryScreen(Container* inv);
 	~InventoryScreen() override;
 
 	void handleItemDrop(int amount = -1);
+	void checkCraftingOutput();
 	
 	void onOpen() override;
 	void onClose() override;

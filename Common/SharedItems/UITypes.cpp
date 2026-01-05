@@ -99,12 +99,12 @@ void UISlot::Render(Renderer2D& ren) const
 {
 	// Draw base
 	bool isBackground = isSlotBackground(slotType);
-	int windth = isBackground ? 24 * 7 : 24;
+	int width = isBackground ? 24 * 7 : 24;
 
 	uint32_t slotColor = isBackground ? 0xFFFFFFFF : (hovered ? 0x33EBEBEB : 0xFFFFFFFF);
 
 	glm::ivec2 atlasPos = GetSloteTypeAtlas(slotType);
-	ren.drawSprite(Sprite{ atlasPos.x * 24, 232 - atlasPos.y * 24, windth, 24}, float(bounds.x), float(bounds.y), float(bounds.w), float(bounds.h), slotColor);
+	ren.drawSprite(Sprite{ atlasPos.x * 24, 232 - atlasPos.y * 24, width, 24}, float(bounds.x), float(bounds.y), float(bounds.w), float(bounds.h), slotColor);
 	if (!container) return;
 
 	const ItemStack& stack = container->getSlot(slotIndex);
@@ -128,13 +128,11 @@ void UISlot::clicked(MouseButtons button, const Input& input)
 	if (container->getSlot(slotIndex).isEmpty()) return; // No item to drag
 
 	// Start dragging
-	DraggedItem& draggedItem = container->draggedItem;
 	draggedItem.isDragging = true;
 	ItemStack& slotStack = container->getSlot(slotIndex);
 	draggedItem.stack = slotStack;
 	draggedItem.itemBounds = Rect{ bounds.x + 4, bounds.y + 4, bounds.w - 8, bounds.h - 8 };
 	slotStack.clear();
-
 }
 
 void Container::AddItem(ItemTypeId itemID, int quantity, int slotIndex)

@@ -137,7 +137,7 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_BEDROCK].mobSpawningAllowed = false;
 	for (int i = 0; i < 6; i++)
 	{
-		g_BlockTypes[B_WATER].textureIndices[i] = {10, 16};
+		g_BlockTypes[B_WATER].textureIndices[i] = {15, 12};
 	}
 
 	// Glowstone
@@ -159,7 +159,6 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_BEDROCK].mobSpawningAllowed = false;
 	for (int i = 0; i < 6; i++)
 	{
-		//g_BlockTypes[B_OAK_LEAF].textureIndices[i] = 15 * 3 + 5; diamond ore
 		g_BlockTypes[B_OAK_LEAF].textureIndices[i] = { 5, 3 };
 	}	
 }
