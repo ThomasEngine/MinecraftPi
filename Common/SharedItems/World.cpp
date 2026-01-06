@@ -66,7 +66,8 @@ World::World(Renderer& ren, int seed, Camera* cam)
 
 World::~World()
 {
-
+	// Destructor
+	//m_ChunkLoader->SaveData();
 }
 
 void World::Update(const glm::vec3& camDir, const glm::vec3& camPos, const glm::mat4& viewProjMatrix, float deltaTime)
@@ -163,6 +164,11 @@ void World::SetCollisionSystem(std::shared_ptr<CollisionSystem> cs)
 	m_Player.SetCollisionSystem(cs);
 	m_CollisionSystem = cs;
 	m_CollisionSystem.get()->SetBlockTarget(*this);
+}
+
+void World::SaveWorldData()
+{
+	m_ChunkLoader->SaveData();
 }
 
 void World::UpdateEntities(float deltaTime)

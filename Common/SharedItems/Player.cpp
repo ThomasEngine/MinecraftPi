@@ -196,8 +196,8 @@ void Player::UpdateMoveY(float deltaTime)
 	float grav = m_InWater ? GRAVITY * 0.1f : GRAVITY;
 	float maxFall = m_InWater ? MAX_FALL_SPEED * 0.1f : MAX_FALL_SPEED;
 
-	const float buoyancyStrength = 150.0f; 
-	const float damping = 0.85f;          
+	const float buoyancyStrength = 24.0f; 
+	const float damping = 0.95f;          
 	const float surfaceSlack = 0.8f; 
 
 	float waterSurfaceY = 66.0f;

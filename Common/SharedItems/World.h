@@ -76,6 +76,9 @@ public:
 	// File data access
 	FileData* GetFileData() { return m_FileData.get(); }
 	bool IsLoadFromFile() const { return m_LoadFromFile; }
+
+	void SaveWorldData(); // Saves world data to file
+
 private:  
 	// List of noise maps
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;

@@ -33,9 +33,11 @@ ChunkLoader::ChunkLoader(Renderer& rend, std::shared_ptr<NoiseMaps> noiseMaps, b
 ChunkLoader::~ChunkLoader()  
 {  
    for (auto& pair : m_ChunkLoadTasks) {  
+	   pair.second.chunk->ExportChangedBlocks(*m_FileData);
        pair.second.chunk.reset(); 
    }  
    m_ChunkLoadTasks.clear();
+
 }
 
 glm::ivec3 ChunkLoader::WorldToChunkPos(const glm::vec3& pos) const
@@ -161,6 +163,14 @@ void ChunkLoader::PlaceTree(const glm::ivec3& worldPos)
         it->second.renderReady = false;
         it->second.reloaded = false;
 
+    }
+}
+
+void ChunkLoader::SaveData()
+{
+	for (auto& pair : m_ChunkLoadTasks) {
+		ChunkLoadTask& task = pair.second;
+		task.chunk->ExportChangedBlocks(*m_FileData);
     }
 }
 

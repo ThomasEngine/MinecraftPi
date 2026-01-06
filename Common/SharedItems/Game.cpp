@@ -238,6 +238,7 @@ const Input& Game::GetInput() const
 
 void Game::Quit()
 {
+	world->SaveWorldData();
 	quitting = true;
 }
 

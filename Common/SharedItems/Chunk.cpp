@@ -267,7 +267,6 @@ void Chunk::GenerateTerrain(ChunkLoader & owner, const std::vector<BlockData>& l
             {
                 float caveNoise = owner.m_NoiseMaps->caveNoise.GetNoise((float)wx, (float)y, (float)wz);
 
-
                 // carve out cave
                 // Carving idea: https://www.youtube.com/watch?v=v7yyZZjF1z4
                 if (caveNoise > -0.3f) {
@@ -296,8 +295,7 @@ void Chunk::GenerateTerrain(ChunkLoader & owner, const std::vector<BlockData>& l
         for (const auto& blockData : loadedData)
         {
             blocks[blockData.index].blockID = blockData.id;
-			blocks[blockData.index].lightLevel = blockData.lightLevel;
-			changedBlocks.push_back(blockData);
+			changedBlocks.push_back(blockData); // restore changed blocks
         }
     }
 }

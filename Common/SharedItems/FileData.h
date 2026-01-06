@@ -5,7 +5,6 @@
 struct BlockData {
 	uint8_t id;
 	unsigned int index;
-	uint8_t lightLevel;
 };
 
 struct WorldData {

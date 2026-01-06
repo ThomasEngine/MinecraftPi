@@ -64,9 +64,11 @@ public:
 	void AddToSunlightQueue(const glm::ivec3& worldPos); 
 	void PlaceTree(const glm::ivec3& worldPos);
 	
+	void SaveData(); // Saves all chunk data to file 
+
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;
 private:
-	uint8_t VIEW_DISTANCE = 2;
+	uint8_t VIEW_DISTANCE = 4;
 	uint8_t HALF_X = 0;
 	uint8_t HALF_Z = 0;
 	uint8_t HALF_Y = 0;
