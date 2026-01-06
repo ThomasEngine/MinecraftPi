@@ -29,6 +29,7 @@ void UIManager::Update(float deltaTime, const Input& input)
 	m_PlayerGameInv->Update(&input, deltaTime);
 
 	DraggedItem& draggedItem = m_InventoryScreen->draggedItem;
+	if (!draggedItem.active) return;
 	if (draggedItem.isDragging)
 	{
 		if (input.GetMouse().GetButtonDown(MouseButtons::LEFT))
@@ -45,6 +46,7 @@ void UIManager::Update(float deltaTime, const Input& input)
 			m_InventoryScreen->handleItemDrop();
 			m_InventoryScreen->checkCraftingOutput();
 			draggedItem.isDragging = false;
+			draggedItem.active = false;
 			draggedItem.stack.clear();
 		}
 }

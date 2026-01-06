@@ -31,6 +31,7 @@ struct DraggedItem {
 	Rect itemBounds;
 	int quantity = 0;
 	bool isDragging = false;
+	bool active;
 	glm::vec2 mousePos;
 	glm::vec2 offset;
 };

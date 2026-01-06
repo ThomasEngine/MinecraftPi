@@ -128,7 +128,13 @@ void UISlot::clicked(MouseButtons button, const Input& input)
 	if (container->getSlot(slotIndex).isEmpty()) return; // No item to drag
 
 	// Start dragging
-	draggedItem.isDragging = true;
+	if (draggedItem.isDragging) draggedItem.isDragging = false;
+	else {
+		draggedItem.isDragging = true;
+		draggedItem.active = true;
+	}
+
+
 	ItemStack& slotStack = container->getSlot(slotIndex);
 	draggedItem.stack = slotStack;
 	draggedItem.itemBounds = Rect{ bounds.x + 4, bounds.y + 4, bounds.w - 8, bounds.h - 8 };
