@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
-#include <string>		
+#include <string>
+#include <glm/glm.hpp>
 
 struct BlockData {
 	uint8_t id;
@@ -8,7 +9,10 @@ struct BlockData {
 };
 
 struct WorldData {
-	int seed;
+	int seed; // World seed
+	float timeOfDay; // Time of day in hours
+	glm::ivec3 spawnPoint; // Current player spawn point
+	glm::ivec3 playerPosition; // Last known player position
 };
 
 class FileData

@@ -32,8 +32,10 @@ public:
 	void SetSprinting(bool s) { m_Sprinting = s; }
 	bool IsRunning() const;
 	void SetChrouching(bool c) { m_Crouching = c; }
+	void SetPosition(const glm::vec3& pos);
 	void SetInWater(bool w) { m_InWater = w; }
 	bool GetUnderWater() const;
+	glm::vec3 GetPosition() const { return m_Pos; }
 
 private:
 	std::shared_ptr<CollisionSystem> m_CS;
@@ -53,7 +55,6 @@ private:
 
 	glm::vec3 m_PlayerRect = { 0.8f, 1.9f, 0.6 };
 
-	void SetPosition(const glm::vec3& pos);
 	bool CanJump() const;
 
 	Container* m_Inventory;

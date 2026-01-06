@@ -15,10 +15,12 @@ World::World(Renderer& ren, int seed, Camera* cam)
 	int GameSeed;
 	m_FileData = std::make_unique<FileData>(std::string("world_0").c_str());
 
-	int fileSeed = m_FileData->LoadWorldData().seed;
+	WorldData dat = m_FileData->LoadWorldData();
+	int fileSeed = dat.seed;
 	if (fileSeed != 0)
 	{
 		GameSeed = fileSeed;
+		m_Player.SetPosition(dat.playerPosition);
 	}
 	else
 	{
@@ -169,6 +171,10 @@ void World::SetCollisionSystem(std::shared_ptr<CollisionSystem> cs)
 void World::SaveWorldData()
 {
 	m_ChunkLoader->SaveData();
+	glm::ivec3 playerPos = m_Player.GetPosition();
+	WorldData dat = m_FileData->LoadWorldData();
+	dat.playerPosition = playerPos;
+	m_FileData->SaveWorldData(dat);
 }
 
 void World::UpdateEntities(float deltaTime)
