@@ -24,6 +24,7 @@ enum ItemTypeId : uint8_t {
     I_GRANITE_BLOCK,
     I_DIORITE_BLOCK,
     I_GLOWSTONE_BLOCK,
+    I_CRAFTING_TABLE,
     // Non-block items
     I_STICK,
     I_WOODEN_SWORD,

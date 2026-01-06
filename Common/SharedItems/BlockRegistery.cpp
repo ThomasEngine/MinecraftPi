@@ -156,9 +156,24 @@ void InitializeBlockTypes()
 	g_BlockTypes[B_OAK_LEAF].name = "Oak Leaf";
 	g_BlockTypes[B_OAK_LEAF].isSolid = true;
 	g_BlockTypes[B_OAK_LEAF].isTransparent = false;
-	g_BlockTypes[B_BEDROCK].mobSpawningAllowed = false;
+	g_BlockTypes[B_OAK_LEAF].mobSpawningAllowed = false;
 	for (int i = 0; i < 6; i++)
 	{
 		g_BlockTypes[B_OAK_LEAF].textureIndices[i] = { 5, 3 };
 	}	
+
+	// Crafting table
+	g_BlockTypes[B_CRAFTING_TABLE] = BlockType();
+	g_BlockTypes[B_CRAFTING_TABLE].name = "Crafting Tabel";
+	g_BlockTypes[B_CRAFTING_TABLE].isSolid = true;
+	g_BlockTypes[B_CRAFTING_TABLE].isTransparent = false;
+	g_BlockTypes[B_CRAFTING_TABLE].mobSpawningAllowed = false;
+	g_BlockTypes[B_CRAFTING_TABLE].interaction = new Interactable();
+
+	g_BlockTypes[B_CRAFTING_TABLE].textureIndices[0] = { 11,3 }; // Left
+	g_BlockTypes[B_CRAFTING_TABLE].textureIndices[1] = { 11,3 }; // Right
+	g_BlockTypes[B_CRAFTING_TABLE].textureIndices[2] = { 11,2 }; // Top
+	g_BlockTypes[B_CRAFTING_TABLE].textureIndices[3] = {11,2 }; // Bottom
+	g_BlockTypes[B_CRAFTING_TABLE].textureIndices[4] = { 12,3 }; // Front
+	g_BlockTypes[B_CRAFTING_TABLE].textureIndices[5] = { 12,3 }; // Back
 }

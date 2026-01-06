@@ -174,6 +174,7 @@ void World::SaveWorldData()
 	glm::ivec3 playerPos = m_Player.GetPosition();
 	WorldData dat = m_FileData->LoadWorldData();
 	dat.playerPosition = playerPos;
+	dat.playerPosition.y += 1;
 	m_FileData->SaveWorldData(dat);
 }
 

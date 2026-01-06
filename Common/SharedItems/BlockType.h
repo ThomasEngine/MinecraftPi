@@ -18,6 +18,7 @@ enum BlockTypeId : uint8_t {
 	B_GRANITE,
 	B_DIORITE,
 	B_GLOWSTONE,
+	B_CRAFTING_TABLE,
 	B_AMOUNT
 };
 
@@ -31,6 +32,10 @@ struct AtlasPos {
 	}
 };
 
+struct Interactable {
+	// Data necessary for items
+	
+};
 
 struct BlockType {
 	const char* name;
@@ -40,6 +45,7 @@ struct BlockType {
 	bool isTransparent;
 	bool mobSpawningAllowed = true;
 	uint8_t lightStrength = 0;
+	Interactable* interaction = nullptr;
 
 	BlockType() = default;
 

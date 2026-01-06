@@ -17,7 +17,8 @@ Player::Player(Camera* m_Camera)
 	m_Inventory->AddItem(I_DIRT_BLOCK, 1, 1);
 	m_Inventory->AddItem(I_STICK, 1, 2);
 	m_Inventory->AddItem(I_WOODEN_PICKAXE, 1, 3);
-	m_Inventory->AddItem(I_OAK_LOG_BLOCK, 10, 4);
+	m_Inventory->AddItem(I_OAK_LOG_BLOCK, 1, 4);
+	m_Inventory->AddItem(I_CRAFTING_TABLE, 1, 9);
 }
 
 Player::~Player()

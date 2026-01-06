@@ -57,4 +57,7 @@ void InitializeItemTypes()
 	g_ItemTypes[I_WOODEN_AXE] = {
 		"Wooden Axe", {16,13}, ItemCategory::Tool, B_AIR
 	};
+	g_ItemTypes[I_CRAFTING_TABLE] = {
+		"Crafting Table", {11,2}, ItemCategory::Block, B_CRAFTING_TABLE
+	};
 }
