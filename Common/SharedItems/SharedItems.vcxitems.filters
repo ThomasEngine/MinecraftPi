@@ -177,6 +177,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ChunkLoader.h">
       <Filter>World\Chunks</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)InputManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Input.cpp">
@@ -228,9 +229,6 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Mesh.cpp">
       <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)InputManager.h">
-      <Filter>Input</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)MobLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp">

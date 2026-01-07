@@ -24,6 +24,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CraftingType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Crosshair.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileData.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)InputManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)InventoryScreen.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ItemRegistry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ItemType.h" />
@@ -86,7 +87,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Renderer2D.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Shader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Mobs.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)InputManager.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Texture.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)UIManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)UITypes.cpp" />
