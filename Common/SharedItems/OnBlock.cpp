@@ -7,12 +7,12 @@
 
 #ifdef WINDOWS_BUILD
 #include <glad/glad.h>
+#include <imgui/imgui_impl_opengl3_loader.h>
 #elif defined(Raspberry_BUILD)
 #include <GLES3/gl3.h>
 #else
 #include <GLES2/gl2.h>
 #endif
-#include <imgui/imgui_impl_opengl3_loader.h>
 
 extern const FaceVertex faceVertices[6][4];
 

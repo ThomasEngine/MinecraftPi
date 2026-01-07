@@ -8,6 +8,7 @@ public:
 	virtual void Quit() = 0;
 	virtual int GetWindowWidth() const = 0;
 	virtual int GetWindowHeight() const = 0;
+	virtual void ToggleCurser() const = 0;
 
 #ifdef WINDOWS_BUILD
 	virtual GLFWwindow& GetWindow() = 0;

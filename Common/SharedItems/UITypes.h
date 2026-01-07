@@ -38,7 +38,7 @@ struct DraggedItem {
 
 class Container {
 public:
-	Container() {
+	Container() : maxSlots(36) {
 		slots.resize(maxSlots);
 	}
 	void AddItem(ItemTypeId itemID, int quantity, int slotIndex = -1);

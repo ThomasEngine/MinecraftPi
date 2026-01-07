@@ -16,7 +16,7 @@ GLFWwindow& WindowsGraphics::Window() const
 {
 	return *window;
 }
-void WindowsGraphics::ToggleCurser()
+void WindowsGraphics::ToggleCurser() const
 {
 	if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
 	{

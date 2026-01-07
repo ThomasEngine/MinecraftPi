@@ -21,7 +21,7 @@ public:
 	void SwapBuffer() override;
 	GLFWwindow& GetWindow() override { return Window(); }
 	GLFWwindow& Window() const;
-	void ToggleCurser();
+	void ToggleCurser() const override;
 	int GetWindowWidth() const override;
 	int GetWindowHeight() const override;
 

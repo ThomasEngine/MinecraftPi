@@ -15,6 +15,7 @@ public:
 	void SwapBuffer() override;
 	int GetWindowWidth() const override;
 	int GetWindowHeight() const override;
+	void ToggleCurser() const override;
 
 
 	XWindow& Window() const;

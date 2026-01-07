@@ -99,8 +99,8 @@ void InventoryScreen::onOpen()
 	const int uiScale = 1;
 
 	// Define grid parameters
-	const int cols = 9;
-	const int rows = 4;
+	int cols = 9;
+	int rows = 4;
 	const int inBetweenSlotSpace = 3;
 	const int baseSlotSize = 48;
 	const int slotSize = int(baseSlotSize * uiScale);
@@ -157,8 +157,10 @@ void InventoryScreen::onOpen()
 	int craftingStartY = startYBackground + craftingMarginY;
 
 	// Input slots
-	for (int row = 0; row < 2; ++row) {
-		for (int col = 0; col < 2; ++col) {
+	rows = 2;
+	cols = 2;
+	for (int row = 0; row < rows; ++row) {
+		for (int col = 0; col < cols; ++col) {
 			int index = row * cols + col; // after inventory slots
 			slotX = craftingStartX + col * (slotSize + inBetweenSlotSpace);
 			slotY = craftingStartY + row * (slotSize + inBetweenSlotSpace);

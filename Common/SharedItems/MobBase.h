@@ -1,6 +1,6 @@
 #pragma once
 #include "Renderer.h"
-#include "GLM/glm.hpp"
+#include "glm/glm.hpp"
 #include "CollisionSystem.h"
 
 struct SharedModelData

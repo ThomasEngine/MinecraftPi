@@ -8,6 +8,7 @@
 #include "Shader.h"
 #include "MobLoader.h"
 #include "FileData.h"
+#include <algorithm> 
 
 World::World(Renderer& ren, int seed, Camera* cam)
 	: m_Player(cam), m_Renderer(ren)
@@ -108,9 +109,9 @@ Mob* World::AddMob(std::unique_ptr<Mob> mob)
 
 void World::RemoveMob(Mob* mob)
 {
-	auto it = std::remove_if(m_Mobs.begin(), m_Mobs.end(), 
-		[mob](const std::unique_ptr<Mob>& m) { return m.get() == mob; });
-	m_Mobs.erase(it, m_Mobs.end());
+   auto it = std::remove_if(m_Mobs.begin(), m_Mobs.end(),
+       [mob](const std::unique_ptr<Mob>& m) { return m.get() == mob; });
+   m_Mobs.erase(it, m_Mobs.end());
 }
 
 uint8_t World::GetBlockAtPosition(const glm::vec3& worldPos)

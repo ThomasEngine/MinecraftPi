@@ -536,7 +536,7 @@ void Game::ProcessInventoryCommands()
 void Game::ToggleMouse()
 {
 	toggledCurser = !toggledCurser;
-	dynamic_cast<WindowsGraphics*>(graphics)->ToggleCurser();
+	graphics->ToggleCurser();
 	canBreakBlock = false;
 	blockTimer = 0;
 	renderimGUI = !renderimGUI;

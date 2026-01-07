@@ -6,10 +6,10 @@
 #include <functional>
 #include <cstddef>
 #include "Mesh.h"
-#include <imgui/imgui_impl_opengl3.h>
 
 #ifdef WINDOWS_BUILD
 //include glad and glfw for Windows build
+#include <imgui/imgui_impl_opengl3.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <gui.h>

@@ -125,15 +125,20 @@ void UISlot::clicked(MouseButtons button, const Input& input)
 {
 	// Drag and hold
 	if (!container) return;
-	if (container->getSlot(slotIndex).isEmpty()) return; // No item to drag
+	if (container->getSlot(slotIndex).isEmpty() 
+		&& !draggedItem.isDragging) return; // No item to drag
 
 	// Start dragging
-	if (draggedItem.isDragging) draggedItem.isDragging = false;
-	else {
-		draggedItem.isDragging = true;
-		draggedItem.active = true;
+	draggedItem.active = true;
+	if (draggedItem.isDragging) {
+		draggedItem.isDragging = false;
+		printf("Place\n");
 	}
 
+	else {
+		draggedItem.isDragging = true;
+		printf("Take\n");
+	}
 
 	ItemStack& slotStack = container->getSlot(slotIndex);
 	draggedItem.stack = slotStack;

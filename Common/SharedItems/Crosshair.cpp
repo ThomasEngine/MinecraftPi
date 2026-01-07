@@ -3,8 +3,7 @@
 #include "Renderer.h"
 #include "Shader.h"
 #include <Texture.h>
-#include <ext/matrix_clip_space.hpp>
-#include <ext/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
 
 Crosshair::Crosshair(Renderer& ren)
    : m_WindowWidth(0), m_WindowHeight(0)
