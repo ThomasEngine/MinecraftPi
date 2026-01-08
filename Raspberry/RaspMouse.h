@@ -1,5 +1,5 @@
 #pragma once
-#include "IInput.h"
+#include "../IInput.h"
 
 #include <X11/Xlib.h>
 

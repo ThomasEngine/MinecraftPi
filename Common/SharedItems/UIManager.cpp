@@ -1,10 +1,10 @@
 #include "UIManager.h"
 #include "InventoryScreen.h"
-#include "Input.h"
+#include "../Input.h"
 #include "Game.h"
 #include "Renderer2D.h"
 #include "PlayerGameInv.h"
-#include "IInput.h"
+#include "../IInput.h"
 
 void UIManager::Initialize(Container& playerInv,  Game& game, Renderer2D& ren)
 {

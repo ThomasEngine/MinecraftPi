@@ -3,7 +3,7 @@
 #include <map>
 #include <queue>
 #include <set>
-#include <noise/FastNoiseLite.h>
+#include <../noise/FastNoiseLite.h>
 #include "Frustum.h"
 #include "World.h"
 
@@ -68,7 +68,11 @@ public:
 
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;
 private:
+#ifdef WINDOWS_BUILD
+	uint8_t VIEW_DISTANCE = 8;
+#else
 	uint8_t VIEW_DISTANCE = 4;
+#endif
 	uint8_t HALF_X = 0;
 	uint8_t HALF_Z = 0;
 	uint8_t HALF_Y = 0;

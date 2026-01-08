@@ -1,6 +1,6 @@
 #pragma once  
 #include "Renderer.h"  
-#include "noise/FastNoiseLite.h"
+#include "../noise/FastNoiseLite.h"
 #include <memory>
 #include "Player.h"
 

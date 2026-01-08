@@ -21,12 +21,16 @@ uniform float u_CellHeight;
 uniform float u_DayTime;
 uniform float u_UnderWater;
 uniform float u_YOffset;
+uniform float u_PiBUILD;
 
 float near = 90.0f;                    
 float far = 110.0f;      
 
 void main()
 {
+    near = 90.0 / u_PiBUILD;
+    far = 110.0 / u_PiBUILD;
+
     vec3 Position = a_Position;
     Position.y += u_YOffset;
     gl_Position = u_MVP * vec4(Position, 1.0);

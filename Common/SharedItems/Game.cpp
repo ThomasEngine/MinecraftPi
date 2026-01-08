@@ -1,12 +1,12 @@
 #include "Game.h"
-#include "Input.h"
+#include "../Input.h"
 #include <chrono>
 #include <ctime>
 #include <sstream>
 #include <iostream>
-#include "IGraphics.h"
+#include "../IGraphics.h"
 
-#include "IInput.h"
+#include "../IInput.h"
 #include <map>
 #include "ICommand.h"
 
@@ -45,8 +45,7 @@ Game::Game(const Input* const input, IGraphics* graphics) :
 	graphics(graphics),
 	m_Camera(WINDOW_WIDTH, WINDOW_HEIGHT),
 	m_InputManager(input)
-{
-
+{	
 }
 
 Game::~Game()
@@ -83,8 +82,7 @@ void Game::Start()
 	Shader uiShader("Common/SharedItems/ui.shader");
 	Texture* uiTex = new Texture("Common/SharedItems/Assets/basicWidget.png");
 	Shader guiShader("Common/SharedItems/Assets/gui.shader");
-#endif
-#ifdef Raspberry_BUILD
+#else
 	Shader shader("../Common/SharedItems/Assets/Basic.shader");
 	Shader otherShader("../Common/SharedItems/Assets/OnBlock.shader");
 	Texture* testTex = new Texture("../Common/SharedItems/Assets/minecraftAtlas.png");
@@ -92,7 +90,6 @@ void Game::Start()
 	Texture* uiTex = new Texture("../Common/SharedItems/Assets/basicWidget.png");
 	Shader guiShader("../Common/SharedItems/Assets/gui.shader");
 #endif
-
 
 	//Shader shader("Common/SharedItems/Assets/Basic.shader");
 	GLuint program = shader.GetID();
@@ -111,6 +108,11 @@ void Game::Start()
 	// Before drawing
 	shader.Bind();
 	shader.SetUniform1i("u_TextureAtlas", 0);
+#ifdef WINDOWS_BUILD // FOG DIFFERENCES 
+	shader.SetUniform1f("u_PiBUILD", 1);
+#else 
+	shader.SetUniform1f("u_PiBUILD", 2); // Fog is 2x closer (loads less chunks)
+#endif
 	shader.SetUniform1f("u_CellWidth", 1.f / 32.f);
 	shader.SetUniform1f("u_CellHeight", 1.f / 32.f);
 	testTex->Bind(0);
@@ -132,6 +134,11 @@ void Game::Start()
 	Initialize();
 
 	dayTime = 11.9f; // Noon
+
+	float avgFPS = 0.f;
+	float lowFPS = 0.f;
+
+	std::vector<float> frameTimes;
 
 	// setup GUI
 	gui = new Gui(world, this);
@@ -171,6 +178,7 @@ void Game::Start()
 
 		ProcessInput(m_Camera, renderer, gameDeltaTime, moveSpeed);
 
+		// fps and deltaTime
 		std::chrono::duration<float> elapsed = time - startTime;
 		if(elapsed.count() > 0.25f && frameCount > 10)
 		{
@@ -178,6 +186,39 @@ void Game::Start()
 			startTime = time;
 			frameCount = 0;
 		}
+		
+		frameTimes.push_back(gameDeltaTime);
+
+		const size_t maxHistory = 200;
+		if (frameTimes.size() > maxHistory)
+			frameTimes.erase(frameTimes.begin(), frameTimes.end() - maxHistory);
+
+
+		float avgFPS = 0.0f;
+		if (!frameTimes.empty()) {
+			float sum = 0.0f;
+			for (float dt : frameTimes) sum += dt;
+			avgFPS = frameTimes.size() / sum;
+		}
+		
+        // Calculate 1% low FPS (average FPS of the slowest 1% of frames)
+        float low1PercentFPS = 0.0f;
+        if (!frameTimes.empty()) {
+            std::vector<float> sortedTimes = frameTimes;
+            std::sort(sortedTimes.begin(), sortedTimes.end(), std::greater<float>()); // slowest first
+            size_t count = sortedTimes.size();
+            size_t numLowFrames = std::max<size_t>(1, static_cast<size_t>(count * 0.01f));
+            float sum = 0.0f;
+            for (size_t i = 0; i < numLowFrames; ++i) {
+                sum += sortedTimes[i];
+            }
+            float avgLowFrameTime = sum / numLowFrames;
+            if (avgLowFrameTime > 0.0f)
+                low1PercentFPS = 1.0f / avgLowFrameTime;
+        }
+
+        printf("Current FPS: %.2f | Average FPS: %.2f | Low 1%% FPS: %.2f\r", averageFPS, avgFPS, low1PercentFPS);
+
 		ClearScreen();
 		//Update and Draw your game here
 	
@@ -281,6 +322,7 @@ void Game::ProcessInput(Camera& cam, Renderer& renderer, float deltaTime, float 
 	const Input& input = GetInput();
 	const IMouse& mouse = input.GetMouse();
 	const IKeyboard& keyboard = input.GetKeyboard();
+
 	float moveSpeed = speed;
 	float lookSpeed = 0.008;
 

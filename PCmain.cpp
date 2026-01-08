@@ -32,7 +32,7 @@ Game* game;
 int main()
 {
 	WinGraphics = new WindowsGraphics();
-	glfwSwapInterval(1); // stop the windows build updating without vblank so its the same speed as pi
+	glfwSwapInterval(0); // stop the windows build updating without vblank so its the same speed as pi
 
 	input = new Input(new WindowsKeyboard(WinGraphics->Window()), new WindowsMouse(WinGraphics->Window()));
 

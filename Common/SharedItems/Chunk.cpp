@@ -1,6 +1,6 @@
 #include "Chunk.h"
 #include <BlockRegistery.h>
-#include <noise/FastNoiseLite.h>
+#include <../noise/FastNoiseLite.h>
 #include "ChunkLoader.h"
 #include "FileData.h"
 

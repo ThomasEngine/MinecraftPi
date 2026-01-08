@@ -1,15 +1,16 @@
 //Set up the Raspberry/Linux systems
-#include "Input.h"
+#include "../Input.h"
 
 #include <iostream>
 #include <GLES3/gl3.h>
 #include <GLES2/gl2ext.h>
-#include "XWindow.h"
-#include "RaspKeyboard.h"
-#include "RaspMouse.h"
-#include "RaspGraphics.h"
-#include "IInput.h"
+#include "../Raspberry/RaspKeyboard.h"
+#include "../Raspberry/RaspMouse.h"
+#include "../Raspberry/RaspGraphics.h"
+#include "../Raspberry/XWindow.h"
+#include "../IInput.h"
 #include "Game.h"
+
 
 float lastTime{};
 float deltaTime{ 0.2f };

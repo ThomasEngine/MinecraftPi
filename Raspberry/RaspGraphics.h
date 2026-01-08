@@ -1,5 +1,5 @@
 #pragma once
-#include "IGraphics.h"
+#include "../IGraphics.h"
 
 class XWindow;
 struct EGLState;

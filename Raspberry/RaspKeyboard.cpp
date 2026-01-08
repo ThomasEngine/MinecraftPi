@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <linux/input.h>
-#include "IInput.h"
+#include "../IInput.h"
 RaspKeyboard::RaspKeyboard() : keyDown{new bool[256] {false}}
 {
 	FindKeyboardLocation();

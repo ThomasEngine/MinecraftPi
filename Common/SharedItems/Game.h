@@ -34,9 +34,15 @@ class MobFactory;
 class UIManager;
 enum class Key;
 
+#ifdef WINDOWS_BUILD
 constexpr unsigned int WINDOW_WIDTH = 854;
 constexpr unsigned int WINDOW_HEIGHT = 480;
 constexpr float ASPECT_RATIO = WINDOW_WIDTH / WINDOW_HEIGHT;
+#else
+constexpr unsigned int WINDOW_WIDTH = 1920;
+constexpr unsigned int WINDOW_HEIGHT = 1080;
+constexpr float ASPECT_RATIO = WINDOW_WIDTH / WINDOW_HEIGHT;
+#endif
 
 class Game
 {

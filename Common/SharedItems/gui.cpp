@@ -5,8 +5,8 @@
 #include "World.h"
 #include "Camera.h"
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_opengl3.h>
+#include <../imgui/imgui.h>
+#include <../imgui/imgui_impl_opengl3.h>
 #ifdef WINDOWS_BUILD
 #include <imgui/imgui_impl_glfw.h>
 #endif
@@ -101,6 +101,9 @@ void Gui::Window(float& FPS, float& moveSpeed, float& dayTime, uint8_t& block)
 
 	ImGui::SliderFloat("Move Speed", &moveSpeed, 6.f, 42.f);
 	ImGui::SliderFloat("Time", &dayTime, 0.f, 11.9f);
+
+	ImGui::Text("--Reset Position");
+	if (ImGui::Button("Reset pos")) player->SetPosition(glm::vec3(0, 120, 0));
 
 	ImGui::Text("--Block to place--");
 	const char* listBlocks[] = {

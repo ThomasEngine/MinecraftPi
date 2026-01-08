@@ -67,6 +67,9 @@
     <Filter Include="Crafting">
       <UniqueIdentifier>{1a04057b-fe2c-4bb2-965f-1b99d689207b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{17b02923-12a3-4b24-90a5-92c58b4c4294}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\IInput.h">
@@ -283,23 +286,20 @@
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03.mtl">
       <Filter>Assets</Filter>
     </None>
-    <None Include="$(MSBuildThisFileDirectory)Assets\Basic.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\basicpi.shader" />
-    <None Include="$(MSBuildThisFileDirectory)Assets\OnBlock.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\crosshair.shader" />
-    <None Include="$(MSBuildThisFileDirectory)ui.shader" />
-    <None Include="$(MSBuildThisFileDirectory)Assets\gui.shader" />
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_02.obj">
-      <Filter>Assets</Filter>
-    </Object>
-    <Object Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03.obj">
-      <Filter>Assets</Filter>
-    </Object>
-    <Object Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.obj">
-      <Filter>Assets</Filter>
-    </Object>
+    <None Include="$(MSBuildThisFileDirectory)Assets\gui.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Assets\OnBlock.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ui.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Assets\Basic.shader">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_01.png">

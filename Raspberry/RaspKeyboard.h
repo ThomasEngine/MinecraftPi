@@ -1,5 +1,5 @@
 #pragma once
-#include <IInput.h>
+#include <../IInput.h>
 #include <string>
 
 class RaspKeyboard : public IKeyboard

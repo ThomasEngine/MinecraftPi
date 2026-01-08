@@ -1,6 +1,6 @@
 #include "UITypes.h"
-#include "Input.h"
-#include "IInput.h"
+#include "../Input.h"
+#include "../IInput.h"
 #include "Renderer2D.h"
 
 namespace {

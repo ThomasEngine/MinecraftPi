@@ -65,12 +65,16 @@
     <OutDir>$(ProjectDir)bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <IncludePath>Common</IncludePath>
-    <LibraryPath>PCContent\lib;PCContent\lib\x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>
+    </IncludePath>
+    <LibraryPath>
+    </LibraryPath>
+    <OutDir>$(ProjectDir)bin\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
-      <LibraryDependencies>wiringPi</LibraryDependencies>
+      <LibraryDependencies>
+      </LibraryDependencies>
     </Link>
     <RemotePostBuildEvent>
       <Command>gpio export 17 out</Command>

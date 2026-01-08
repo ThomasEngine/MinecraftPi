@@ -1,8 +1,8 @@
 #include "InputManager.h"
 #include "Player.h"
 #include "ICommand.h"
-#include "Input.h"
-#include "IInput.h"
+#include "../Input.h"
+#include "../IInput.h"
 // heldfsfjfsffds
 InputManager::InputManager(const Input* input)
     : m_Input(input) {
