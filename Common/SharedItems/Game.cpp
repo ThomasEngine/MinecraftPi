@@ -169,7 +169,7 @@ void Game::Start()
 		windowW = graphics->GetWindowWidth();
 		windowH = graphics->GetWindowHeight();
 		// sleep to save CPU
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		//std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
 		auto time = std::chrono::system_clock::now();
 		std::chrono::duration<float> delta = time - lastTime;
