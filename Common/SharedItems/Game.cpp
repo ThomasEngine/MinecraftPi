@@ -39,6 +39,10 @@
 #include "CollisionSystem.h"
 #include "MobFactory.h"
 
+#ifdef WINDOWS_BUILD
+std::string startPath = "";
+#else std::string startPath = "../"
+#endif;
 
 Game::Game(const Input* const input, IGraphics* graphics) :
 	input(input),
