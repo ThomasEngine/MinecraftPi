@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include <memory>
 #include <queue>
+#include <cstdint>
 
 
 extern const FaceVertex faceVertices[6][4];
@@ -20,6 +21,12 @@ struct AONeighbors {
     bool side1;
     bool side2;
     bool corner;
+};
+
+enum Light
+{
+    Sunlight,
+    Blocklight
 };
 
 constexpr int CHUNKSIZE = CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z;
@@ -54,12 +61,19 @@ public:
     void DrawSolid(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const;
     void DrawTransparent(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const;
 
+    inline uint8_t GetSunlight(unsigned int idx);
+    inline uint8_t GetSunlight(int x, int y, int z);
+    inline void SetSunlight(unsigned int idx, uint8_t val);
+
+    inline uint8_t GetBlockLight(unsigned int idx);
+    inline uint8_t GetBlockLight(int x, int y, int z);
+    inline void SetBlockLight(unsigned int idx, uint8_t val);
 
     uint8_t GetLightLevel(int x, int y, int z);
     uint8_t GetLightLevel(unsigned int index);
 
 
-    void SetLightLevel(int x, int y, int z, uint8_t lightLevel);
+    void SetLightLevel(int x, int y, int z, uint8_t lightLevel, Light type = Light::Sunlight);
     void SetLightLevel(int index, uint8_t lightLevel);
 
 	void ApplySunlight(ChunkLoader& owner);

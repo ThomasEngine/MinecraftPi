@@ -732,6 +732,44 @@ void Chunk::DrawTransparent(Renderer& renderer, const glm::mat4& viewProj, const
     if (hasTransparentBlocks) renderer.drawBatchMesh(*transparentMesh);
 }
 
+inline uint8_t Chunk::GetSunlight(unsigned int idx)
+{
+    // Get bits XXXX0000
+    return (blocks[idx].lightLevel >> 4) & 0xF;
+}
+
+inline uint8_t Chunk::GetSunlight(int x, int y, int z)
+{
+    // Get bits XXXX0000
+    return (blocks[GetBlockIndex(x, y, z)].lightLevel >> 4) & 0xF;
+}
+
+inline void Chunk::SetSunlight(unsigned int idx, uint8_t val)
+{
+    // Set bitx XXXX000
+    blocks[idx].lightLevel = (blocks[idx].lightLevel & 0xF) | (val << 4);
+}
+
+inline uint8_t Chunk::GetBlockLight(unsigned int idx)
+{
+    // Get bitx 0000XXXX
+    return (blocks[idx].lightLevel) & 0xF;
+}
+
+inline uint8_t Chunk::GetBlockLight(int x, int y, int z)
+{
+    // Get bits 0000XXXX
+    return blocks[GetBlockIndex(x, y, z)].lightLevel & 0xF;
+}
+
+inline void Chunk::SetBlockLight(unsigned int idx, uint8_t val)
+{
+    // Set bitx 0000XXXX
+    (blocks[idx].lightLevel & 0xF0) | val;
+}
+
+
+
 uint8_t Chunk::GetLightLevel(int x, int y, int z)
 {
     int blockIndex = GetBlockIndex(x, y, z);
@@ -744,13 +782,23 @@ uint8_t Chunk::GetLightLevel(unsigned int index)
     return blocks[index].lightLevel;
 }
 
-void Chunk::SetLightLevel(int x, int y, int z, uint8_t newLight)
+void Chunk::SetLightLevel(int x, int y, int z, uint8_t newLight, Light type)
 {
-    if (newLight > 15) {
-		blocks[GetBlockIndex(x, y, z)].lightLevel = 15;
-		return;
+    switch (type)
+    {
+        case Light::Blocklight:
+            return;
+        case Light::Sunlight:
+            if (newLight > 15) {
+                blocks[GetBlockIndex(x, y, z)].lightLevel = 15;
+                SetSunlight(GetBlockIndex(x, y, z), 15);
+                return;
+            }
+            SetSunlight(GetBlockIndex(x, y, z), newLight);
+            return;
+        default:
+            return;
     }
-    blocks[GetBlockIndex(x, y, z)].lightLevel = newLight;
 }
 
 void Chunk::SetLightLevel(int index, uint8_t newLight)
