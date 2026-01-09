@@ -38,10 +38,12 @@ enum class Key;
 constexpr unsigned int WINDOW_WIDTH = 854;
 constexpr unsigned int WINDOW_HEIGHT = 480;
 constexpr float ASPECT_RATIO = WINDOW_WIDTH / WINDOW_HEIGHT;
+std::string startPath("");
 #else
 constexpr unsigned int WINDOW_WIDTH = 1920;
 constexpr unsigned int WINDOW_HEIGHT = 1080;
 constexpr float ASPECT_RATIO = WINDOW_WIDTH / WINDOW_HEIGHT;
+std::string startPath("../");
 #endif
 
 class Game

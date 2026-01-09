@@ -1,6 +1,7 @@
 #include "MobFactory.h"
 #include "Mobs.h"
 #include "Texture.h"
+#include "Game.h"
 
 extern const FaceVertex faceVertices[6][4];
 
@@ -30,7 +31,7 @@ namespace {
 	void LoadPigModel(Renderer& ren, SharedModelData& sheepModel) {
 		
 		// Load textures
-		Texture* texture = new Texture("Common/SharedItems/Assets/Mobs/temperate_pig.png");
+		Texture* texture = new Texture(startPath + "Common/SharedItems/Assets/Mobs/temperate_pig.png");
 		sheepModel.texture = texture;
 
 		// Mins and maxes

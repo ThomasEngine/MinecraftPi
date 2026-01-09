@@ -4,11 +4,12 @@
 #include "Shader.h"
 #include <Texture.h>
 #include <glm/ext/matrix_clip_space.hpp>
+#include "Game.h"
 
 Crosshair::Crosshair(Renderer& ren)
    : m_WindowWidth(0), m_WindowHeight(0)
 {
-   m_Shader = std::make_unique<Shader>("Common/SharedItems/Assets/crosshair.shader");
+   m_Shader = std::make_unique<Shader>(startPath + "Common/SharedItems/Assets/crosshair.shader");
 
    std::vector<FaceVertex> vertices = {
        // Vertical line

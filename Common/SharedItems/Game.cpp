@@ -75,21 +75,11 @@ void Game::Start()
 		std::cerr << "Renderer init failed\n";
 	}
 
-#ifdef WINDOWS_BUILD
-	Shader shader("Common/SharedItems/Assets/Basic.shader");
-	Texture* testTex = new Texture("Common/SharedItems/Assets/minecraftAtlas.png");
-	Shader otherShader("Common/SharedItems/Assets/OnBlock.shader");
-	Shader uiShader("Common/SharedItems/ui.shader");
-	Texture* uiTex = new Texture("Common/SharedItems/Assets/basicWidget.png");
-	Shader guiShader("Common/SharedItems/Assets/gui.shader");
-#else
-	Shader shader("../Common/SharedItems/Assets/Basic.shader");
-	Shader otherShader("../Common/SharedItems/Assets/OnBlock.shader");
-	Texture* testTex = new Texture("../Common/SharedItems/Assets/minecraftAtlas.png");
-	Shader uiShader("../Common/SharedItems/Assets/ui.shader");
-	Texture* uiTex = new Texture("../Common/SharedItems/Assets/basicWidget.png");
-	Shader guiShader("../Common/SharedItems/Assets/gui.shader");
-#endif
+	Shader shader(startPath + "Common/SharedItems/Assets/Basic.shader");
+	Texture* testTex = new Texture(startPath + "Common/SharedItems/Assets/minecraftAtlas.png");
+	Shader otherShader(startPath + "Common/SharedItems/Assets/OnBlock.shader");
+	Shader uiShader(startPath + "Common/SharedItems/ui.shader");
+	Texture* uiTex = new Texture(startPath + "Common/SharedItems/Assets/basicWidget.png");
 
 	//Shader shader("Common/SharedItems/Assets/Basic.shader");
 	GLuint program = shader.GetID();
@@ -169,7 +159,7 @@ void Game::Start()
 		windowW = graphics->GetWindowWidth();
 		windowH = graphics->GetWindowHeight();
 		// sleep to save CPU
-		//std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
 		auto time = std::chrono::system_clock::now();
 		std::chrono::duration<float> delta = time - lastTime;
