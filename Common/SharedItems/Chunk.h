@@ -14,7 +14,7 @@ extern const int faceDirs[6][3];
 
 // Chunk dimensions
 constexpr int CHUNK_SIZE_X = 16;
-constexpr int CHUNK_SIZE_Y = 128 * 2;
+constexpr int CHUNK_SIZE_Y = 180;
 constexpr int CHUNK_SIZE_Z = 16;
 
 struct AONeighbors {
@@ -41,6 +41,7 @@ public:
     glm::ivec3 chunkPos; // chunk grid position
     std::vector<Voxel> blocks;
     std::queue<unsigned int> sunlightBfsQueue;
+    std::queue<short int> blocklightBfsQueue;
     std::unique_ptr<Mesh> mesh;
 	std::unique_ptr<Mesh> transparentMesh;
     bool hasTransparentBlocks = false;
@@ -69,12 +70,16 @@ public:
     inline uint8_t GetBlockLight(int x, int y, int z);
     inline void SetBlockLight(unsigned int idx, uint8_t val);
 
-    uint8_t GetLightLevel(int x, int y, int z);
-    uint8_t GetLightLevel(unsigned int index);
-
+    uint8_t GetLightLevel(int x, int y, int z, Light type = Light::Sunlight);
+    uint8_t GetLightLevel(unsigned int index, Light type = Light::Sunlight);
+    
+    void PlaceBlockLight(short idx);
+    void PlaceBlockLight(int x, int y, int z);
 
     void SetLightLevel(int x, int y, int z, uint8_t lightLevel, Light type = Light::Sunlight);
-    void SetLightLevel(int index, uint8_t lightLevel);
+    void SetLightLevel(int index, uint8_t lightLevel, Light type = Light::Sunlight);
+
+    void ApplyBlocklight(ChunkLoader& owner);
 
 	void ApplySunlight(ChunkLoader& owner);
 	void PropagateLight(ChunkLoader& owner);

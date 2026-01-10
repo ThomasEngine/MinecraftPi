@@ -85,16 +85,12 @@ void Game::Start()
 	Shader uiShader(startPath + "Common/SharedItems/ui.shader");
 	Texture* uiTex = new Texture(startPath + "Common/SharedItems/Assets/basicWidget.png");
 
-	//Shader shader("Common/SharedItems/Assets/Basic.shader");
 	GLuint program = shader.GetID();
-	//GLuint program = renderer.createProgramFromSource(vs_src, fs_src);
 
 	if (!program) {
 		std::cerr << "Failed to create shader program\n";
 		renderer.shutdown();
 	}
-	//Texture* testTex = new Texture("Common/SharedItems/Assets/MinecraftTex.png");
-	//Texture testTex("Common/SharedItems/Assets/dirtblock.png");
 	InitializeBlockTypes();
 	InitializeItemTypes();
 	InitializeCraftingRecipes();
@@ -148,7 +144,6 @@ void Game::Start()
 	// Setup 2D renderer
 	Renderer2D uiRenderer;
 	uiRenderer.init(testTex, &uiShader);
-	//uiRenderer.init(testTex, &uiShader);
 	// Create ui manager
 
 	windowW = graphics->GetWindowWidth();
