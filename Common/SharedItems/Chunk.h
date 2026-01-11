@@ -42,6 +42,7 @@ public:
     std::vector<Voxel> blocks;
     std::queue<unsigned int> sunlightBfsQueue;
     std::queue<short int> blocklightBfsQueue;
+	std::queue<short int> removeBlocklightQueue;
     std::unique_ptr<Mesh> mesh;
 	std::unique_ptr<Mesh> transparentMesh;
     bool hasTransparentBlocks = false;
@@ -79,9 +80,14 @@ public:
     void SetLightLevel(int x, int y, int z, uint8_t lightLevel, Light type = Light::Sunlight);
     void SetLightLevel(int index, uint8_t lightLevel, Light type = Light::Sunlight);
 
+	uint8_t GetMaxLight(int x, int y, int z);
+    uint8_t GetMaxLight(unsigned int index);
+
     void ApplyBlocklight(ChunkLoader& owner);
+	void RemoveBlocklight(ChunkLoader& owner);
 
 	void ApplySunlight(ChunkLoader& owner);
+	void RemoveSunlight(ChunkLoader& owner);
 	void PropagateLight(ChunkLoader& owner);
 	void ReapplyBorderLight(ChunkLoader& owner);
 

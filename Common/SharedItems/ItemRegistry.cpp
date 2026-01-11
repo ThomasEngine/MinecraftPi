@@ -40,9 +40,9 @@ void InitializeItemTypes()
 	//g_ItemTypes[I_DIORITE_BLOCK] = {
 	//	"Diorite", 15, ItemCategory::Block, B_DIORITE
 	//};
-	//g_ItemTypes[I_GLOWSTONE_BLOCK] = {
-	//	"Glowstone", 105, ItemCategory::Block, B_GLOWSTONE
-	//};
+	g_ItemTypes[I_GLOWSTONE_BLOCK] = {
+		"Glowstone",{9, 6} , ItemCategory::Block, B_GLOWSTONE
+	};
 
 	// Non-block items
 	g_ItemTypes[I_STICK] = {

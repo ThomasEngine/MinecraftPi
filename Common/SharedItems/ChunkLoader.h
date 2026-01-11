@@ -29,7 +29,7 @@ struct ChunkLoadTask {
 	std::shared_ptr<Chunk> chunk;
 	bool pendingMesh = false;
 	bool pendingSunlight = false;
-	bool pendingSunlightFill = true;
+	bool pendingLightFill = true;
 	bool renderReady = false;
 	bool reloaded = false;
 };
