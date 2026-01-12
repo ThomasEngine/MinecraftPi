@@ -30,22 +30,11 @@ void UIManager::Update(float deltaTime, const Input& input)
 
 	DraggedItem& draggedItem = m_InventoryScreen->draggedItem;
 	if (!draggedItem.active) return;
-	if (draggedItem.isDragging)
-	{
-		glm::vec2 mousePos = input.GetMouse().GetPosition();
-		draggedItem.mousePos = mousePos;
-		draggedItem.itemBounds.x = static_cast<int>(mousePos.x + draggedItem.offset.x);
-		draggedItem.itemBounds.y = static_cast<int>(mousePos.y + draggedItem.offset.y);
-
-	}
-	else
+	if (!draggedItem.isDragging)
 	{
 		// Drop the item
-		m_InventoryScreen->handleItemDrop();
+		//m_InventoryScreen->handleItemDrop();
 		m_InventoryScreen->checkCraftingOutput();
-		draggedItem.isDragging = false;
-		draggedItem.active = false;
-		draggedItem.stack.clear();
 	}
 }
 

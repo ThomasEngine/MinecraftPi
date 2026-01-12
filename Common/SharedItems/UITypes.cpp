@@ -29,6 +29,7 @@ namespace {
 		case SlotTypes::HelmetHolder:
 			return {7,1};
 			break;
+			break;
 		case SlotTypes::ChestplateHolder:
 			return {8,1};
 			break;
@@ -46,6 +47,10 @@ namespace {
 			break;
 		}
 	}
+
+	static const float waitForSecondClick = 10.f;
+	static float timer = 0.0f;
+
 	bool isSlotBackground(SlotTypes type)
 	{
 		return type == SlotTypes::BackgroundTop || type == SlotTypes::BackgroundMiddle || type == SlotTypes::BackgroundBottom;
@@ -82,16 +87,19 @@ void UISlot::Update(const Input* input, float deltaTime)
 {
 	const IMouse& mouse = input->GetMouse();
 	hovered = bounds.contains(mouse.GetPosition());
+
+	timer += deltaTime;
+
 	if (!hovered || !container) return;
 
 	if (hovered && mouse.GetButtonDown(MouseButtons::LEFT)) {
-		clicked(MouseButtons::LEFT, *input);
+		clicked(MouseButtons::LEFT, *input, deltaTime);
 	}
 	else if (hovered && mouse.GetButtonDown(MouseButtons::RIGHT)) {
-		clicked(MouseButtons::RIGHT, *input);
+		clicked(MouseButtons::RIGHT, *input, deltaTime);
 	}
 	else if (hovered && mouse.GetButtonDown(MouseButtons::MIDDLE)) {
-		clicked(MouseButtons::MIDDLE, *input);
+		clicked(MouseButtons::MIDDLE, *input, deltaTime);
 	}
 }
 
@@ -121,30 +129,49 @@ void UISlot::Render(Renderer2D& ren) const
 	}
 }
 
-void UISlot::clicked(MouseButtons button, const Input& input)
+void UISlot::clicked(MouseButtons button, const Input& input, float deltaTime)
 {
-	// Drag and hold
+	printf("Timer time: %.2f\n", timer);
+	if (timer < waitForSecondClick) {
+		return;
+	}
+	timer = 0.0f;
+
+	printf("CLICK\n");
+
 	if (!container) return;
-	if (container->getSlot(slotIndex).isEmpty() 
-		&& !draggedItem.isDragging) return; // No item to drag
-
-	// Start dragging
-	draggedItem.active = true;
-	if (draggedItem.isDragging) {
-		draggedItem.isDragging = false;
-		printf("Place\n");
-	}
-
-	else {
-		draggedItem.isDragging = true;
-		printf("Take\n");
-	}
 
 	ItemStack& slotStack = container->getSlot(slotIndex);
-	draggedItem.stack = slotStack;
-	draggedItem.itemBounds = Rect{ bounds.x + 4, bounds.y + 4, bounds.w - 8, bounds.h - 8 };
-	slotStack.clear();
+
+	// If currently dragging, try to place
+	if (draggedItem.isDragging) {
+		// Only place if slot is empty
+		if (slotStack.isEmpty()) {
+			slotStack = draggedItem.stack;
+			draggedItem.stack.clear();
+			draggedItem.isDragging = false;
+			draggedItem.active = false;
+			printf("Place\n");
+		}
+		else
+		{
+			// Swap items keep dragging but with new item
+			std::swap(slotStack, draggedItem.stack);
+			printf("Swap\n");
+		}
+		draggedItem.onItemDrop(); // Call drop callback
+	}
+	// If not dragging, try to pick up
+	else if (!slotStack.isEmpty()) {
+		draggedItem.stack = slotStack;
+		draggedItem.itemBounds = Rect{ bounds.x + 4, bounds.y + 4, bounds.w - 8, bounds.h - 8 };
+		slotStack.clear();
+		draggedItem.isDragging = true;
+		draggedItem.active = true;
+		printf("Take\n");
+	}
 }
+
 
 void Container::AddItem(ItemTypeId itemID, int quantity, int slotIndex)
 {

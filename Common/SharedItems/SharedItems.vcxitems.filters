@@ -64,11 +64,11 @@
     <Filter Include="World\Items">
       <UniqueIdentifier>{3754a0cd-9ceb-42b2-96ef-8d5e19cbf20d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Crafting">
-      <UniqueIdentifier>{1a04057b-fe2c-4bb2-965f-1b99d689207b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{17b02923-12a3-4b24-90a5-92c58b4c4294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Crafting">
+      <UniqueIdentifier>{1a04057b-fe2c-4bb2-965f-1b99d689207b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -85,7 +85,6 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Game.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)stb_image.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Player.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Camera.h">
       <Filter>Camera</Filter>
@@ -132,14 +131,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Pig.h">
       <Filter>Mobs\Mobs</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)MobLoader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gui.h">
       <Filter>ui\ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)BaseUI.h">
       <Filter>ui\GameGUI\Base</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Renderer2D.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UITypes.h">
       <Filter>ui\GameGUI\Base</Filter>
     </ClInclude>
@@ -168,19 +165,30 @@
       <Filter>World\Items</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)CraftingRegistry.h">
-      <Filter>Crafting</Filter>
+      <Filter>World\Crafting</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)CraftingType.h">
-      <Filter>Crafting</Filter>
+      <Filter>World\Crafting</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Crafting.h">
-      <Filter>Crafting</Filter>
+      <Filter>World\Crafting</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)FileData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ChunkLoader.h">
       <Filter>World\Chunks</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)InputManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MobLoader.h">
+      <Filter>Mobs</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Renderer2D.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)InputManager.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)stb_image.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Input.cpp">
@@ -233,7 +241,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Mesh.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)MobLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)gui.cpp">
       <Filter>ui\ImGUI</Filter>
     </ClCompile>
@@ -267,13 +274,18 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)ItemRegistry.cpp">
       <Filter>World\Items</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)CraftingRegistry.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Crafting.cpp">
-      <Filter>Crafting</Filter>
+      <Filter>World\Crafting</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)FileData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)InputManager.cpp">
       <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MobLoader.cpp">
+      <Filter>Mobs</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)CraftingRegistry.cpp">
+      <Filter>World\Crafting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -286,8 +298,6 @@
     <None Include="$(MSBuildThisFileDirectory)..\Assets\Models\brian_03.mtl">
       <Filter>Assets</Filter>
     </None>
-    <None Include="$(MSBuildThisFileDirectory)Assets\basicpi.shader" />
-    <None Include="$(MSBuildThisFileDirectory)Assets\crosshair.shader" />
     <None Include="$(MSBuildThisFileDirectory)Assets\gui.shader">
       <Filter>Shaders</Filter>
     </None>
@@ -299,6 +309,12 @@
     </None>
     <None Include="$(MSBuildThisFileDirectory)Assets\Basic.shader">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Assets\basicpi.shader">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Assets\crosshair.shader">
+      <Filter>Assets</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -323,10 +339,20 @@
     <Image Include="$(MSBuildThisFileDirectory)..\Assets\Textures\Harvey2.jpg">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="$(MSBuildThisFileDirectory)Assets\MinecraftTex.png" />
-    <Image Include="$(MSBuildThisFileDirectory)Assets\GUI-Atlas.png" />
-    <Image Include="$(MSBuildThisFileDirectory)Assets\basicWidget.png" />
-    <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas1.png" />
-    <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas.png" />
+    <Image Include="$(MSBuildThisFileDirectory)Assets\MinecraftTex.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Assets\GUI-Atlas.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Assets\minecraftAtlas1.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Assets\basicWidget.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
 </Project>

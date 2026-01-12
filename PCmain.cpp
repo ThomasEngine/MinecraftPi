@@ -22,7 +22,6 @@ extern "C"
 }
 #endif
 
-
 //
 WindowsGraphics* WinGraphics;
 Input* input;

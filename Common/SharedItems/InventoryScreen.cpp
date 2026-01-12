@@ -1,5 +1,7 @@
 #include "InventoryScreen.h"
 #include "Crafting.h"
+#include "IInput.h"
+#include "Input.h"
 
 InventoryScreen::InventoryScreen(Container* inv)
 	: playerInventory(inv)
@@ -7,10 +9,30 @@ InventoryScreen::InventoryScreen(Container* inv)
 	craftingContainer = new Container();
 	craftingContainer->setSize(5); // 2x2 crafting grid + 1 output
 	craftingContainer->clear();
+
+	draggedItem.onItemDrop = [this]() {
+		this->checkCraftingOutput();
+	};
+
 }
 
 InventoryScreen::~InventoryScreen()
 {
+}
+
+void InventoryScreen::Update(const Input* input, float deltaTime)
+{
+	// Update all widgets
+	UIScreen::Update(input, deltaTime);
+
+	// if dragging update dragged item position
+	if (draggedItem.isDragging)
+	{
+		const IMouse& mouse = input->GetMouse();
+		draggedItem.mousePos = glm::vec2(mouse.GetPosition().x, mouse.GetPosition().y);
+		draggedItem.itemBounds.x = int(draggedItem.mousePos.x - draggedItem.offset.x);
+		draggedItem.itemBounds.y = int(draggedItem.mousePos.y - draggedItem.offset.y);
+	}
 }
 
 void InventoryScreen::handleItemDrop(int amount)
@@ -24,7 +46,6 @@ void InventoryScreen::handleItemDrop(int amount)
 			{
 				Container* container = slot->container;
 				DraggedItem& draggedItem = slot->draggedItem;
-				if (draggedItem.isDragging)
 				{
 					// Place item in this slot
 					printf("Placing item in slot %d\n", slot->slotIndex);
@@ -42,7 +63,13 @@ void InventoryScreen::handleItemDrop(int amount)
 						}
 						else if (amount == -1 || amount >= draggedItem.stack.quantity)
 						{
-							std::swap(targetStack, draggedItem.stack);
+							printf("Taking all\n");
+							ItemStack& draggedStack = draggedItem.stack;
+							printf("Dragged stack has itemID %d quantity %d\n", draggedStack.itemID, draggedStack.quantity);
+							std::swap(targetStack, draggedStack);
+							printf("Target stack now has itemID %d quantity %d\n", targetStack.itemID, targetStack.quantity);
+							printf("At position: %d, %d\n", slot->bounds.x, slot->bounds.y);
+							printf("Slot index: %d\n", slot->slotIndex);
 							return;
 						}
 					}

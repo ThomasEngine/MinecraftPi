@@ -2,6 +2,7 @@
 #include "BaseUI.h"
 #include <string>
 #include "ItemRegistry.h"
+#include <functional>
 
 class UIButton : public UIWidget {
 public:
@@ -14,9 +15,6 @@ public:
 	void Render(Renderer2D& ren) const override;
 	void OnClick();
 };
-
-// class UILabel : public UIWidget {
-
 
 // Slots
 struct ItemStack {
@@ -34,6 +32,9 @@ struct DraggedItem {
 	bool active;
 	glm::vec2 mousePos;
 	glm::vec2 offset;
+
+	// Callback function when item is dropped function from InventoryScreen
+	std::function<void()> onItemDrop;
 };
 
 class Container {
@@ -89,5 +90,5 @@ public:
 	void Render(Renderer2D& ren) const override;
 
 private:
-	void clicked(MouseButtons button, const Input& input);
+	void clicked(MouseButtons button, const Input& input, float deltaTime);
 };

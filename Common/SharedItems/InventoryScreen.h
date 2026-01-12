@@ -12,6 +12,8 @@ public:
 	InventoryScreen(Container* inv);
 	~InventoryScreen() override;
 
+	void Update(const Input* input, float deltaTime) override;
+
 	void handleItemDrop(int amount = -1);
 	void checkCraftingOutput();
 	

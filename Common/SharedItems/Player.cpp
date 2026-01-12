@@ -11,7 +11,6 @@
 Player::Player(Camera* m_Camera)
 	: m_MovementSpeed(1.0f), m_CS(nullptr), m_Camera(m_Camera)
 {
-	SetPosition(glm::vec3(0.0f, 120.0f, 0.0f));
 	m_Inventory = new Container();
 	m_Inventory->AddItem(I_GRASS_BLOCK, 1, 0);
 	m_Inventory->AddItem(I_DIRT_BLOCK, 1, 1);
@@ -19,6 +18,7 @@ Player::Player(Camera* m_Camera)
 	m_Inventory->AddItem(I_WOODEN_PICKAXE, 1, 3);
 	m_Inventory->AddItem(I_OAK_LOG_BLOCK, 1, 4);
 	m_Inventory->AddItem(I_CRAFTING_TABLE, 1, 9);
+	m_Inventory->AddItem(I_GLOWSTONE_BLOCK, 1, 5);
 }
 
 Player::~Player()
@@ -210,7 +210,7 @@ void Player::UpdateMoveY(float deltaTime)
 			// Apply buoyancy proportional to depth
 			m_Vel.y += buoyancyStrength * (depth / 5 + surfaceSlack) * deltaTime;
 			// Damping for bounce
-			m_Vel.y *= damping;
+			m_Vel.y *= dampingt ;
 		}
 		else {
 			// If above surface, let gravity pull down

@@ -85,16 +85,12 @@ void Game::Start()
 	Shader uiShader(startPath + "Common/SharedItems/ui.shader");
 	Texture* uiTex = new Texture(startPath + "Common/SharedItems/Assets/basicWidget.png");
 
-	//Shader shader("Common/SharedItems/Assets/Basic.shader");
 	GLuint program = shader.GetID();
-	//GLuint program = renderer.createProgramFromSource(vs_src, fs_src);
 
 	if (!program) {
 		std::cerr << "Failed to create shader program\n";
 		renderer.shutdown();
 	}
-	//Texture* testTex = new Texture("Common/SharedItems/Assets/MinecraftTex.png");
-	//Texture testTex("Common/SharedItems/Assets/dirtblock.png");
 	InitializeBlockTypes();
 	InitializeItemTypes();
 	InitializeCraftingRecipes();
@@ -148,7 +144,6 @@ void Game::Start()
 	// Setup 2D renderer
 	Renderer2D uiRenderer;
 	uiRenderer.init(testTex, &uiShader);
-	//uiRenderer.init(testTex, &uiShader);
 	// Create ui manager
 
 	windowW = graphics->GetWindowWidth();
@@ -163,7 +158,7 @@ void Game::Start()
 		windowW = graphics->GetWindowWidth();
 		windowH = graphics->GetWindowHeight();
 		// sleep to save CPU
-		//std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
 		auto time = std::chrono::system_clock::now();
 		std::chrono::duration<float> delta = time - lastTime;
@@ -181,38 +176,37 @@ void Game::Start()
 			frameCount = 0;
 		}
 		
-		frameTimes.push_back(gameDeltaTime);
+		//frameTimes.push_back(gameDeltaTime);
 
-		const size_t maxHistory = 200;
-		if (frameTimes.size() > maxHistory)
-			frameTimes.erase(frameTimes.begin(), frameTimes.end() - maxHistory);
+		//const size_t maxHistory = 200;
+		//if (frameTimes.size() > maxHistory)
+		//	frameTimes.erase(frameTimes.begin(), frameTimes.end() - maxHistory);
 
 
-		float avgFPS = 0.0f;
-		if (!frameTimes.empty()) {
-			float sum = 0.0f;
-			for (float dt : frameTimes) sum += dt;
-			avgFPS = frameTimes.size() / sum;
-		}
-		
-        // Calculate 1% low FPS (average FPS of the slowest 1% of frames)
-        float low1PercentFPS = 0.0f;
-        if (!frameTimes.empty()) {
-            std::vector<float> sortedTimes = frameTimes;
-            std::sort(sortedTimes.begin(), sortedTimes.end(), std::greater<float>()); // slowest first
-            size_t count = sortedTimes.size();
-            //size_t numLowFrames = std::max<size_t>(1, static_cast<size_t>(count * 0.5f));
-			size_t numLowFrames = static_cast<size_t>(count * 0.5f);
-			low1PercentFPS = 1 / sortedTimes[numLowFrames] ;/*
-            float sum = 0.0f;
-            for (size_t i = 0; i < numLowFrames; ++i) {
-                sum += sortedTimes[i];
-            }
-            float avgLowFrameTime = sum / numLowFrames;
-            low1PercentFPS = 1.0f / avgLowFrameTime;*/
-        }
+		//float avgFPS = 0.0f;
+		//if (!frameTimes.empty()) {
+		//	float sum = 0.0f;
+		//	for (float dt : frameTimes) sum += dt;
+		//	avgFPS = frameTimes.size() / sum;
+		//}
+		//
+  //      // Calculate 1% low FPS (average FPS of the slowest 1% of frames)
+  //      float low1PercentFPS = 0.0f;
+  //      if (!frameTimes.empty()) {
+  //          std::vector<float> sortedTimes = frameTimes;
+  //          std::sort(sortedTimes.begin(), sortedTimes.end(), std::greater<float>()); // slowest first
+  //          size_t count = sortedTimes.size();
+  //          size_t numLowFrames = std::max<size_t>(1, static_cast<size_t>(count * 0.01f));
+  //          float sum = 0.0f;
+  //          for (size_t i = 0; i < numLowFrames; ++i) {
+  //              sum += sortedTimes[i];
+  //          }
+  //          float avgLowFrameTime = sum / numLowFrames;
+  //          if (avgLowFrameTime > 0.0f)
+  //              low1PercentFPS = 1.0f / avgLowFrameTime;
+  //      }
 
-        printf("Current FPS: %.2f | Average FPS: %.2f | Low 5%% FPS: %.2f\r", averageFPS, avgFPS, low1PercentFPS);
+  //      printf("Current FPS: %.2f | Average FPS: %.2f | Low 1%% FPS: %.2f\r", averageFPS, avgFPS, low1PercentFPS);
 
 		ClearScreen();
 		//Update and Draw your game here
@@ -467,7 +461,10 @@ void Game::InitializeOpenGLES()
 void Game::ClearScreen()
 {
 	float timeOfDay = fmod(dayTime / 12.f, 1.f);
-	glClearColor(0.53f * timeOfDay, 0.81f * timeOfDay, 0.92f * timeOfDay, 1.f);
+	if (world->GetPlayer().GetUnderWater())
+		glClearColor(0.0f * timeOfDay, 0.2f * timeOfDay, 0.4f * timeOfDay, 1.f * timeOfDay);
+	else
+		glClearColor(0.53f * timeOfDay, 0.81f * timeOfDay, 0.92f * timeOfDay, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

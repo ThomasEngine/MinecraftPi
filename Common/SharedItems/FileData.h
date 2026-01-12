@@ -12,7 +12,7 @@ struct WorldData {
 	int seed; // World seed
 	float timeOfDay; // Time of day in hours
 	glm::ivec3 spawnPoint; // Current player spawn point
-	glm::ivec3 playerPosition; // Last known player position
+	glm::vec3 playerPosition; // Last known player position
 };
 
 class FileData

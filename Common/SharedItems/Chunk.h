@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include <memory>
 #include <queue>
+#include <cstdint>
 
 
 extern const FaceVertex faceVertices[6][4];
@@ -13,13 +14,19 @@ extern const int faceDirs[6][3];
 
 // Chunk dimensions
 constexpr int CHUNK_SIZE_X = 16;
-constexpr int CHUNK_SIZE_Y = 128 * 2;
+constexpr int CHUNK_SIZE_Y = 180;
 constexpr int CHUNK_SIZE_Z = 16;
 
 struct AONeighbors {
     bool side1;
     bool side2;
     bool corner;
+};
+
+enum Light
+{
+    Sunlight,
+    Blocklight
 };
 
 constexpr int CHUNKSIZE = CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z;
@@ -34,6 +41,9 @@ public:
     glm::ivec3 chunkPos; // chunk grid position
     std::vector<Voxel> blocks;
     std::queue<unsigned int> sunlightBfsQueue;
+    std::queue<unsigned int> removeSunlightBfsQueue;
+    std::queue<short int> blocklightBfsQueue;
+	std::queue<short int> removeBlocklightQueue;
     std::unique_ptr<Mesh> mesh;
 	std::unique_ptr<Mesh> transparentMesh;
     bool hasTransparentBlocks = false;
@@ -54,26 +64,43 @@ public:
     void DrawSolid(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const;
     void DrawTransparent(Renderer& renderer, const glm::mat4& viewProj, const Shader& shader, const Texture& texture) const;
 
+    inline uint8_t GetSunlight(unsigned int idx);
+    inline uint8_t GetSunlight(int x, int y, int z);
+    inline void SetSunlight(unsigned int idx, uint8_t val);
 
-    uint8_t GetLightLevel(int x, int y, int z);
-    uint8_t GetLightLevel(unsigned int index);
+    inline uint8_t GetBlockLight(unsigned int idx);
+    inline uint8_t GetBlockLight(int x, int y, int z);
+    inline void SetBlockLight(unsigned int idx, uint8_t val);
 
+    uint8_t GetLightLevel(int x, int y, int z, Light type = Light::Sunlight);
+    uint8_t GetLightLevel(unsigned int index, Light type = Light::Sunlight);
+    
+    void PlaceBlockLight(short idx);
+    void PlaceBlockLight(int x, int y, int z);
 
-    void SetLightLevel(int x, int y, int z, uint8_t lightLevel);
-    void SetLightLevel(int index, uint8_t lightLevel);
+    void SetLightLevel(int x, int y, int z, uint8_t lightLevel, Light type = Light::Sunlight);
+    void SetLightLevel(int index, uint8_t lightLevel, Light type = Light::Sunlight);
+
+	uint8_t GetMaxLight(int x, int y, int z);
+    uint8_t GetMaxLight(unsigned int index);
+
+    void ApplyBlocklight(ChunkLoader& owner);
+	void RemoveBlocklight(ChunkLoader& owner);
 
 	void ApplySunlight(ChunkLoader& owner);
+	void RemoveSunlight(ChunkLoader& owner);
 	void PropagateLight(ChunkLoader& owner);
 	void ReapplyBorderLight(ChunkLoader& owner);
 
 	void PlaceTrees(Renderer& ren, ChunkLoader& owner);
 
     void ExportChangedBlocks(FileData& fileHelper);
+	
+    inline int GetBlockIndex(int x, int y, int z) const;
 private:
 	std::vector<glm::ivec3> m_TreePositions;
 
 	void GenerateTerrain(ChunkLoader& owner, const std::vector<BlockData>& loadedData);
-	inline int GetBlockIndex(int x, int y, int z) const;
 
 	std::vector<BlockData> changedBlocks;
 	bool m_FinishedGeneration = false;
