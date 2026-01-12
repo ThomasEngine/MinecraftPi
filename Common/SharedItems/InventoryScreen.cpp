@@ -42,7 +42,6 @@ void InventoryScreen::handleItemDrop(int amount)
 			{
 				Container* container = slot->container;
 				DraggedItem& draggedItem = slot->draggedItem;
-				if (draggedItem.isDragging)
 				{
 					// Place item in this slot
 					printf("Placing item in slot %d\n", slot->slotIndex);
@@ -60,7 +59,13 @@ void InventoryScreen::handleItemDrop(int amount)
 						}
 						else if (amount == -1 || amount >= draggedItem.stack.quantity)
 						{
-							std::swap(targetStack, draggedItem.stack);
+							printf("Taking all\n");
+							ItemStack& draggedStack = draggedItem.stack;
+							printf("Dragged stack has itemID %d quantity %d\n", draggedStack.itemID, draggedStack.quantity);
+							std::swap(targetStack, draggedStack);
+							printf("Target stack now has itemID %d quantity %d\n", targetStack.itemID, targetStack.quantity);
+							printf("At position: %d, %d\n", slot->bounds.x, slot->bounds.y);
+							printf("Slot index: %d\n", slot->slotIndex);
 							return;
 						}
 					}

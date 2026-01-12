@@ -33,7 +33,7 @@ void UIManager::Update(float deltaTime, const Input& input)
 	if (!draggedItem.isDragging)
 	{
 		// Drop the item
-		m_InventoryScreen->handleItemDrop();
+		//m_InventoryScreen->handleItemDrop();
 		//m_InventoryScreen->checkCraftingOutput();
 		draggedItem.isDragging = false;
 		draggedItem.active = false;
