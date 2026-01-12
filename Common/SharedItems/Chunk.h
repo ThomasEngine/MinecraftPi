@@ -65,6 +65,7 @@ public:
 	void ApplySunlight(ChunkLoader& owner);
 	void PropagateLight(ChunkLoader& owner);
 	void ReapplyBorderLight(ChunkLoader& owner);
+	void SampleBorderLightFromNeighbors(ChunkLoader& owner);
 
 	void PlaceTrees(Renderer& ren, ChunkLoader& owner);
 

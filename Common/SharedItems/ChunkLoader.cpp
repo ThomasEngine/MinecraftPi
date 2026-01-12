@@ -250,6 +250,8 @@ void ChunkLoader::ProccessChunkLoadingAsync(Renderer& renderer)
             task.pendingSunlight = false;
             //task.pendingSunlightFill = true;
             task.chunk->ApplySunlight(*this);
+            task.chunk->SampleBorderLightFromNeighbors(*this);
+            task.chunk->ApplySunlight(*this);
             task.pendingSunlightFill = false;
             task.pendingMesh = true;
 			if (!*m_WorldReady )
@@ -444,7 +446,7 @@ void ChunkLoader::SetBlockLightLevel(const glm::ivec3& worldPos, uint8_t lightLe
         return;
 
 	auto chunk = it->second.chunk.get();
-    unsigned int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
+    unsigned int index = x + CHUNK_SIZE_X * (y + CHUNK_SIZE_Y * z);
     uint8_t currentLight = chunk->GetLightLevel(index);
     if (lightLevel >= currentLight) {
         chunk->SetLightLevel(index, lightLevel);
