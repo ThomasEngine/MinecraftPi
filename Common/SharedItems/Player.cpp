@@ -210,7 +210,7 @@ void Player::UpdateMoveY(float deltaTime)
 			// Apply buoyancy proportional to depth
 			m_Vel.y += buoyancyStrength * (depth / 5 + surfaceSlack) * deltaTime;
 			// Damping for bounce
-			m_Vel.y *= damping;
+			m_Vel.y *= dampingt ;
 		}
 		else {
 			// If above surface, let gravity pull down
