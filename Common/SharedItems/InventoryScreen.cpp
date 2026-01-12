@@ -9,6 +9,11 @@ InventoryScreen::InventoryScreen(Container* inv)
 	craftingContainer = new Container();
 	craftingContainer->setSize(5); // 2x2 crafting grid + 1 output
 	craftingContainer->clear();
+
+	draggedItem.onItemDrop = [this]() {
+		this->checkCraftingOutput();
+	};
+
 }
 
 InventoryScreen::~InventoryScreen()
@@ -23,7 +28,6 @@ void InventoryScreen::Update(const Input* input, float deltaTime)
 	// if dragging update dragged item position
 	if (draggedItem.isDragging)
 	{
-
 		const IMouse& mouse = input->GetMouse();
 		draggedItem.mousePos = glm::vec2(mouse.GetPosition().x, mouse.GetPosition().y);
 		draggedItem.itemBounds.x = int(draggedItem.mousePos.x - draggedItem.offset.x);

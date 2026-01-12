@@ -159,6 +159,7 @@ void UISlot::clicked(MouseButtons button, const Input& input, float deltaTime)
 			std::swap(slotStack, draggedItem.stack);
 			printf("Swap\n");
 		}
+		draggedItem.onItemDrop(); // Call drop callback
 	}
 	// If not dragging, try to pick up
 	else if (!slotStack.isEmpty()) {

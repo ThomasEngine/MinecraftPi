@@ -2,6 +2,7 @@
 #include "BaseUI.h"
 #include <string>
 #include "ItemRegistry.h"
+#include <functional>
 
 class UIButton : public UIWidget {
 public:
@@ -34,6 +35,10 @@ struct DraggedItem {
 	bool active;
 	glm::vec2 mousePos;
 	glm::vec2 offset;
+
+	// Callback function when item is dropped function from InventoryScreen
+	std::function<void()> onItemDrop;
+
 };
 
 class Container {

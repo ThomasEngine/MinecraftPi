@@ -34,10 +34,7 @@ void UIManager::Update(float deltaTime, const Input& input)
 	{
 		// Drop the item
 		//m_InventoryScreen->handleItemDrop();
-		//m_InventoryScreen->checkCraftingOutput();
-		draggedItem.isDragging = false;
-		draggedItem.active = false;
-		draggedItem.stack.clear();
+		m_InventoryScreen->checkCraftingOutput();
 	}
 }
 
