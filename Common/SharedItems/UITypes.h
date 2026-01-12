@@ -38,7 +38,6 @@ struct DraggedItem {
 
 	// Callback function when item is dropped function from InventoryScreen
 	std::function<void()> onItemDrop;
-
 };
 
 class Container {
