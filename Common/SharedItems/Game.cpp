@@ -163,7 +163,7 @@ void Game::Start()
 		windowW = graphics->GetWindowWidth();
 		windowH = graphics->GetWindowHeight();
 		// sleep to save CPU
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		//std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
 		auto time = std::chrono::system_clock::now();
 		std::chrono::duration<float> delta = time - lastTime;
@@ -201,17 +201,18 @@ void Game::Start()
             std::vector<float> sortedTimes = frameTimes;
             std::sort(sortedTimes.begin(), sortedTimes.end(), std::greater<float>()); // slowest first
             size_t count = sortedTimes.size();
-            size_t numLowFrames = std::max<size_t>(1, static_cast<size_t>(count * 0.01f));
+            //size_t numLowFrames = std::max<size_t>(1, static_cast<size_t>(count * 0.5f));
+			size_t numLowFrames = static_cast<size_t>(count * 0.5f);
+			low1PercentFPS = 1 / sortedTimes[numLowFrames] ;/*
             float sum = 0.0f;
             for (size_t i = 0; i < numLowFrames; ++i) {
                 sum += sortedTimes[i];
             }
             float avgLowFrameTime = sum / numLowFrames;
-            if (avgLowFrameTime > 0.0f)
-                low1PercentFPS = 1.0f / avgLowFrameTime;
+            low1PercentFPS = 1.0f / avgLowFrameTime;*/
         }
 
-        printf("Current FPS: %.2f | Average FPS: %.2f | Low 1%% FPS: %.2f\r", averageFPS, avgFPS, low1PercentFPS);
+        printf("Current FPS: %.2f | Average FPS: %.2f | Low 5%% FPS: %.2f\r", averageFPS, avgFPS, low1PercentFPS);
 
 		ClearScreen();
 		//Update and Draw your game here
