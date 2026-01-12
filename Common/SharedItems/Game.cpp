@@ -176,37 +176,37 @@ void Game::Start()
 			frameCount = 0;
 		}
 		
-		frameTimes.push_back(gameDeltaTime);
+		//frameTimes.push_back(gameDeltaTime);
 
-		const size_t maxHistory = 200;
-		if (frameTimes.size() > maxHistory)
-			frameTimes.erase(frameTimes.begin(), frameTimes.end() - maxHistory);
+		//const size_t maxHistory = 200;
+		//if (frameTimes.size() > maxHistory)
+		//	frameTimes.erase(frameTimes.begin(), frameTimes.end() - maxHistory);
 
 
-		float avgFPS = 0.0f;
-		if (!frameTimes.empty()) {
-			float sum = 0.0f;
-			for (float dt : frameTimes) sum += dt;
-			avgFPS = frameTimes.size() / sum;
-		}
-		
-        // Calculate 1% low FPS (average FPS of the slowest 1% of frames)
-        float low1PercentFPS = 0.0f;
-        if (!frameTimes.empty()) {
-            std::vector<float> sortedTimes = frameTimes;
-            std::sort(sortedTimes.begin(), sortedTimes.end(), std::greater<float>()); // slowest first
-            size_t count = sortedTimes.size();
-            size_t numLowFrames = std::max<size_t>(1, static_cast<size_t>(count * 0.01f));
-            float sum = 0.0f;
-            for (size_t i = 0; i < numLowFrames; ++i) {
-                sum += sortedTimes[i];
-            }
-            float avgLowFrameTime = sum / numLowFrames;
-            if (avgLowFrameTime > 0.0f)
-                low1PercentFPS = 1.0f / avgLowFrameTime;
-        }
+		//float avgFPS = 0.0f;
+		//if (!frameTimes.empty()) {
+		//	float sum = 0.0f;
+		//	for (float dt : frameTimes) sum += dt;
+		//	avgFPS = frameTimes.size() / sum;
+		//}
+		//
+  //      // Calculate 1% low FPS (average FPS of the slowest 1% of frames)
+  //      float low1PercentFPS = 0.0f;
+  //      if (!frameTimes.empty()) {
+  //          std::vector<float> sortedTimes = frameTimes;
+  //          std::sort(sortedTimes.begin(), sortedTimes.end(), std::greater<float>()); // slowest first
+  //          size_t count = sortedTimes.size();
+  //          size_t numLowFrames = std::max<size_t>(1, static_cast<size_t>(count * 0.01f));
+  //          float sum = 0.0f;
+  //          for (size_t i = 0; i < numLowFrames; ++i) {
+  //              sum += sortedTimes[i];
+  //          }
+  //          float avgLowFrameTime = sum / numLowFrames;
+  //          if (avgLowFrameTime > 0.0f)
+  //              low1PercentFPS = 1.0f / avgLowFrameTime;
+  //      }
 
-        printf("Current FPS: %.2f | Average FPS: %.2f | Low 1%% FPS: %.2f\r", averageFPS, avgFPS, low1PercentFPS);
+  //      printf("Current FPS: %.2f | Average FPS: %.2f | Low 1%% FPS: %.2f\r", averageFPS, avgFPS, low1PercentFPS);
 
 		ClearScreen();
 		//Update and Draw your game here

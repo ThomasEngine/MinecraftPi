@@ -1,5 +1,7 @@
 #include "InventoryScreen.h"
 #include "Crafting.h"
+#include "IInput.h"
+#include "Input.h"
 
 InventoryScreen::InventoryScreen(Container* inv)
 	: playerInventory(inv)
@@ -11,6 +13,22 @@ InventoryScreen::InventoryScreen(Container* inv)
 
 InventoryScreen::~InventoryScreen()
 {
+}
+
+void InventoryScreen::Update(const Input* input, float deltaTime)
+{
+	// Update all widgets
+	UIScreen::Update(input, deltaTime);
+
+	// if dragging update dragged item position
+	if (draggedItem.isDragging)
+	{
+
+		const IMouse& mouse = input->GetMouse();
+		draggedItem.mousePos = glm::vec2(mouse.GetPosition().x, mouse.GetPosition().y);
+		draggedItem.itemBounds.x = int(draggedItem.mousePos.x - draggedItem.offset.x);
+		draggedItem.itemBounds.y = int(draggedItem.mousePos.y - draggedItem.offset.y);
+	}
 }
 
 void InventoryScreen::handleItemDrop(int amount)

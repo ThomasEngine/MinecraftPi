@@ -69,7 +69,7 @@ public:
 	std::shared_ptr<NoiseMaps> m_NoiseMaps;
 private:
 #ifdef WINDOWS_BUILD
-	uint8_t VIEW_DISTANCE = 8;
+	uint8_t VIEW_DISTANCE = 3;
 #else
 	uint8_t VIEW_DISTANCE = 4;
 #endif

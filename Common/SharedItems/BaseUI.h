@@ -51,6 +51,8 @@ public:
 	virtual void Update(const Input* input, float deltaTime) {
 		for (auto& w : m_Widgets) {
 			w->Update(input, deltaTime);
+
+
 		}
 	}
 	virtual void Render(Renderer2D& ren) const {
@@ -61,6 +63,7 @@ public:
 
 	void setScreenWidthAndHeight(int screenW, int screenH) { m_ScreenW = screenW; m_ScreenH = screenH; }
 protected: // protected and not private to allow derived classes to add widgets
+	
 	std::vector<std::unique_ptr<UIWidget>> m_Widgets;
 	int m_ScreenW, m_ScreenH;
 };

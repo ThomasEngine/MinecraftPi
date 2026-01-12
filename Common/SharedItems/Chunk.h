@@ -41,6 +41,7 @@ public:
     glm::ivec3 chunkPos; // chunk grid position
     std::vector<Voxel> blocks;
     std::queue<unsigned int> sunlightBfsQueue;
+    std::queue<unsigned int> removeSunlightBfsQueue;
     std::queue<short int> blocklightBfsQueue;
 	std::queue<short int> removeBlocklightQueue;
     std::unique_ptr<Mesh> mesh;
@@ -94,11 +95,12 @@ public:
 	void PlaceTrees(Renderer& ren, ChunkLoader& owner);
 
     void ExportChangedBlocks(FileData& fileHelper);
+	
+    inline int GetBlockIndex(int x, int y, int z) const;
 private:
 	std::vector<glm::ivec3> m_TreePositions;
 
 	void GenerateTerrain(ChunkLoader& owner, const std::vector<BlockData>& loadedData);
-	inline int GetBlockIndex(int x, int y, int z) const;
 
 	std::vector<BlockData> changedBlocks;
 	bool m_FinishedGeneration = false;

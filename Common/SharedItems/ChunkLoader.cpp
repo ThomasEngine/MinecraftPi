@@ -60,6 +60,10 @@ void ChunkLoader::SetBlockAtPosition(const glm::vec3& worldPos, const uint8_t& b
 	auto it = m_ChunkLoadTasks.find(chunkPos);
 	if (it != m_ChunkLoadTasks.end()) {
 		it->second.chunk->SetBlock(int(position.x), int(position.y), int(position.z), block);
+        // Recheck sunlight
+        it->second.chunk->removeSunlightBfsQueue.push(it->second.chunk->GetBlockIndex(position.x, position.y, position.z));
+		it->second.chunk->RemoveSunlight(*this);
+
 		if (g_BlockTypes[block].isTransparent) it->second.chunk->hasTransparentBlocks = true;
         if (g_BlockTypes[block].isTransparent) it->second.chunk->createTransparentMesh(m_Renderer, *this);
         ReloadNeighborChunks(chunkPos);
@@ -126,6 +130,8 @@ void ChunkLoader::RemoveBlockAtPosition(const glm::vec3& worldPos)
         chunk->removeBlocklightQueue.push(idx);
         chunk->RemoveBlocklight(*this);
     }
+    // Remove sunlight
+
 
     // 2. Remove the block (set to air)
     chunk->SetBlock(x, y, z, B_AIR);

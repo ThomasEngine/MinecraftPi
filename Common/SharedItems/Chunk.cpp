@@ -382,9 +382,66 @@ void Chunk::ApplySunlight(ChunkLoader& owner)
 
 void Chunk::RemoveSunlight(ChunkLoader& owner)
 {
-	// Not implemented yet
-}
+    while (!removeSunlightBfsQueue.empty())
+    {
+        unsigned int index = removeSunlightBfsQueue.front();
+        removeSunlightBfsQueue.pop();
 
+        // Defensive check: skip if index is out of bounds
+        if (index >= blocks.size())
+            continue;
+
+        Voxel& block = blocks[index];
+        uint8_t lightlevel = GetSunlight(index);
+
+        if (lightlevel < 1) continue; // No light
+
+        SetSunlight(index, 0);
+
+        int vx = index % CHUNK_SIZE_X;
+        int vy = (index / CHUNK_SIZE_X) % CHUNK_SIZE_Y;
+        int vz = index / (CHUNK_SIZE_X * CHUNK_SIZE_Y);
+
+        for (int d = 0; d < 6; ++d) {
+            int nx = vx + faceDirs[d][0];
+            int ny = vy + faceDirs[d][1];
+            int nz = vz + faceDirs[d][2];
+            int neighborIdx = GetBlockIndex(nx, ny, nz);
+
+            if (neighborIdx == -1) {
+                // Cross-chunk: let the neighbor chunk handle its own sunlight removal
+                continue;
+            }
+
+            // Defensive check: skip if neighborIdx is out of bounds
+            if (neighborIdx < 0 || static_cast<size_t>(neighborIdx) >= blocks.size())
+                continue;
+
+            uint8_t neighborLight = GetSunlight(neighborIdx);
+            if (neighborLight != 0) {
+                SetSunlight(neighborIdx, 0);
+                removeSunlightBfsQueue.emplace(neighborIdx);
+
+                // If neighbor is a light source, re-flood
+                if (g_BlockTypes[blocks[neighborIdx].blockID].lightStrength > 0) {
+                    sunlightBfsQueue.emplace(neighborIdx);
+                }
+                else {
+                    // Check if any neighbor of this neighbor has higher light, if so, re-flood
+                    for (int nd = 0; nd < 6; ++nd) {
+                        int nnx = nx + faceDirs[nd][0];
+                        int nny = ny + faceDirs[nd][1];
+                        int nnz = nz + faceDirs[nd][2];
+                        int nnIdx = GetBlockIndex(nnx, nny, nnz);
+                        if (nnIdx != -1 && static_cast<size_t>(nnIdx) < blocks.size() && GetSunlight(nnIdx) > 1) {
+                            sunlightBfsQueue.emplace(nnIdx);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 void Chunk::PropagateLight(ChunkLoader& owner)
 {
@@ -695,7 +752,7 @@ void Chunk::createSolidMesh(Renderer& renderer, ChunkLoader& owner)
 					sampledLight = glm::clamp(sampledLight, 0.1f, 1.0f);
                     if (g_BlockTypes[blockId].lightStrength > 0)
                     {
-                        sampledLight = 10.f;
+                        sampledLight = 1.5f;
                     }
                     float finalLight = sampledLight;
 

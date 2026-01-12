@@ -29,6 +29,7 @@ namespace {
 		case SlotTypes::HelmetHolder:
 			return {7,1};
 			break;
+			break;
 		case SlotTypes::ChestplateHolder:
 			return {8,1};
 			break;
@@ -46,6 +47,10 @@ namespace {
 			break;
 		}
 	}
+
+	static const float waitForSecondClick = 10.f;
+	static float timer = 0.0f;
+
 	bool isSlotBackground(SlotTypes type)
 	{
 		return type == SlotTypes::BackgroundTop || type == SlotTypes::BackgroundMiddle || type == SlotTypes::BackgroundBottom;
@@ -82,16 +87,19 @@ void UISlot::Update(const Input* input, float deltaTime)
 {
 	const IMouse& mouse = input->GetMouse();
 	hovered = bounds.contains(mouse.GetPosition());
+
+	timer += deltaTime;
+
 	if (!hovered || !container) return;
 
 	if (hovered && mouse.GetButtonDown(MouseButtons::LEFT)) {
-		clicked(MouseButtons::LEFT, *input);
+		clicked(MouseButtons::LEFT, *input, deltaTime);
 	}
 	else if (hovered && mouse.GetButtonDown(MouseButtons::RIGHT)) {
-		clicked(MouseButtons::RIGHT, *input);
+		clicked(MouseButtons::RIGHT, *input, deltaTime);
 	}
 	else if (hovered && mouse.GetButtonDown(MouseButtons::MIDDLE)) {
-		clicked(MouseButtons::MIDDLE, *input);
+		clicked(MouseButtons::MIDDLE, *input, deltaTime);
 	}
 }
 
@@ -121,8 +129,16 @@ void UISlot::Render(Renderer2D& ren) const
 	}
 }
 
-void UISlot::clicked(MouseButtons button, const Input& input)
+void UISlot::clicked(MouseButtons button, const Input& input, float deltaTime)
 {
+	printf("Timer time: %.2f\n", timer);
+	if (timer < waitForSecondClick) {
+		return;
+	}
+	timer = 0.0f;
+
+	printf("CLICK\n");
+
 	// Drag and hold
 	if (!container) return;
 	if (container->getSlot(slotIndex).isEmpty() 
@@ -133,6 +149,7 @@ void UISlot::clicked(MouseButtons button, const Input& input)
 	if (draggedItem.isDragging) {
 		draggedItem.isDragging = false;
 		printf("Place\n");
+		
 	}
 
 	else {

@@ -89,5 +89,5 @@ public:
 	void Render(Renderer2D& ren) const override;
 
 private:
-	void clicked(MouseButtons button, const Input& input);
+	void clicked(MouseButtons button, const Input& input, float deltaTime);
 };
