@@ -16,9 +16,6 @@ public:
 	void OnClick();
 };
 
-// class UILabel : public UIWidget {
-
-
 // Slots
 struct ItemStack {
 	ItemTypeId itemID;

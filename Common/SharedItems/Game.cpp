@@ -461,7 +461,10 @@ void Game::InitializeOpenGLES()
 void Game::ClearScreen()
 {
 	float timeOfDay = fmod(dayTime / 12.f, 1.f);
-	glClearColor(0.53f * timeOfDay, 0.81f * timeOfDay, 0.92f * timeOfDay, 1.f);
+	if (world->GetPlayer().GetUnderWater())
+		glClearColor(0.0f * timeOfDay, 0.2f * timeOfDay, 0.4f * timeOfDay, 1.f * timeOfDay);
+	else
+		glClearColor(0.53f * timeOfDay, 0.81f * timeOfDay, 0.92f * timeOfDay, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

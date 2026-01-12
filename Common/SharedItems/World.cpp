@@ -172,7 +172,7 @@ void World::SetCollisionSystem(std::shared_ptr<CollisionSystem> cs)
 void World::SaveWorldData()
 {
 	m_ChunkLoader->SaveData();
-	glm::ivec3 playerPos = m_Player.GetPosition();
+	glm::vec3 playerPos = m_Player.GetPosition();
 	WorldData dat = m_FileData->LoadWorldData();
 	dat.playerPosition = playerPos;
 	dat.playerPosition.y += 1;

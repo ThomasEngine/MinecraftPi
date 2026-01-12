@@ -30,7 +30,7 @@ float near = 90.0f;
 float far = 110.0f;  
 
 vec3 UnderwaterFogColor = vec3(0.0, 0.4, 0.7);
-vec3 UnderWaterColor = vec3(0.0, 0.4, 0.7);
+vec3 UnderWaterColor = vec3(0.0, 0.2, 0.4);
 
 void main()
 {
@@ -38,7 +38,7 @@ void main()
     far = 110.0 / u_PiBUILD;
 
     near = mix(near, 0.1, u_UnderWater);
-    far = mix(far, 10.0, u_UnderWater);
+    far = mix(far, 30.0, u_UnderWater);
 
     v_UnderWaterColor = UnderWaterColor;
     v_UnderwaterFogColor = UnderwaterFogColor;
@@ -72,14 +72,10 @@ uniform sampler2D u_TextureAtlas;
 void main()
 {
     vec3 fogColor = mix(vec3(0.53, 0.81, 0.92) * v_DayTime, v_UnderWaterColor * (v_DayTime - 0.2), v_UnderWater);
-    //vec3 fogColor = vec3(0.53 * v_DayTime, 0.81 * v_DayTime, 0.92 * v_DayTime);
-    //vec3 underWaterColor = vec3(0.0, 0.4, 0.7);
     color = texture(u_TextureAtlas, v_AtlasUV);
-    float alpha = color.a;
     color.rgb *= v_LightLevel;
     color.rgb = mix(v_UnderWaterColor, color.rgb,  1.0 - v_UnderWater * 0.25);
     color.rgb = mix(fogColor, color.rgb, v_FogFactor);
-    color.a = alpha;
 }
 
 

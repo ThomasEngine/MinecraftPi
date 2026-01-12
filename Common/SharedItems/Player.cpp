@@ -11,7 +11,6 @@
 Player::Player(Camera* m_Camera)
 	: m_MovementSpeed(1.0f), m_CS(nullptr), m_Camera(m_Camera)
 {
-	SetPosition(glm::vec3(0.0f, 120.0f, 0.0f));
 	m_Inventory = new Container();
 	m_Inventory->AddItem(I_GRASS_BLOCK, 1, 0);
 	m_Inventory->AddItem(I_DIRT_BLOCK, 1, 1);
